@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# testing
+coverage/
+
+# environment — never commit real values
+.env
+.env*.local
+.env.production
+
+# local development data (synthetic enquiries written by the local lead store)
+.data/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+
+# playwright
+test-results/
+playwright-report/

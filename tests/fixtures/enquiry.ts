@@ -1,0 +1,21 @@
+/** Synthetic enquiry used across tests — fictional person, no real data. */
+export const validEnquiry = {
+  fullName: "  Test Student  ",
+  email: "Test.Student@Example.com",
+  whatsapp: "+91 98765-43210",
+  countryOfResidence: "India",
+  destination: "italy",
+  pathway: "study",
+  level: "masters",
+  intake: "autumn-2027",
+  academicBackground: "B.Tech, 2025, 7.8 CGPA",
+  budgetRange: "10-20l",
+  applicationStatus: "exploring",
+  consultationMethod: "whatsapp",
+  message: "",
+  privacyAcknowledged: true,
+  contactConsent: true,
+  updatesConsent: false,
+  website: "",
+  startedAt: 1_700_000_000_000,
+};

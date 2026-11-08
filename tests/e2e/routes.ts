@@ -1,0 +1,17 @@
+export const publicRoutes = [
+  "/",
+  "/destinations",
+  "/destinations/italy",
+  "/destinations/germany",
+  "/destinations/france",
+  "/services",
+  "/services/visa-preparation",
+  "/how-it-works",
+  "/pricing",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/sign-in",
+  "/sign-up",
+  "/this-page-does-not-exist",
+];

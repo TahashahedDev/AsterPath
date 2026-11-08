@@ -1,0 +1,41 @@
+import Link from "next/link";
+import type { ComponentProps } from "react";
+import { cn } from "@/lib/utils";
+
+type Variant = "primary" | "secondary" | "ghost" | "dark";
+type Size = "sm" | "md" | "lg";
+
+const base =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
+
+const variants: Record<Variant, string> = {
+  primary: "bg-primary text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_1px_2px_rgb(16_29_44/0.12)] hover:bg-primary-deep",
+  secondary: "bg-card text-ink ring-1 ring-border-strong hover:ring-ink/30",
+  ghost: "text-ink hover:bg-ink/5",
+  dark: "bg-ink text-paper hover:bg-ink-soft",
+};
+
+const sizes: Record<Size, string> = {
+  sm: "h-9 px-4 text-sm",
+  md: "h-11 px-5 text-[0.9375rem]",
+  lg: "h-12 px-6 text-base",
+};
+
+export function buttonStyles({ variant = "primary", size = "md", className }: { variant?: Variant; size?: Size; className?: string } = {}) {
+  return cn(base, variants[variant], sizes[size], className);
+}
+
+type StyleProps = { variant?: Variant; size?: Size };
+
+export function Button({ variant, size, className, type = "button", ...props }: ComponentProps<"button"> & StyleProps) {
+  return <button type={type} className={buttonStyles({ variant, size, className })} {...props} />;
+}
+
+export function ButtonLink({ variant, size, className, ...props }: ComponentProps<typeof Link> & StyleProps) {
+  return <Link className={buttonStyles({ variant, size, className })} {...props} />;
+}
+
+/** For off-site links such as WhatsApp — always opens safely in a new tab. */
+export function ExternalButtonLink({ variant, size, className, ...props }: ComponentProps<"a"> & StyleProps) {
+  return <a target="_blank" rel="noopener noreferrer" className={buttonStyles({ variant, size, className })} {...props} />;
+}
