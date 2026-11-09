@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const control =
-  "block w-full rounded-xl border border-border-strong bg-card px-4 text-[1rem] text-ink shadow-[inset_0_1px_1px_rgb(16_29_44/0.03)] transition-[border-color,box-shadow] placeholder:text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/12 aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/10";
+  "block w-full rounded-xl border border-border-strong bg-card px-4 text-[1rem] text-ink shadow-[inset_0_1px_1px_rgb(20_26_31/0.03)] transition-[border-color,box-shadow] placeholder:text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/12 aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/10";
 
 type FieldShellProps = { label: string; error?: string; hint?: string; optional?: boolean; children: (ids: { id: string; describedBy?: string }) => ReactNode };
 

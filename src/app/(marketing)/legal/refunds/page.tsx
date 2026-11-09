@@ -14,7 +14,7 @@ const sections: LegalSection[] = [
     heading: "The principle",
     body: [
       <p key="a">
-        You pay in instalments, each linked to a stage of work. You pay for work as it begins — never for stages that have not started. That is the basis
+        You pay in instalments, each linked to a stage of work. You pay for work as it begins, never for stages that have not started. That is the basis
         of everything below.
       </p>,
     ],

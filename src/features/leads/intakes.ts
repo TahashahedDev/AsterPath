@@ -20,7 +20,7 @@ export function upcomingIntakes(now: Date = new Date()): IntakeOption[] {
   return [
     ...windows.map(({ season, year: y }) => ({
       value: `${season}-${y}`,
-      label: season === "autumn" ? `Autumn ${y} (Sept–Oct)` : `Spring ${y} (Feb–Mar)`,
+      label: season === "autumn" ? `Autumn ${y} (September or October)` : `Spring ${y} (February or March)`,
     })),
     { value: "undecided", label: "Not decided yet" },
   ];

@@ -9,7 +9,8 @@ const base =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_1px_2px_rgb(16_29_44/0.12)] hover:bg-primary-deep",
+  primary:
+    "btn-sheen bg-[linear-gradient(135deg,var(--color-primary),var(--color-primary-deep))] text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_10px_24px_-12px_var(--color-primary)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_14px_30px_-12px_var(--color-primary)] hover:-translate-y-px",
   secondary: "bg-card text-ink ring-1 ring-border-strong hover:ring-ink/30",
   ghost: "text-ink hover:bg-ink/5",
   dark: "bg-ink text-paper hover:bg-ink-soft",
@@ -36,6 +37,11 @@ export function ButtonLink({ variant, size, className, ...props }: ComponentProp
 }
 
 /** For off-site links such as WhatsApp — always opens safely in a new tab. */
-export function ExternalButtonLink({ variant, size, className, ...props }: ComponentProps<"a"> & StyleProps) {
-  return <a target="_blank" rel="noopener noreferrer" className={buttonStyles({ variant, size, className })} {...props} />;
+export function ExternalButtonLink({ variant, size, className, children, ...props }: ComponentProps<"a"> & StyleProps) {
+  return (
+    <a target="_blank" rel="noopener noreferrer" className={buttonStyles({ variant, size, className })} {...props}>
+      {children}
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
+  );
 }

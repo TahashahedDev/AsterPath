@@ -1,162 +1,136 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Minus, Plus } from "lucide-react";
 import { faqs } from "@/content/faqs";
-import { feeAllowances, packageComparison, packageExclusions, servicePackages } from "@/content/packages";
-import { checkSchedule, milestoneShares } from "@/features/payments/milestones";
+import { plan } from "@/content/plan";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { FaqList } from "@/components/marketing/faq-list";
 import { PageHero } from "@/components/marketing/page-hero";
-import { PricingCards } from "@/components/marketing/pricing-cards";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { cn, formatInr } from "@/lib/utils";
+import { ButtonLink } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Pricing — published packages, paid in instalments",
-  description: "AsterPath's Italy packages with published starting prices, instalment schedules, included university fees and every third-party cost listed openly.",
+  title: "The AsterPath plan: one plan, everything in it",
+  description: "One plan per student for studying in Italy: every service and the costs along the way, from the English test to your visa file, paid in instalments.",
   alternates: { canonical: "/pricing" },
 };
 
-export default function PricingPage() {
-  // Never display a schedule that doesn't add up to its package price.
-  const schedules = servicePackages.filter((p) => checkSchedule(p.milestones, p.startingPrice).ok);
-
+export default function PlanPage() {
   return (
     <>
       <PageHero
-        eyebrow="Pricing"
-        title={<>Clear prices. <span className="display-italic text-primary">Fair instalments.</span></>}
-        description="Published starting prices, university application fees included, and you pay stage by stage as work begins. Your final quote is confirmed in writing after a free consultation."
-      />
+        eyebrow="The plan"
+        title={
+          <>
+            One plan. <span className="display-italic text-primary">Everything in it.</span>
+          </>
+        }
+        description={`${plan.intakeNote} Each student gets one plan, one advisor and one written figure.`}>
+        <ButtonLink href="/contact">Book a free consultation</ButtonLink>
+      </PageHero>
 
-      <section className="page-container mt-16">
-        <PricingCards />
-      </section>
-
-      <section className="page-container mt-28">
-        <SectionHeading eyebrow="Instalments" title={<>Pay as each stage <span className="display-italic text-primary">begins.</span></>} description="No large upfront fee. These are the standard schedules; your written agreement sets the exact amounts and dates." />
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {schedules.map((pkg) => {
-            const shares = milestoneShares(pkg.milestones);
-            return (
-              <div key={pkg.slug} className="reveal rounded-[var(--radius-card)] border border-border bg-card p-6 sm:p-7">
-                <h3 className="display text-2xl text-ink">{pkg.name}</h3>
-                <div className="mt-5 flex h-2 overflow-hidden rounded-full bg-paper-deep" aria-hidden="true">
-                  {pkg.milestones.map((m, i) => (
-                    <span key={m.label} className={i % 2 === 0 ? "bg-primary" : "bg-terracotta"} style={{ width: `${shares[i]}%` }} />
-                  ))}
-                </div>
-                <ol className="mt-5 divide-y divide-border">
-                  {pkg.milestones.map((m, i) => (
-                    <li key={m.label} className="flex items-baseline justify-between gap-4 py-3">
-                      <span className="flex gap-3 text-sm text-ink-soft">
-                        <span className="display text-lg text-terracotta-deep tabular-nums">{i + 1}</span>
-                        {m.label}
-                      </span>
-                      <span className="text-sm font-bold tabular-nums">{formatInr(m.amount)}</span>
-                    </li>
-                  ))}
-                  <li className="flex items-baseline justify-between gap-4 pt-3">
-                    <span className="font-bold">Total</span>
-                    <span className="font-bold tabular-nums">{formatInr(pkg.startingPrice)}</span>
-                  </li>
-                </ol>
-              </div>
-            );
-          })}
+      {/* What we do */}
+      <section className="section" aria-labelledby="services-title">
+        <div className="page-container cols">
+          <h2 id="services-title" className="col-span-4">
+            What we do.
+          </h2>
+          <ol className="rows col-span-8">
+            {plan.services.map((service, i) => (
+              <li key={service} className="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-4 py-5">
+                <span className="figure-xl text-2xl text-accent">{i + 1}</span>
+                <span className="text-[1.0625rem]">{service}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="page-container mt-28">
-        <h2 className="display text-4xl text-ink">Compare packages</h2>
-        <div className="mt-8 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-card" role="region" aria-label="Package comparison (scrolls sideways on small screens)" tabIndex={0}>
-          <table className="w-full min-w-[42rem] text-left text-[0.9375rem]">
-            <caption className="sr-only">Features included in each AsterPath package</caption>
-            <thead>
-              <tr className="border-b border-border">
-                <th scope="col" className="p-5 font-semibold text-muted">Feature</th>
-                {servicePackages.map((p) => (
-                  <th key={p.slug} scope="col" className={cn("p-5 text-center font-bold", p.highlighted && "text-primary")}>{p.name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {packageComparison.map((row) => (
-                <tr key={row.feature} className="border-b border-border last:border-0">
-                  <th scope="row" className="p-5 font-normal text-ink-soft">{row.feature}</th>
-                  {servicePackages.map((p) => {
-                    const value = row.values[p.slug];
-                    return (
-                      <td key={p.slug} className="p-5 text-center">
-                        {value === true ? (
-                          <Check className="mx-auto size-4 text-primary" aria-label="Included" />
-                        ) : value === false || value === undefined ? (
-                          <Minus className="mx-auto size-4 text-subtle" aria-label="Not included" />
-                        ) : (
-                          <span className="text-sm font-semibold text-ink-soft">{value}</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="page-container mt-28 grid gap-6 lg:grid-cols-2">
-        <div className="reveal rounded-[1.75rem] border border-border bg-primary-soft/50 p-7 sm:p-10">
-          <p className="eyebrow mb-5">Included</p>
-          <h2 className="display text-3xl text-ink">University fees we pay for you</h2>
-          <ul className="mt-6 space-y-4">
-            <li className="flex gap-3 text-ink-soft">
-              <Plus className="mt-1 size-4 shrink-0 text-primary" aria-hidden="true" />
-              <span>
-                <strong className="font-bold text-ink">Application fees</strong> for up to {feeAllowances.applicationUniversities} universities, up to €{feeAllowances.applicationFeesEur} in
-                total — in every package.
-              </span>
-            </li>
-            <li className="flex gap-3 text-ink-soft">
-              <Plus className="mt-1 size-4 shrink-0 text-primary" aria-hidden="true" />
-              <span>
-                <strong className="font-bold text-ink">Enrolment administrative fees</strong> at your chosen university — the regional tax and revenue stamp — in the
-                Complete Journey and Complete + Arrival packages.
-              </span>
-            </li>
-          </ul>
-          <p className="mt-6 text-sm text-muted">Fees above the allowance, or for extra universities, are agreed with you in advance.</p>
-        </div>
-        <div className="reveal rounded-[1.75rem] border border-border bg-paper-deep/70 p-7 sm:p-10">
-          <p className="eyebrow mb-5">Never hidden</p>
-          <h2 className="display text-3xl text-ink">Not included</h2>
-          <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-            {packageExclusions.map((item) => (
-              <li key={item} className="flex gap-3 text-[0.9375rem] text-ink-soft">
-                <Minus className="mt-1 size-4 shrink-0 text-terracotta" aria-hidden="true" />
+      {/* What we pay */}
+      <section className="field section" aria-labelledby="cover-title">
+        <div className="page-container cols">
+          <div className="col-span-5">
+            <h2 id="cover-title">The costs we pay for you.</h2>
+            <p className="lead mt-6">From the English test to your visa insurance, these are inside the plan.</p>
+          </div>
+          <ul className="col-span-6 col-start-7 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+            {plan.weCover.map((item) => (
+              <li key={item} className="text-[1.0625rem] leading-snug">
                 {item}
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-sm text-muted">We estimate these with you early, and show any third-party fee before you commit.</p>
         </div>
       </section>
 
-      <section className="page-container mt-28 grid gap-12 lg:grid-cols-[1fr_2fr]">
-        <div>
-          <h2 className="display text-4xl text-ink">Pricing questions</h2>
-          <p className="mt-5 text-muted">
-            Read our{" "}
-            <Link href="/legal/refunds" className="font-semibold text-primary underline-offset-4 hover:underline">
+      {/* Credited and not included */}
+      <section className="section" aria-labelledby="credit-title">
+        <div className="page-container cols gap-y-[var(--space-3xl)]">
+          <div className="col-span-6">
+            <h2 id="credit-title" className="text-[length:var(--text-title)]">
+              Paid by you, credited back
+            </h2>
+            <p className="mt-3 text-ink-2">Consulate rules say these must come from you. The plan returns the amount.</p>
+            <ul className="rows mt-6">
+              {plan.weCredit.map((c) => (
+                <li key={c.item} className="py-5">
+                  <p className="font-medium">{c.item}</p>
+                  <p className="mt-1 text-[0.9375rem] text-ink-2">{c.why}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="col-span-6">
+            <h2 className="text-[length:var(--text-title)]">Not in the plan</h2>
+            <p className="mt-3 text-ink-2">Listed now, so nothing surprises you later.</p>
+            <ul className="rows mt-6">
+              {plan.notIncluded.map((c) => (
+                <li key={c.item} className="py-5">
+                  <p className="font-medium">{c.item}</p>
+                  <p className="mt-1 text-[0.9375rem] text-ink-2">{c.why}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Instalments */}
+      <section className="section" aria-labelledby="instalments-title">
+        <div className="page-container">
+          <h2 id="instalments-title" className="max-w-[16ch]">
+            Paid as each stage begins.
+          </h2>
+          <ol className="cols mt-[var(--space-2xl)] gap-y-10">
+            {plan.instalments.map((step, i) => (
+              <li key={step.stage} className={i < 2 ? "card col-span-3" : "card col-span-2"}>
+                <span className="figure-xl block text-[clamp(3rem,5vw,4.5rem)] text-accent">{i + 1}</span>
+                <h3 className="mt-4">{step.stage}</h3>
+                <p className="label mt-1">{step.when}</p>
+                <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">{step.covers}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-[var(--space-xl)] max-w-[60ch] text-ink-2">
+            Your written agreement sets every amount and date before you pay anything. Read the{" "}
+            <Link href="/legal/refunds" className="link">
               refund and cancellation policy
             </Link>
             .
           </p>
         </div>
-        <FaqList faqs={faqs.filter((f) => f.topic === "pricing")} />
       </section>
 
-      <CtaSection title="Get a written quote for your situation." description="Your free consultation ends with a written quote: what's included, what it costs and when each instalment is due." />
+      <section className="section" aria-labelledby="plan-faq-title">
+        <div className="page-container cols">
+          <h2 id="plan-faq-title" className="col-span-4">
+            About the plan.
+          </h2>
+          <div className="col-span-8">
+            <FaqList faqs={faqs.filter((f) => f.topic === "pricing")} />
+          </div>
+        </div>
+      </section>
+
+      <CtaSection title="Get your figure in writing." description="Your free consultation ends with one written figure for your plan, and the dates of each instalment." />
     </>
   );
 }

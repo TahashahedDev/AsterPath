@@ -1,41 +1,33 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Clock3, FileSignature, MessageCircle, MessagesSquare, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock3, FileSignature, MessageCircle, MessagesSquare, ShieldCheck, UserRound } from "lucide-react";
 import { commitments, siteConfig } from "@/config/site";
 import { faqs } from "@/content/faqs";
-import { afterGraduation, dovRules, visaFunds } from "@/content/italy/facts";
+import { afterGraduation } from "@/content/italy/facts";
 import { legalisationChain } from "@/content/italy/documents";
 import { studyLevels } from "@/content/italy/levels";
 import { processStages } from "@/content/italy/process";
 import { regions } from "@/content/italy/regions";
+import { universities } from "@/content/italy/universities";
+import { plan } from "@/content/plan";
 import { buildItalyRegionMap } from "@/lib/geo";
 import { JourneyMap } from "@/components/maps/journey-map";
 import { RegionExplorer } from "@/components/maps/region-explorer";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { FaqList, faqJsonLd } from "@/components/marketing/faq-list";
 import { Flag } from "@/components/marketing/flag";
-import { PricingCards } from "@/components/marketing/pricing-cards";
 import { SourceNote } from "@/components/marketing/cards";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ButtonLink, ExternalButtonLink } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { whatsappUrl } from "@/lib/whatsapp";
 
-const eur = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 });
-
-const keyFigures = [
-  { value: eur.format(visaFunds.annualEur), label: `Minimum yearly funds for an Italian study visa (${visaFunds.appliesTo})` },
-  { value: `${dovRules.maxProcessingDays} days`, label: "Maximum time an Italian mission may take to issue your Declaration of Value" },
-  { value: "20", label: "Italian regions — each with its own scholarship body and rules" },
-  { value: "12 months", label: "Maximum job-seeker permit available after graduating in Italy" },
-];
-
 const cadence = commitments.activeStageUpdateCadence;
 
 const promises = [
   { icon: UserRound, title: "One named advisor", body: "The same person owns your file from the first call to your arrival in Italy." },
-  { icon: Clock3, title: `Replies within ${commitments.responseTimeWorkingDays} working day`, body: "Every message answered — you never have to chase us." },
+  { icon: Clock3, title: `Replies within ${commitments.responseTimeWorkingDays} working day`, body: "Every message answered. You never have to chase us." },
   { icon: MessagesSquare, title: `${cadence.charAt(0).toUpperCase()}${cadence.slice(1)} updates`, body: "During active stages, you hear from us even when nothing has changed." },
-  { icon: FileSignature, title: "Everything in writing", body: "Scope, price, instalments and refunds agreed before you pay anything." },
+  { icon: FileSignature, title: "Everything in writing", body: "Scope, your figure, instalments and refunds agreed before you pay anything." },
 ];
 
 export default function HomePage() {
@@ -63,8 +55,8 @@ export default function HomePage() {
               Study in Italy, <span className="display-italic text-primary">done properly.</span>
             </h1>
             <p className="mt-7 text-lg leading-relaxed text-muted motion-safe:animate-rise motion-safe:[animation-delay:160ms] sm:text-xl">
-              Universities, Universitaly, your Declaration of Value, regional scholarships and your study visa — handled by one dedicated advisor, at
-              published prices, paid in instalments.
+              Universities, entrance tests, your Declaration of Value, regional scholarships and an early visa file, handled by one dedicated advisor in
+              one plan, paid in instalments.
             </p>
             <div className="mt-9 flex flex-col gap-3 motion-safe:animate-rise motion-safe:[animation-delay:240ms] sm:flex-row">
               <ButtonLink href="/contact" size="lg">
@@ -74,58 +66,48 @@ export default function HomePage() {
                 <MessageCircle aria-hidden="true" /> WhatsApp an advisor
               </ExternalButtonLink>
             </div>
-            <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-ink-soft motion-safe:animate-rise motion-safe:[animation-delay:320ms]">
-              {["Free first consultation", "Published prices", "One advisor — no ghosting"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <span className="size-1.5 rotate-45 bg-terracotta" aria-hidden="true" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
 
           <figure className="relative motion-safe:animate-fade">
-            <div className="overflow-hidden rounded-[1.75rem] border border-border bg-card/70 p-2 shadow-[var(--shadow-lift)] backdrop-blur-sm sm:p-4">
+            <div className="ring-gradient float-soft overflow-hidden rounded-[1.75rem] p-2 shadow-[var(--shadow-lift)] sm:p-4">
               <JourneyMap />
             </div>
             <figcaption className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-muted">
               <Flag code="india" className="h-3.5 w-5" />
-              Four Italian missions in India
-              <span aria-hidden="true" className="text-terracotta">→</span>
+              From the Italian missions in New Delhi, Mumbai, Kolkata and Bengaluru to Italy
               <Flag code="italy" className="h-3.5 w-5" />
-              one destination, done properly
             </figcaption>
           </figure>
         </div>
       </section>
 
-      {/* Key figures */}
-      <section className="border-y border-border bg-card/70">
-        <div className="page-container py-14">
-          <dl className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {keyFigures.map((f) => (
-              <div key={f.value} className="reveal border-l-2 border-terracotta/60 pl-5">
-                <dt className="sr-only">{f.label}</dt>
-                <dd>
-                  <span className="display block text-4xl text-ink tabular-nums">{f.value}</span>
-                  <span className="mt-3 block text-sm leading-relaxed text-muted" aria-hidden="true">{f.label}</span>
-                </dd>
-              </div>
+      {/* Every public university, scrolling past */}
+      <section aria-label={`The ${universities.length} public universities we work with`} className="border-y border-border bg-card/50 py-5">
+        <div className="marquee">
+          <div className="marquee-track">
+            {[0, 1].map((copy) => (
+              <ul key={copy} aria-hidden={copy === 1 ? true : undefined} className="flex shrink-0 items-center">
+                {universities.map((u) => (
+                  <li key={u.slug} className="flex items-center gap-6 pr-6 whitespace-nowrap">
+                    <span className="display-italic text-lg text-ink-soft">{u.name}</span>
+                    <span className="text-xs text-terracotta" aria-hidden="true">✦</span>
+                  </li>
+                ))}
+              </ul>
             ))}
-          </dl>
-          <SourceNote ids={["vistoPerItalia", "dovChecklistMumbai", "studyInItaly"]} className="mt-10" />
+          </div>
         </div>
       </section>
 
       {/* Overview film */}
-      <section className="page-container mt-24">
+      <section className="page-container mt-20">
         <div className="reveal grid items-center gap-10 lg:grid-cols-[1fr_1.6fr]">
           <div>
-            <p className="eyebrow mb-5">In 26 seconds</p>
+            <p className="eyebrow mb-5">In 29 seconds</p>
             <h2 className="display text-4xl leading-[1.06] text-ink sm:text-5xl">
               How AsterPath <span className="display-italic text-primary">works.</span>
             </h2>
-            <p className="mt-5 text-lg leading-relaxed text-muted">From your passport to your first week in Italy — the stages, the prices and the promise, in one short film.</p>
+            <p className="mt-5 text-lg leading-relaxed text-muted">From your passport to your first week in Italy: the stages, the plan and the promise, in one short film.</p>
           </div>
           <video
             controls
@@ -133,7 +115,7 @@ export default function HomePage() {
             preload="none"
             poster="/video/asterpath-intro-poster.jpg"
             className="aspect-video w-full rounded-[1.5rem] border border-border bg-card shadow-[var(--shadow-lift)]"
-            aria-label="A 26-second overview film: AsterPath's five stages from passport to arrival in Italy, published prices paid in instalments, and the service commitment. The film has no narration; all information is shown as on-screen text."
+            aria-label="A 29-second overview film: AsterPath's five stages from passport to arrival in Italy, one plan paid in instalments, and the service commitment. The film has no narration; all information is shown as on-screen text."
           >
             <source src="/video/asterpath-intro.mp4" type="video/mp4" />
           </video>
@@ -146,8 +128,12 @@ export default function HomePage() {
           <SectionHeading
             className="reveal"
             eyebrow="How we work"
-            title={<>Five stages. <span className="display-italic text-primary">Nothing left to chance.</span></>}
-            description="Each stage has a clear owner, a deadline and an outcome. You always know what is done, what is next and who is doing it."
+            title={
+              <>
+                Five stages. <span className="display-italic text-primary">Nothing left to chance.</span>
+              </>
+            }
+            description="Each stage has a clear owner, a deadline and an outcome. We file your visa early, before the June to September rush."
           />
           <Link href="/process" className="reveal inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
             The full process <ArrowRight className="size-4" aria-hidden="true" />
@@ -155,7 +141,10 @@ export default function HomePage() {
         </div>
         <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {processStages.map((stage) => (
-            <li key={stage.slug} className="reveal group relative rounded-[var(--radius-card)] border border-border bg-card p-6 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]">
+            <li
+              key={stage.slug}
+              className="reveal glow-card group rounded-[var(--radius-card)] border border-border bg-card p-6"
+            >
               <span className="display block text-5xl text-terracotta tabular-nums">{String(stage.number).padStart(2, "0")}</span>
               <h3 className="mt-5 font-bold tracking-tight text-ink">{stage.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{stage.timing}</p>
@@ -166,8 +155,8 @@ export default function HomePage() {
 
       {/* No ghosting */}
       <section className="page-container mt-28">
-        <div className="reveal relative overflow-hidden rounded-[1.75rem] bg-inverse p-7 text-on-inverse sm:p-14 dark:ring-1 dark:ring-border-strong">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_0%_100%,rgb(24_122_102/0.35),transparent_70%)]" aria-hidden="true" />
+        <div className="reveal panel-sheen relative overflow-hidden rounded-[1.75rem] bg-inverse p-7 text-on-inverse sm:p-14 dark:ring-1 dark:ring-border-strong">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(36rem_18rem_at_0%_100%,rgb(176_141_87/0.22),transparent_70%)]" aria-hidden="true" />
           <div className="relative grid gap-12 lg:grid-cols-[1fr_1.4fr]">
             <div>
               <ShieldCheck className="size-9 text-accent-on-inverse" strokeWidth={1.4} aria-hidden="true" />
@@ -175,7 +164,8 @@ export default function HomePage() {
                 We don&rsquo;t disappear <span className="display-italic text-accent-on-inverse">halfway.</span>
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-on-inverse/75">
-                The most common complaint about study consultants is silence after the payment. Our service commitments are written into every agreement.
+                The most common complaint about study consultants is silence after the payment. {plan.intakeNote} Our service commitments are written into
+                every agreement.
               </p>
             </div>
             <ul className="grid gap-4 sm:grid-cols-2">
@@ -196,15 +186,19 @@ export default function HomePage() {
         <SectionHeading
           className="reveal"
           eyebrow="Programmes"
-          title={<>Bachelor&rsquo;s, master&rsquo;s or PhD — <span className="display-italic text-primary">each its own route.</span></>}
-          description="Eligibility, entrance rules and documents differ by level. Start with the guide for yours."
+          title={
+            <>
+              Bachelor&rsquo;s, master&rsquo;s or PhD, <span className="display-italic text-primary">each its own route.</span>
+            </>
+          }
+          description="Eligibility, entrance tests and documents differ by level. Start with the guide for yours."
         />
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {studyLevels.map((level, i) => (
             <Link
               key={level.slug}
               href={`/study-in-italy/${level.slug}`}
-              className="reveal group relative flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-card p-7 transition-[transform,box-shadow,border-color] duration-500 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[var(--shadow-lift)]"
+              className="reveal glow-card group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-card p-7"
             >
               {/* Decorative numeral drawn with CSS content, so it is not read or contrast-checked as text. */}
               <span
@@ -223,22 +217,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Scholarships */}
+      {/* Regions, scholarships and universities */}
       <section className="mt-28 border-y border-border bg-card/60 py-24">
         <div className="page-container">
           <SectionHeading
             className="reveal"
-            eyebrow="Regional scholarships"
-            title={<>Twenty regions. <span className="display-italic text-primary">Twenty sets of rules.</span></>}
-            description="DSU scholarships can cover a grant, housing, meals and a tuition waiver — and every region runs its own. Explore who runs support where."
+            eyebrow="Regions and universities"
+            title={
+              <>
+                Twenty regions. <span className="display-italic text-primary">Twenty sets of rules.</span>
+              </>
+            }
+            description="Every region runs its own scholarships. Pick one to see its scholarship office and its public universities, each linked to its official website."
           />
           <div className="mt-12">
-            <RegionExplorer map={regionMap} regions={regions} />
+            <RegionExplorer map={regionMap} regions={regions} universities={universities} />
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
-            <SourceNote ids={["studyInItaly", "mur"]} />
-            <Link href="/scholarships" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
-              How DSU and the ISEE parificato work <ArrowRight className="size-4" aria-hidden="true" />
+            <SourceNote ids={["murDsu", "studyInItaly"]} />
+            <Link href="/universities" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
+              All {universities.length} public universities <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -250,16 +248,20 @@ export default function HomePage() {
           <SectionHeading
             className="reveal"
             eyebrow="Documents"
-            title={<>Notary to DOV, <span className="display-italic text-primary">in the right order.</span></>}
+            title={
+              <>
+                Notary to DOV, <span className="display-italic text-primary">in the right order.</span>
+              </>
+            }
             description="One wrong attestation can cost months. We plan the chain for every document before you visit a single office."
           />
           <Link href="/documents" className="reveal inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
-            Documents guide <ArrowRight className="size-4" aria-hidden="true" />
+            The full checklist <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </div>
         <ol className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {legalisationChain.map((step, i) => (
-            <li key={step.title} className="reveal relative rounded-[var(--radius-card)] border border-border bg-card p-6">
+            <li key={step.title} className="reveal glow-card rounded-[var(--radius-card)] border border-border bg-card p-6">
               <span className="flex size-9 items-center justify-center rounded-full bg-terracotta-soft text-sm font-bold text-terracotta-deep tabular-nums">{i + 1}</span>
               <h3 className="mt-4 font-bold text-ink">{step.title}</h3>
               <p className="mt-1 text-sm text-muted">{step.who}</p>
@@ -268,23 +270,42 @@ export default function HomePage() {
         </ol>
       </section>
 
-      {/* Pricing */}
+      {/* The plan */}
       <section className="mt-28 border-y border-border bg-card/60 py-24">
-        <div className="page-container">
-          <SectionHeading
-            align="center"
-            className="reveal"
-            eyebrow="Transparent pricing"
-            title={<>Published prices. <span className="display-italic text-primary">Paid in instalments.</span></>}
-            description="University application fees are included in every package. Everything that isn't included is listed — no surprises later."
-          />
-          <div className="mt-14">
-            <PricingCards />
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
-              Instalments, inclusions and exclusions <ArrowRight className="size-4" aria-hidden="true" />
+        <div className="page-container grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+          <div>
+            <SectionHeading
+              className="reveal"
+              eyebrow="One plan"
+              title={
+                <>
+                  Everything in it. <span className="display-italic text-primary">Paid in instalments.</span>
+                </>
+              }
+              description="No price lists and no add-ons. After your free consultation you get one written figure, paid stage by stage. Flights are the only big cost outside it."
+            />
+            <ol className="mt-10 flex flex-wrap gap-2">
+              {plan.instalments.map((instalment, i) => (
+                <li key={instalment.stage} className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm font-medium text-ink ring-1 ring-border">
+                  <span className="display text-lg text-terracotta">{i + 1}</span>
+                  {instalment.stage}
+                </li>
+              ))}
+            </ol>
+            <Link href="/pricing" className="mt-10 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-deep">
+              What the plan covers <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
+          </div>
+          <div className="reveal ring-gradient rounded-[var(--radius-card)] p-7 shadow-[var(--shadow-lift)] sm:p-9">
+            <h3 className="display text-2xl text-ink">Costs we pay for you</h3>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {plan.weCover.map((item) => (
+                <li key={item} className="flex gap-3 text-[0.9375rem] leading-relaxed text-ink-soft">
+                  <Check className="mt-1 size-4 shrink-0 text-primary" aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

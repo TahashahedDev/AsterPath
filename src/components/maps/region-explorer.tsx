@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState, type CSSProperties } from "react";
 import { ArrowUpRight, Building2, Landmark, MousePointerClick } from "lucide-react";
 import type { RegionMapData } from "@/lib/geo";
 import type { Region } from "@/content/italy/regions";
+import type { University } from "@/content/italy/universities";
 import { cn } from "@/lib/utils";
 
 /**
@@ -11,11 +13,12 @@ import { cn } from "@/lib/utils";
  * list) eases the camera onto it and shows its DSU body and main universities.
  * The <select> is the accessible control; the map is a pointer shortcut.
  */
-export function RegionExplorer({ map, regions }: { map: RegionMapData; regions: Region[] }) {
+export function RegionExplorer({ map, regions, universities }: { map: RegionMapData; regions: Region[]; universities: University[] }) {
   const [selected, setSelected] = useState<string | null>(null);
   const selectId = useId();
   const region = selected ? regions.find((r) => r.code === selected) : undefined;
   const shape = selected ? map.regions.find((r) => r.code === selected) : undefined;
+  const regionUniversities = region ? universities.filter((u) => u.regionCode === region.code) : [];
 
   let transform = "translate(0px, 0px) scale(1)";
   if (shape) {
@@ -103,23 +106,32 @@ export function RegionExplorer({ map, regions }: { map: RegionMapData; regions: 
                 ))}
               </ul>
               <h4 className="mt-6 flex items-center gap-2 text-sm font-semibold text-ink">
-                <Building2 className="size-4 text-terracotta" aria-hidden="true" /> Main public universities
+                <Building2 className="size-4 text-terracotta" aria-hidden="true" /> Public universities
               </h4>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {region.universities.map((u) => (
-                  <li key={u} className="rounded-full bg-paper-deep px-3 py-1.5 text-sm text-ink-soft ring-1 ring-border">
-                    {u}
+              <ul className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+                {regionUniversities.map((u) => (
+                  <li key={u.slug} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3">
+                    <Link href={`/universities/${u.slug}`} className="font-semibold text-ink hover:text-primary">
+                      {u.name}
+                    </Link>
+                    <a href={u.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-deep">
+                      Official website <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                      <span className="sr-only">: {u.name} (opens in a new tab)</span>
+                    </a>
                   </li>
                 ))}
               </ul>
               <p className="mt-6 text-sm leading-relaxed text-muted">
-                You apply for DSU support to the body that serves the region of your university — not the region you live in.
+                You apply for DSU support to the body that serves the region of your university, not the region you live in.
               </p>
+              <Link href={`/regions/${region.slug}`} className="mt-5 inline-flex items-center gap-1.5 font-semibold text-primary hover:text-primary-deep">
+                Studying in {region.name} <ArrowUpRight className="size-4" aria-hidden="true" />
+              </Link>
             </div>
           ) : (
             <p className="flex gap-3 rounded-xl border border-dashed border-border-strong p-5 text-[0.9375rem] leading-relaxed text-muted">
               <MousePointerClick className="mt-0.5 size-5 shrink-0 text-terracotta" aria-hidden="true" />
-              Select a region on the map or from the list to see which body runs its scholarships and which public universities are there.
+              Select a region on the map or from the list to see who runs its scholarships and every public university there, with a link to each one&rsquo;s website.
             </p>
           )}
         </div>

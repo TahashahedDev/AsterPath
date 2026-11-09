@@ -23,19 +23,19 @@ export const studyLevels: StudyLevel[] = [
     slug: "bachelors",
     title: "Bachelor's degrees",
     italianName: "Laurea (and single-cycle Laurea Magistrale)",
-    duration: "3 years (single-cycle programmes such as medicine: 5–6 years)",
+    duration: "3 years (single-cycle programmes such as medicine: 5 or 6 years)",
     headline: "After Class 12: three-year bachelor's degrees, many taught in English.",
     summary:
-      "Italian bachelor's degrees take three years. Some fields — medicine, dentistry, architecture, law — run as single-cycle programmes of five or six years with their own national admission rules.",
+      "Italian bachelor's degrees take three years. Some fields, such as medicine, dentistry, architecture and law, run as single-cycle programmes of five or six years with their own national admission rules.",
     eligibility: [
-      "Italy generally requires 12 years of schooling for bachelor's entry — Class 12 from a recognised Indian board fits this.",
+      "Italy generally requires 12 years of schooling for bachelor's entry; Class 12 from a recognised Indian board fits this.",
       "Each programme sets its own subject and grade requirements.",
       "English-taught programmes require proof of English, usually at B2 level or above.",
     ],
     admissions: [
       "Many universities run a pre-evaluation of your marks before formal application.",
       "Some programmes use entrance tests (for example TOLC or SAT-based routes); limited-enrolment programmes publish separate calls.",
-      "Medicine and other restricted programmes follow national rules that have changed recently — we confirm the current route for each programme.",
+      "Medicine and other restricted programmes follow national rules that have changed recently, so we confirm the current route for each programme.",
     ],
     watchOuts: [
       "Limited-enrolment programmes often close earlier than the general Universitaly deadline.",
@@ -86,7 +86,7 @@ export const studyLevels: StudyLevel[] = [
       "PhD applicants use the paid DOV category at the Italian mission.",
     ],
     watchOuts: [
-      "Calls are published in Italian and English with short deadlines — tracking them early matters.",
+      "Calls are published in Italian and English with short deadlines, so tracking them early matters.",
       "Research proposals must fit the programme's stated areas.",
     ],
     documents: ["Passport", "Master's degree and marksheets (attested and apostilled)", "Research proposal", "CV and publications, if any", "Recommendation letters", "DOV (paid category) or CIMEA statement"],

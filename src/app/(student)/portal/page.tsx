@@ -1,7 +1,7 @@
 import { EmptyPanel } from "@/components/dashboard/dashboard-shell";
 
 const panels = [
-  { title: "Current stage", description: "Derived from your case workflow once it is assigned — never estimated." },
+  { title: "Current stage", description: "Derived from your case workflow once it is assigned, never estimated." },
   { title: "Outstanding tasks", description: "Tasks your advisor assigns to you, with due dates and who is responsible." },
   { title: "Documents awaiting review", description: "Uploads and their review status, with feedback from your reviewer." },
   { title: "Next deadline", description: "The nearest deadline across your applications and tasks." },

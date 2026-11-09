@@ -39,7 +39,7 @@ export function JourneyMap() {
           ))}
         </g>
         <path d={map.india} className="fill-primary-soft stroke-primary" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-        <path d={map.italy} className="fill-terracotta/25 stroke-terracotta dark:fill-terracotta/55" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        <path d={map.italy} className="fill-terracotta/40 stroke-terracotta-deep dark:fill-terracotta/55 dark:stroke-terracotta" strokeWidth={1} vectorEffect="non-scaling-stroke" />
 
         {/* Italy close-up: regions and university cities, sized for the zoomed view. */}
         <g className="journey-italy-detail">

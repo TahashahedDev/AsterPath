@@ -12,9 +12,8 @@ next-env.d.ts
 coverage/
 
 # environment — never commit real values
-.env
-.env*.local
-.env.production
+.env*
+!.env.example
 
 # local development data (synthetic enquiries written by the local lead store)
 .data/
@@ -22,6 +21,8 @@ coverage/
 # misc
 .DS_Store
 *.pem
+*.key
+.hallmark/
 npm-debug.log*
 .vercel
 

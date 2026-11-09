@@ -1,8 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-const DARK_PAPER = "rgb(11, 20, 32)";
-const LIGHT_PAPER = "rgb(248, 245, 238)";
-const bodyBackground = (page: import("@playwright/test").Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+/**
+ * Body background lightness (CIE L*, 0 to 100). Chrome reports the oklch paper
+ * tokens as lab()/oklch()/rgb() depending on version, so compare lightness, not strings.
+ */
+async function paperLightness(page: import("@playwright/test").Page): Promise<number> {
+  return page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b] = Array.from(ctx.getImageData(0, 0, 1, 1).data).map((v) => v / 255);
+    const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+    const y = 0.2126 * lin(r!) + 0.7152 * lin(g!) + 0.0722 * lin(b!);
+    return y > 0.008856 ? 116 * Math.cbrt(y) - 16 : 903.3 * y;
+  });
+}
+const expectDark = async (page: import("@playwright/test").Page) => expect(await paperLightness(page)).toBeLessThan(15);
+const expectLight = async (page: import("@playwright/test").Page) => expect(await paperLightness(page)).toBeGreaterThan(90);
 
 test.describe("theme", () => {
   test("follows the device setting before the page first renders", async ({ page }) => {
@@ -15,7 +31,7 @@ test.describe("theme", () => {
     });
     await page.goto("/");
     expect(await page.evaluate(() => (window as unknown as { themeAtDcl?: string }).themeAtDcl)).toBe("dark");
-    expect(await bodyBackground(page)).toBe(DARK_PAPER);
+    await expectDark(page);
   });
 
   test("reacts live when the device switches theme", async ({ page }) => {
@@ -31,11 +47,11 @@ test.describe("theme", () => {
     await page.goto("/");
     await page.getByRole("button", { name: "Switch to dark theme" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#0b1420");
+    await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#0c1513");
 
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    expect(await bodyBackground(page)).toBe(DARK_PAPER);
+    await expectDark(page);
     expect(await page.evaluate(() => localStorage.getItem("asterpath-theme"))).toBe("dark");
   });
 
@@ -47,7 +63,7 @@ test.describe("theme", () => {
 
     await group.getByRole("radio", { name: "Light theme" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-    expect(await bodyBackground(page)).toBe(LIGHT_PAPER);
+    await expectLight(page);
 
     await page.keyboard.press("ArrowRight"); // light → system (device is dark)
     await expect(group.getByRole("radio", { name: "System theme" })).toHaveAttribute("aria-checked", "true");
@@ -59,7 +75,7 @@ test.describe("theme", () => {
     const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
     const page = await context.newPage();
     await page.goto("/");
-    expect(await bodyBackground(page)).toBe(DARK_PAPER);
+    await expectDark(page);
     await context.close();
   });
 });

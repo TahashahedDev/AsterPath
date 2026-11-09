@@ -12,6 +12,8 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "media-src 'self'",
+  // The consultation calendar (Cal.com) is the only third party allowed in a frame.
+  "frame-src https://cal.com https://app.cal.com",
   "font-src 'self'",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",

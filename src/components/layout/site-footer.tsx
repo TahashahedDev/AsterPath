@@ -13,6 +13,7 @@ const columns = [
       { href: "/study-in-italy/bachelors", label: "Bachelor's" },
       { href: "/study-in-italy/masters", label: "Master's" },
       { href: "/study-in-italy/phd", label: "PhD and research" },
+      { href: "/universities", label: "Universities" },
       { href: "/scholarships", label: "Scholarships (DSU)" },
     ],
   },
@@ -21,7 +22,7 @@ const columns = [
     links: [
       { href: "/process", label: "How we work" },
       { href: "/documents", label: "Documents and DOV" },
-      { href: "/pricing", label: "Pricing" },
+      { href: "/pricing", label: "The plan" },
       { href: "/about", label: "About" },
       { href: "/contact", label: "Free consultation" },
     ],

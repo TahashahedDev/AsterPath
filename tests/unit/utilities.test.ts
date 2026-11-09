@@ -14,8 +14,29 @@ describe("rate limiter", () => {
     expect(check("ip", 1_001).allowed).toBe(true);
   });
 
-  it("takes the first forwarded address", () => {
-    expect(clientIp(new Headers({ "x-forwarded-for": "203.0.113.5, 10.0.0.1" }))).toBe("203.0.113.5");
+  it("never trusts forwarding headers unless the deployment says so", () => {
+    const headers = new Headers({ "x-forwarded-for": "198.51.100.9, 203.0.113.5", "x-real-ip": "198.51.100.9" });
+    expect(clientIp(headers, { trustedProxyHops: 0 })).toBeNull();
+  });
+
+  it("takes the entry added by the nearest trusted proxy, not the client's", () => {
+    const headers = new Headers({ "x-forwarded-for": "198.51.100.9, 203.0.113.5" });
+    expect(clientIp(headers, { trustedProxyHops: 1 })).toBe("203.0.113.5");
+    expect(clientIp(new Headers(), { trustedProxyHops: 1 })).toBeNull();
+  });
+
+  it("reads a platform header and rejects values that are not addresses", () => {
+    expect(clientIp(new Headers({ "x-real-ip": "2001:db8::1" }), { header: "x-real-ip", trustedProxyHops: 0 })).toBe("2001:db8::1");
+    expect(clientIp(new Headers({ "x-real-ip": "x".repeat(500) }), { header: "x-real-ip", trustedProxyHops: 0 })).toBeNull();
+  });
+
+  it("stays within its key bound, dropping the oldest windows", () => {
+    const check = createRateLimiter({ limit: 1, windowMs: 60_000, maxKeys: 2 });
+    check("a", 0);
+    check("b", 0);
+    check("c", 0);
+    expect(check("b", 1).allowed).toBe(false);
+    expect(check("a", 1).allowed).toBe(true);
   });
 });
 

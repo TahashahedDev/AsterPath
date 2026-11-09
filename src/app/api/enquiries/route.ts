@@ -1,11 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { enquirySchema } from "@/features/leads/schema";
+import { getServerEnv } from "@/lib/env";
 import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
 import { createLead } from "@/server/services/lead-service";
 
 const MAX_BODY_BYTES = 16 * 1024;
-const limiter = createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 });
+const WINDOW_MS = 10 * 60 * 1000;
+// Per client when the deployment says where the real address is.
+const limiter = createRateLimiter({ limit: 5, windowMs: WINDOW_MS });
+// One shared allowance for every request whose address cannot be trusted.
+const unverifiedLimiter = createRateLimiter({ limit: 30, windowMs: WINDOW_MS, maxKeys: 1 });
 
 function error(status: number, code: string, message: string, extra?: Record<string, unknown>) {
   return NextResponse.json({ error: { code, message, ...extra } }, { status });
@@ -22,10 +27,40 @@ function isSameOrigin(request: NextRequest): boolean {
   }
 }
 
+/**
+ * Reads the body while counting bytes and stops at the cap, so an oversized or
+ * length-less chunked body is never held in memory whole. Null means too large.
+ */
+async function readBodyLimited(request: NextRequest, maxBytes: number): Promise<string | null> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) return error(403, "forbidden", "This request was blocked.");
 
-  const rate = limiter(clientIp(request.headers));
+  const env = getServerEnv();
+  const ip = clientIp(request.headers, { header: env.CLIENT_IP_HEADER, trustedProxyHops: env.TRUSTED_PROXY_HOPS });
+  const rate = ip ? limiter(ip) : unverifiedLimiter("unverified");
   if (!rate.allowed) {
     return NextResponse.json(
       { error: { code: "rate-limited", message: "Too many enquiries from this connection. Please try again later or message us on WhatsApp." } },
@@ -38,8 +73,8 @@ export async function POST(request: NextRequest) {
 
   let body: unknown;
   try {
-    const text = await request.text();
-    if (text.length > MAX_BODY_BYTES) return error(413, "too-large", "This enquiry is too large to submit.");
+    const text = await readBodyLimited(request, MAX_BODY_BYTES);
+    if (text === null) return error(413, "too-large", "This enquiry is too large to submit.");
     body = JSON.parse(text);
   } catch {
     return error(400, "invalid-json", "We couldn't read this enquiry. Please try again.");

@@ -10,6 +10,13 @@ const serverEnvSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     LEAD_STORE: z.enum(["local", "none"]).optional(),
+    // How to find the real client address for rate limiting (see .env.example).
+    CLIENT_IP_HEADER: z
+      .string()
+      .regex(/^[a-z0-9-]{1,64}$/i)
+      .transform((name) => name.toLowerCase())
+      .optional(),
+    TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   })
   .transform((env) => ({
     ...env,

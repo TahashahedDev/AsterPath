@@ -12,7 +12,7 @@ export const THEME_STORAGE_KEY = "asterpath-theme";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 /** Browser chrome colours (address bar on mobile) — must match --color-paper. */
-export const THEME_COLORS: Record<ResolvedTheme, string> = { light: "#f7f6f0", dark: "#0b1420" };
+export const THEME_COLORS: Record<ResolvedTheme, string> = { light: "#f8f5ef", dark: "#0c1513" };
 
 /** Inline, render-blocking script for <head>. Kept tiny and dependency-free. */
 export const themeInitScript = `(function(){try{var p=localStorage.getItem("${THEME_STORAGE_KEY}");var d=p==="dark"||(p!=="light"&&window.matchMedia("${DARK_QUERY}").matches);var r=document.documentElement;r.setAttribute("data-theme",d?"dark":"light");r.style.colorScheme=d?"dark":"light";}catch(e){}})();`;

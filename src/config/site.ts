@@ -5,13 +5,23 @@
  */
 const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "393331104575").replace(/\D/g, "");
 
+/** The canonical origin: https, or plain http only on this machine. A bad value fails the build loudly. */
+export function parseSiteUrl(raw: string | undefined): string {
+  const url = new URL(raw ?? "http://localhost:3000");
+  const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (url.username || url.password || url.search || url.hash || !(url.protocol === "https:" || (url.protocol === "http:" && local))) {
+    throw new Error("NEXT_PUBLIC_SITE_URL must be an https origin such as https://asterpath.example");
+  }
+  return url.origin + url.pathname.replace(/\/$/, "");
+}
+
 export const siteConfig = {
   name: "AsterPath",
   tagline: "Your next chapter starts here.",
   positioning: "Study in Italy, done properly.",
   description:
-    "AsterPath is an Italy-specialist study consultancy for Indian students: university applications, Universitaly pre-enrolment, DOV and attestation, regional DSU scholarships and your Italian study visa — with published prices and one dedicated advisor.",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+    "AsterPath is an Italy-specialist study consultancy for students from India: universities, Universitaly, DOV and attestation, regional DSU scholarships and the Italian study visa, in one plan with one dedicated advisor.",
+  url: parseSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@asterpath.example",
   whatsapp: {
     number: whatsappNumber,
@@ -27,7 +37,7 @@ export const siteConfig = {
 export const legalEntity = {
   confirmed: false,
   registeredName: "[Registered business name]",
-  entityType: "[Entity type — e.g. Private Limited / LLP / Proprietorship]",
+  entityType: "[Entity type, e.g. Private Limited, LLP or Proprietorship]",
   registeredAddress: "[Registered office address]",
   gstin: "[GSTIN, if registered]",
   grievanceOfficer: "[Grievance officer name]",
@@ -57,9 +67,9 @@ function formatWhatsappDisplay(digits: string): string {
 
 export const mainNav = [
   { href: "/study-in-italy", label: "Study in Italy" },
+  { href: "/universities", label: "Universities" },
   { href: "/scholarships", label: "Scholarships" },
   { href: "/process", label: "How we work" },
   { href: "/documents", label: "Documents" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
+  { href: "/pricing", label: "The plan" },
 ] as const;

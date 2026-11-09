@@ -32,6 +32,30 @@ export const sources = {
     url: "https://consmumbai.esteri.it/wp-content/uploads/2026/06/Checklist_dov_mumbai-for-study-purposes-2026-2027-vers-05-06-2026.pdf",
     publisher: "Consulate General of Italy, Mumbai (revised June 2026)",
   },
+  visaChecklistBengaluru: {
+    id: "visaChecklistBengaluru",
+    label: "Study visa checklist 2026/27 and 2027/28 (Bengaluru)",
+    url: "https://www.vfsglobal.com/one-pager/italy/india/bangalore/italian/pdf/Checklist-Study-C-and-D-2026-EN.pdf",
+    publisher: "Consulate General of Italy, Bengaluru",
+  },
+  murDsu: {
+    id: "murDsu",
+    label: "MUR: right to study",
+    url: "https://www.mur.gov.it/it/aree-tematiche/universita/studenti-diritto-allo-studio-e-residenze/iniziative-statali-tema-di",
+    publisher: "Italian Ministry of University and Research",
+  },
+  iseeDocs: {
+    id: "iseeDocs",
+    label: "ISEE parificato documents 2026/27",
+    url: "https://www.unive.it/pag/fileadmin/user_upload/ateneo/diritto-allo-studio/tasse/DOCUMENTS_REQUIRED_FOR_ISEE_PARIFICATO_2026_2027.pdf",
+    publisher: "Ca' Foscari University of Venice",
+  },
+  cisia: {
+    id: "cisia",
+    label: "CISIA: CEnT-S",
+    url: "https://www.cisiaonline.it/en/news/cent-s-new-unified-cisia-english-test",
+    publisher: "CISIA, the Italian inter-university consortium for admission tests",
+  },
 } satisfies Record<string, Source>;
 
 export type SourceId = keyof typeof sources;

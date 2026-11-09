@@ -44,9 +44,9 @@ const sections: LegalSection[] = [
     heading: "Why we use it",
     body: [
       <ul key="a">
-        <li>To respond to your enquiry and arrange your consultation — based on your consent.</li>
-        <li>To deliver the services in your agreement, including preparing applications and files you ask us to — based on your consent and our contract with you.</li>
-        <li>To send occasional updates about intakes and deadlines — only if you opt in. You can withdraw at any time.</li>
+        <li>To respond to your enquiry and arrange your consultation (based on your consent).</li>
+        <li>To deliver the services in your agreement, including preparing applications and files you ask us to (based on your consent and our contract with you).</li>
+        <li>To send occasional updates about intakes and deadlines, only if you opt in. You can withdraw at any time.</li>
         <li>To understand, in aggregate, which channels bring students to us.</li>
         <li>To meet legal obligations, such as accounting and tax records.</li>
       </ul>,

@@ -10,18 +10,18 @@ const { fontFamily: sans } = loadManrope("normal", { weights: ["500", "700"] });
 
 // Brand palette (light theme tokens from the website).
 const C = {
-  paper: "#f8f5ee",
-  card: "#fffdf8",
-  ink: "#101d2c",
-  muted: "#59626e",
-  primary: "#187a66",
-  primarySoft: "#dcebe4",
-  terracotta: "#c4643f",
-  land: "#e9e3d6",
-  border: "#d4ccbd",
-  inverse: "#101d2c",
-  onInverse: "#f8f5ee",
-  accentOnInverse: "#4cc3a3",
+  paper: "#f8f5ef",
+  card: "#fffdf9",
+  ink: "#141a1f",
+  muted: "#5c636b",
+  primary: "#1f4d40",
+  primarySoft: "#e2ebe5",
+  terracotta: "#b08d57",
+  land: "#ebe4d6",
+  border: "#d5cbb9",
+  inverse: "#10241e",
+  onInverse: "#f4efe5",
+  accentOnInverse: "#d9bd84",
 };
 
 const SCENES = { title: 105, map: 225, stages: 180, pricing: 135, promise: 120, cta: 105 };
@@ -50,9 +50,9 @@ function Rise({ delay = 0, children, distance = 40 }: { delay?: number; children
 function Star({ size }: { size: number }) {
   return (
     <svg viewBox="0 0 32 32" width={size} height={size}>
-      <path d="M9.5 9.5 16 14.6 22.5 9.5 17.4 16 22.5 22.5 16 17.4 9.5 22.5 14.6 16Z" fill="#c7a66a" />
+      <path d="M9.5 9.5 16 14.6 22.5 9.5 17.4 16 22.5 22.5 16 17.4 9.5 22.5 14.6 16Z" fill="#b08d57" />
       <path d="M16 1 18.2 13.8 27 16 18.2 18.2 16 31 13.8 18.2 5 16 13.8 13.8Z" fill={C.primary} />
-      <path d="M16 1 18.2 13.8 16 16ZM27 16 18.2 18.2 16 16ZM16 31 13.8 18.2 16 16ZM5 16 13.8 13.8 16 16Z" fill="#11604f" />
+      <path d="M16 1 18.2 13.8 16 16ZM27 16 18.2 18.2 16 16ZM16 31 13.8 18.2 16 16ZM5 16 13.8 13.8 16 16Z" fill="#163a30" />
     </svg>
   );
 }
@@ -61,7 +61,7 @@ function Glow() {
   return (
     <AbsoluteFill
       style={{
-        background: "radial-gradient(60% 50% at 10% 0%, rgba(24,122,102,0.14), transparent 70%), radial-gradient(50% 45% at 100% 10%, rgba(196,100,63,0.13), transparent 70%)",
+        background: "radial-gradient(60% 50% at 10% 0%, rgba(31,77,64,0.12), transparent 70%), radial-gradient(50% 45% at 100% 10%, rgba(176,141,87,0.16), transparent 70%)",
       }}
     />
   );
@@ -115,7 +115,7 @@ function MapScene() {
               <path key={i} d={d} fill={C.land} stroke={C.border} strokeWidth={0.8 / k} />
             ))}
             <path d={map.india} fill={C.primarySoft} stroke={C.primary} strokeWidth={1.5 / k} />
-            <path d={map.italy} fill="rgba(196,100,63,0.25)" stroke={C.terracotta} strokeWidth={1.5 / k} />
+            <path d={map.italy} fill="rgba(176,141,87,0.28)" stroke={C.terracotta} strokeWidth={1.5 / k} />
             <g opacity={detail}>
               {map.regions.map((d, i) => (
                 <path key={i} d={d} fill="none" stroke={C.card} strokeWidth={1.4 / k} />
@@ -137,10 +137,10 @@ function MapScene() {
         style={{
           padding: `${(vertical ? 140 : 90) * u}px ${90 * u}px`,
           justifyContent: vertical ? "flex-start" : "flex-end",
-          background: vertical ? `linear-gradient(to bottom, ${C.paper} 18%, rgba(248,245,238,0) 34%)` : undefined,
+          background: vertical ? `linear-gradient(to bottom, ${C.paper} 18%, rgba(248,245,239,0) 34%)` : undefined,
         }}
       >
-        <div style={{ background: vertical ? "transparent" : "rgba(248,245,238,0.85)", borderRadius: 28 * u, padding: vertical ? 0 : `${36 * u}px ${44 * u}px`, alignSelf: vertical ? "flex-start" : "flex-end" }}>
+        <div style={{ background: vertical ? "transparent" : "rgba(248,245,239,0.85)", borderRadius: 28 * u, padding: vertical ? 0 : `${36 * u}px ${44 * u}px`, alignSelf: vertical ? "flex-start" : "flex-end" }}>
           <Rise delay={8}>
             <div style={{ fontFamily: display, fontSize: 76 * u, color: C.ink, lineHeight: 1.05 }}>Four Italian missions in India.</div>
           </Rise>
@@ -181,11 +181,7 @@ function StagesScene() {
   );
 }
 
-const PRICES = [
-  { name: "Admissions", price: "₹39,900" },
-  { name: "Complete Journey", price: "₹99,000" },
-  { name: "Complete + Arrival", price: "₹1,39,000" },
-];
+const INSTALMENTS = ["Onboarding", "Applications", "Admission", "Visa", "Arrival"];
 
 function PricingScene() {
   const { u, vertical } = useUnit();
@@ -194,26 +190,23 @@ function PricingScene() {
       <Glow />
       <AbsoluteFill style={{ padding: 100 * u, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <Rise>
-          <div style={{ fontFamily: display, fontSize: 100 * u, color: C.ink, lineHeight: 1.05 }}>Published prices.</div>
+          <div style={{ fontFamily: display, fontSize: 100 * u, color: C.ink, lineHeight: 1.05 }}>One plan. Everything in it.</div>
         </Rise>
         <Rise delay={10}>
           <div style={{ fontFamily: displayItalic, fontStyle: "italic", fontSize: 100 * u, color: C.primary, lineHeight: 1.15 }}>Paid in instalments.</div>
         </Rise>
-        <div style={{ display: "flex", flexDirection: vertical ? "column" : "row", gap: 28 * u, marginTop: 70 * u }}>
-          {PRICES.map((p, i) => (
-            <Rise key={p.name} delay={30 + i * 10}>
-              <div style={{ background: i === 1 ? C.inverse : C.card, color: i === 1 ? C.onInverse : C.ink, border: `2px solid ${C.border}`, borderRadius: 28 * u, padding: `${32 * u}px ${48 * u}px`, minWidth: 380 * u }}>
-                <div style={{ fontFamily: sans, fontWeight: 700, fontSize: 30 * u, opacity: 0.8 }}>{p.name}</div>
-                <div style={{ fontFamily: sans, fontWeight: 700, fontSize: 66 * u, marginTop: 8 * u }}>
-                  <span style={{ fontSize: 28 * u, fontWeight: 500, opacity: 0.7 }}>from </span>
-                  {p.price}
-                </div>
+        <div style={{ display: "flex", flexDirection: vertical ? "column" : "row", gap: 20 * u, marginTop: 70 * u }}>
+          {INSTALMENTS.map((name, i) => (
+            <Rise key={name} delay={30 + i * 8}>
+              <div style={{ background: i === 0 ? C.inverse : C.card, color: i === 0 ? C.onInverse : C.ink, border: `2px solid ${C.border}`, borderRadius: 28 * u, padding: `${28 * u}px ${36 * u}px`, minWidth: 250 * u }}>
+                <div style={{ fontFamily: display, fontSize: 64 * u, lineHeight: 1, color: i === 0 ? C.onInverse : C.primary }}>{i + 1}</div>
+                <div style={{ fontFamily: sans, fontWeight: 700, fontSize: 30 * u, marginTop: 12 * u }}>{name}</div>
               </div>
             </Rise>
           ))}
         </div>
-        <Rise delay={70}>
-          <div style={{ fontFamily: sans, fontWeight: 500, fontSize: 30 * u, color: C.muted, marginTop: 50 * u }}>University application fees included · every exclusion listed</div>
+        <Rise delay={75}>
+          <div style={{ fontFamily: sans, fontWeight: 500, fontSize: 30 * u, color: C.muted, marginTop: 50 * u }}>One written figure after your free consultation. Flights not included.</div>
         </Rise>
       </AbsoluteFill>
     </Scene>
@@ -224,7 +217,7 @@ function PromiseScene() {
   const { u } = useUnit();
   return (
     <Scene duration={SCENES.promise} background={C.inverse}>
-      <AbsoluteFill style={{ background: "radial-gradient(55% 50% at 0% 100%, rgba(24,122,102,0.4), transparent 70%)" }} />
+      <AbsoluteFill style={{ background: "radial-gradient(55% 50% at 0% 100%, rgba(176,141,87,0.3), transparent 70%)" }} />
       <AbsoluteFill style={{ padding: 110 * u, justifyContent: "center" }}>
         <Rise>
           <div style={{ fontFamily: display, fontSize: 110 * u, color: C.onInverse, lineHeight: 1.05 }}>

@@ -6,13 +6,13 @@ import { THEME_COLORS, themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
-// Bodoni: the classic Italian typeface (Parma, 1798) — used for headlines only.
+// Bodoni: the classic Italian typeface (Parma, 1798), used for headlines only.
 const bodoni = Bodoni_Moda({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-bodoni", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} — Study in Italy from India, done properly`,
+    default: `${siteConfig.name}: study in Italy from India, done properly`,
     template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: siteConfig.name,
     locale: "en_IN",
-    title: `${siteConfig.name} — ${siteConfig.positioning}`,
+    title: `${siteConfig.name}: ${siteConfig.positioning}`,
     description: siteConfig.description,
   },
   twitter: { card: "summary_large_image" },

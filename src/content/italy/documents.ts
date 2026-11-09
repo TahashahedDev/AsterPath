@@ -20,7 +20,7 @@ export const legalisationChain: ChainStep[] = [
   {
     title: "State HRD attestation",
     who: "Your state's Higher Education Department",
-    description: "The competent state education department verifies your degree and marksheets. Italian missions require this for DOV — attestation by an SDM is not accepted.",
+    description: "The competent state education department verifies your degree and marksheets. Italian missions require this; attestation by an SDM is not accepted.",
     when: "Always, for academic documents",
   },
   {
@@ -38,20 +38,57 @@ export const legalisationChain: ChainStep[] = [
   {
     title: "Declaration of Value or CIMEA",
     who: "Italian mission in India, or CIMEA",
-    description: "The DOV describes your qualification for Italian universities and is issued by the mission covering the state where your degree was issued. CIMEA's statement can replace it where your university accepts it.",
+    description: "Needed only if your university asks. The DOV is issued by the mission covering the state where your degree was issued; some universities accept only a CIMEA statement instead.",
     when: "After admission and Universitaly pre-enrolment",
   },
 ];
 
-export const commonDocuments = [
-  { name: "Passport", note: "Valid well beyond your intended stay, with your name spelt exactly as on your certificates." },
-  { name: "Class 10 and 12 certificates and marksheets", note: "Attested and apostilled for bachelor's applicants; often requested for master's too." },
-  { name: "Degree certificate and transcripts", note: "Attested and apostilled. Provisional certificates are accepted only in specific cases." },
-  { name: "English test result", note: "As required by each programme — usually B2 or above." },
-  { name: "Statement of purpose and CV", note: "Written by you, reviewed with us." },
-  { name: "Recommendation letters", note: "Where the programme asks for them." },
-  { name: "Universitaly pre-enrolment summary", note: "Generated after your university validates your pre-enrolment." },
-  { name: "Proof of funds", note: "For the visa — meeting the current annual minimum." },
-  { name: "Accommodation and health insurance", note: "For the visa application." },
-  { name: "ISEE parificato documents", note: "Only if applying for a regional DSU scholarship — legalised and translated." },
+/** Documents by the stage at which you need them. Visa items follow the 2026/27 consulate checklist. */
+export const documentStages = [
+  {
+    title: "Foundation",
+    when: "Before anything else",
+    items: [
+      "Passport, issued in the last 10 years and valid well beyond your stay",
+      "Class 10 and 12 certificates and marksheets",
+      "Degree certificate and transcripts (for master's and PhD)",
+      "A \u201cOne and the same name\u201d certificate, attested and apostilled, if your name differs anywhere",
+    ],
+  },
+  {
+    title: "Applications",
+    when: "Winter to spring",
+    items: [
+      "English test result at B2 or above, or a Medium of Instruction letter where accepted",
+      "CEnT-S, SAT or the university's own test, where the programme asks for one",
+      "Statement of purpose and a one-page CV",
+      "Recommendation letters, and a portfolio for design or architecture",
+    ],
+  },
+  {
+    title: "Recognition",
+    when: "After your offer",
+    items: [
+      "Universitaly pre-enrolment summary, once your university validates it",
+      "Declaration of Value or CIMEA statement, only if your university requires one",
+      "Academic documents attested by the state Higher Education Department and apostilled by the MEA",
+    ],
+  },
+  {
+    title: "Scholarship",
+    when: "Summer",
+    items: [
+      "ISEE parificato documents: family composition, income, property and bank balances",
+      "Each apostilled and translated into Italian by a certified translator",
+    ],
+  },
+  {
+    title: "Arrival",
+    when: "First days in Italy",
+    items: [
+      "Residence permit request within 8 working days of arrival, through the post office kit",
+      "Passport, visa, insurance and enrolment proof for the residence permit",
+      "Tax code (generated at pre-enrolment) and registration with your university",
+    ],
+  },
 ];

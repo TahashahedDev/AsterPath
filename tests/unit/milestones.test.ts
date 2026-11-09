@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { checkSchedule, milestoneShares, milestoneTotal } from "@/features/payments/milestones";
-import { servicePackages } from "@/content/packages";
+import { plan } from "@/content/plan";
 
 describe("milestone arithmetic", () => {
   const schedule = [
@@ -31,10 +31,16 @@ describe("milestone arithmetic", () => {
   });
 });
 
-describe("seed packages", () => {
-  it("every instalment schedule adds up to its package price", () => {
-    for (const pkg of servicePackages) {
-      expect(checkSchedule(pkg.milestones, pkg.startingPrice), pkg.name).toEqual({ ok: true });
-    }
+describe("the AsterPath plan", () => {
+  it("never states a price and pays nothing it is not allowed to", () => {
+    expect(JSON.stringify(plan)).not.toMatch(/₹|INR|price:/);
+    const credited = plan.weCredit.map((c) => c.item).join(" ");
+    expect(credited).toMatch(/enrolment fee/i);
+    expect(plan.weCover.join(" ")).not.toMatch(/enrolment fee|flight/i);
+    expect(plan.notIncluded.map((c) => c.item).join(" ")).toMatch(/Flights/);
+  });
+
+  it("has five instalment stages", () => {
+    expect(plan.instalments).toHaveLength(5);
   });
 });

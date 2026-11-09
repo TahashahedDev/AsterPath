@@ -5,7 +5,7 @@ test.describe("Italy site interactions", () => {
     await page.goto("/scholarships");
     await page.getByLabel("Choose a region").selectOption({ label: "Lazio" });
     await expect(page.getByRole("link", { name: /DiSCo Lazio/ })).toBeVisible();
-    await expect(page.getByText("Sapienza University of Rome")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Sapienza University of Rome", exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: "Show all of Italy" }).click();
     await expect(page.getByText(/Select a region on the map/)).toBeVisible();
@@ -16,6 +16,13 @@ test.describe("Italy site interactions", () => {
     await page.goto("/scholarships");
     await page.locator("path", { has: page.locator("title", { hasText: "Toscana" }) }).click();
     await expect(page.getByRole("link", { name: /DSU Toscana/ })).toBeVisible();
+  });
+
+  test("a region lists its universities, each linking to its page and official website", async ({ page }) => {
+    await page.goto("/regions/lazio");
+    await page.getByRole("link", { name: "University of Cassino and Southern Lazio", exact: true }).click();
+    await expect(page).toHaveURL(/\/universities\/university-of-cassino$/);
+    await expect(page.getByRole("link", { name: /Visit the official website/ })).toHaveAttribute("href", "https://www.unicas.it");
   });
 
   test("old multi-country URLs redirect to their Italy pages", async ({ page }) => {

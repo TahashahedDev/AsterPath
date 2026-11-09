@@ -37,9 +37,9 @@ export const qualificationOptions = [
 ] as const;
 
 export const englishTestOptions = [
-  { value: "ielts", label: "IELTS — done" },
-  { value: "toefl", label: "TOEFL — done" },
-  { value: "other-test", label: "Another test — done" },
+  { value: "ielts", label: "IELTS, taken" },
+  { value: "toefl", label: "TOEFL, taken" },
+  { value: "other-test", label: "Another test, taken" },
   { value: "planning", label: "Planning to take one" },
   { value: "none", label: "Not yet decided" },
 ] as const;
@@ -52,8 +52,8 @@ export const passportOptions = [
 
 export const budgetOptions = [
   { value: "under-10l", label: "Under ₹10 lakh per year" },
-  { value: "10-20l", label: "₹10–20 lakh per year" },
-  { value: "20-35l", label: "₹20–35 lakh per year" },
+  { value: "10-20l", label: "₹10 to 20 lakh per year" },
+  { value: "20-35l", label: "₹20 to 35 lakh per year" },
   { value: "over-35l", label: "Over ₹35 lakh per year" },
   { value: "not-sure", label: "Not sure yet" },
 ] as const;

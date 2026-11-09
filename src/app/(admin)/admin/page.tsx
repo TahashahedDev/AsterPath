@@ -15,7 +15,7 @@ export default function AdminOverviewPage() {
   return (
     <div className="max-w-6xl">
       <h1 className="text-3xl font-semibold tracking-[-0.025em]">Overview</h1>
-      <p className="mt-2 text-muted">Operational KPIs with their definitions. Values appear once the database is connected — none are estimated.</p>
+      <p className="mt-2 text-muted">Operational KPIs with their definitions. Values appear once the database is connected; none are estimated.</p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((kpi) => (
           <EmptyPanel key={kpi.title} {...kpi} />

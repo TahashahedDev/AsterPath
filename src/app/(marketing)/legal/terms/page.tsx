@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { commitments, legalEntity, siteConfig } from "@/config/site";
-import { feeAllowances } from "@/content/packages";
 import { LegalPage, type LegalSection } from "@/components/marketing/legal-page";
 
 export const metadata: Metadata = {
@@ -62,8 +61,8 @@ const sections: LegalSection[] = [
     heading: "Quotes and your written agreement",
     body: [
       <p key="a">
-        Prices on our website are indicative starting prices. Before you pay anything, we give you a written agreement setting out the services included,
-        the total price, the instalment schedule, the university fees we will pay on your behalf, and the refund terms. If anything on the website differs
+        We do not publish prices. Before you pay anything, we give you a written agreement setting out the services included, the total price, the
+        instalment schedule, the costs we pay or credit on your behalf, and the refund terms. If anything on the website differs
         from your signed agreement, the agreement prevails.
       </p>,
     ],
@@ -73,13 +72,13 @@ const sections: LegalSection[] = [
     heading: "Fees, instalments and included university fees",
     body: [
       <p key="a">
-        You pay in instalments as each stage of work begins, as set out in your agreement. Packages include university application fees for up to{" "}
-        {feeAllowances.applicationUniversities} universities, up to €{feeAllowances.applicationFeesEur} in total, and — where your package says so —
-        the enrolment administrative fees at your chosen university. Amounts above these allowances are agreed with you in advance.
+        You pay in instalments as each stage of work begins, as set out in your agreement. Your plan includes the third-party costs it lists (such as
+        the English test fee, university application fees, attestation, apostille, translations and visa insurance), which we pay on your behalf.
+        Costs that consulate rules require you to pay yourself, such as the university enrolment fee, the visa fee and the visa centre charge, are
+        credited back to you as your agreement describes.
       </p>,
       <p key="b">
-        Tuition, test fees, notary, attestation, apostille, translation, DOV or CIMEA fees, visa and visa-centre fees, insurance, travel, accommodation
-        and residence permit fees are not included unless your agreement says otherwise. Applicable taxes are shown on your quote and invoice. [GST treatment to be confirmed.]
+        Tuition, proof of funds, flights, accommodation and living costs are not included. Applicable taxes are shown on your quote and invoice. [GST treatment to be confirmed.]
       </p>,
     ],
   },

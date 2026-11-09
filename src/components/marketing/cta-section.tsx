@@ -14,8 +14,8 @@ export function CtaSection({
 }) {
   return (
     <section className="page-container mt-28">
-      <div className="reveal relative overflow-hidden rounded-[1.75rem] bg-inverse px-6 py-14 text-on-inverse ring-1 ring-transparent sm:px-14 sm:py-20 dark:ring-border-strong">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_100%_0%,rgb(196_100_63/0.25),transparent_70%)]" aria-hidden="true" />
+      <div className="reveal panel-sheen relative overflow-hidden rounded-[1.75rem] bg-inverse px-6 py-14 text-on-inverse ring-1 ring-transparent sm:px-14 sm:py-20 dark:ring-border-strong">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_20rem_at_100%_0%,rgb(176_141_87/0.28),transparent_70%)]" aria-hidden="true" />
         <AsterMark className="pointer-events-none absolute -top-16 -right-16 size-72 opacity-[0.08] sm:size-96" />
         <div className="relative max-w-2xl">
           <h2 className="display text-4xl leading-[1.08] sm:text-5xl">{title}</h2>

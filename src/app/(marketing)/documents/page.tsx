@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import { Info } from "lucide-react";
-import { commonDocuments, legalisationChain } from "@/content/italy/documents";
-import { dovRules, visaRules } from "@/content/italy/facts";
+import { documentStages, legalisationChain } from "@/content/italy/documents";
+import { dovRules, visaChecklist } from "@/content/italy/facts";
 import { IndiaMissionsMap } from "@/components/maps/india-missions-map";
 import { CheckList, ReviewStatus, SourceNote } from "@/components/marketing/cards";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { PageHero } from "@/components/marketing/page-hero";
-import { SectionHeading } from "@/components/ui/section-heading";
 
 export const metadata: Metadata = {
-  title: "Documents, attestation, apostille and DOV for Italy",
-  description: "The document chain for Indian students going to Italy: notary, state HRD attestation, MEA apostille, translation, Declaration of Value or CIMEA — and which Italian mission handles your file.",
+  title: "Documents for studying in Italy: attestation, apostille, DOV and visa",
+  description: "The complete document list for Indian students going to Italy: the attestation chain, DOV or CIMEA, the 2026/27 study visa checklist, scholarship documents and arrival.",
   alternates: { canonical: "/documents" },
 };
 
@@ -18,73 +16,117 @@ export default function DocumentsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Documents"
-        title={<>The paperwork, <span className="display-italic text-primary">without the guesswork.</span></>}
-        description="Italian universities and missions are precise about documents. Here is the chain every academic document goes through, and the rules that catch students out."
-      >
+        eyebrow="Documents and DOV"
+        title={
+          <>
+            Every document, <span className="display-italic text-primary">in the right order.</span>
+          </>
+        }
+        description="One wrong attestation can cost months. We plan the chain for every document before you visit a single office.">
         <ReviewStatus />
       </PageHero>
 
-      <section className="page-container mt-20">
-        <SectionHeading eyebrow="The chain" title={<>Five steps, <span className="display-italic text-primary">always in this order.</span></>} />
-        <ol className="mt-12 grid gap-4 lg:grid-cols-5">
-          {legalisationChain.map((step, i) => (
-            <li key={step.title} className="reveal relative flex flex-col rounded-[var(--radius-card)] border border-border bg-card p-6">
-              <span className="flex size-10 items-center justify-center rounded-full bg-terracotta-soft text-sm font-bold text-terracotta-deep tabular-nums">{i + 1}</span>
-              <h3 className="display mt-5 text-2xl text-ink">{step.title}</h3>
-              <p className="mt-1 text-sm font-semibold text-terracotta-deep">{step.who}</p>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{step.description}</p>
-              <p className="mt-4 border-t border-border pt-3 text-xs font-semibold tracking-wide text-ink-soft uppercase">{step.when}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="page-container mt-24 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-        <div className="reveal rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9">
-          <h2 className="display text-3xl text-ink">Declaration of Value: the rules</h2>
-          <CheckList items={dovRules.points} className="mt-6" />
-          <p className="mt-6 text-sm text-muted">Processing can take up to {dovRules.maxProcessingDays} days from submission.</p>
-          <SourceNote ids={dovRules.sources} className="mt-4" />
-        </div>
-        <div className="reveal rounded-[var(--radius-card)] border border-border bg-paper-deep/70 p-7 sm:p-9">
-          <h2 className="display text-3xl text-ink">Study visa essentials</h2>
-          <CheckList items={visaRules} className="mt-6" />
-          <SourceNote ids={["vistoPerItalia", "consulateKolkata"]} className="mt-6" />
-        </div>
-      </section>
-
-      <section className="mt-24 border-y border-border bg-card/60 py-24">
+      {/* The chain */}
+      <section className="field section" aria-labelledby="chain-title">
         <div className="page-container">
-          <SectionHeading
-            eyebrow="Where your file goes"
-            title={<>Four Italian missions <span className="display-italic text-primary">in India.</span></>}
-            description="Which office handles your DOV and visa depends on where your degree was issued and where you live."
-          />
-          <div className="mt-12">
+          <h2 id="chain-title" className="max-w-[18ch]">
+            The chain, always in this order.
+          </h2>
+          <ol className="cols mt-[var(--space-2xl)] gap-y-12">
+            {legalisationChain.map((step, i) => (
+              <li key={step.title} className={i === 0 || i === legalisationChain.length - 1 ? "col-span-3" : "col-span-2"}>
+                <span className="figure-xl block text-[clamp(3rem,5vw,4.5rem)]">{i + 1}</span>
+                <h3 className="mt-4">{step.title}</h3>
+                <p className="label mt-1">{step.who}</p>
+                <p className="mt-3 text-[0.9375rem] leading-relaxed">{step.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Everything, by stage */}
+      <section className="section" aria-labelledby="stages-title">
+        <div className="page-container">
+          <h2 id="stages-title" className="max-w-[20ch]">
+            What you need, stage by stage.
+          </h2>
+          <div className="mt-[var(--space-2xl)]">
+            {documentStages.map((stage) => (
+              <div key={stage.title} className="cols border-t border-rule py-8">
+                <div className="col-span-4">
+                  <h3 className="text-[length:var(--text-title)]">{stage.title}</h3>
+                  <p className="label mt-1">{stage.when}</p>
+                </div>
+                <CheckList items={stage.items} className="col-span-8" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* The visa file */}
+      <section className="section" aria-labelledby="visa-title">
+        <div className="page-container">
+          <div className="cols items-end">
+            <h2 id="visa-title" className="col-span-6">
+              The study visa file.
+            </h2>
+            <p className="lead col-span-5 col-start-8 text-ink-2">
+              Last dates for bachelor&rsquo;s and master&rsquo;s visas: {visaChecklist.lastDates.map((d) => `${d.date} for ${d.intake}`).join(", ")}.
+            </p>
+          </div>
+          <div className="cols mt-[var(--space-2xl)] gap-y-12">
+            {visaChecklist.groups.map((g) => (
+              <div key={g.title} className="col-span-6">
+                <h3>{g.title}</h3>
+                <CheckList items={g.items} className="mt-4" />
+              </div>
+            ))}
+          </div>
+          <div className="cols mt-[var(--space-2xl)] gap-y-10">
+            <div className="col-span-6">
+              <h3>Under 18</h3>
+              <CheckList items={visaChecklist.minors} className="mt-4" />
+            </div>
+            <div className="col-span-6">
+              <h3>Your appointment</h3>
+              <p className="mt-4 leading-relaxed text-ink-2">{visaChecklist.appointmentRule}</p>
+            </div>
+          </div>
+          <SourceNote ids={[visaChecklist.sourceId]} className="mt-[var(--space-xl)]" />
+        </div>
+      </section>
+
+      {/* DOV or CIMEA */}
+      <section className="section" aria-labelledby="dov-title">
+        <div className="page-container cols">
+          <div className="col-span-4">
+            <h2 id="dov-title">DOV or CIMEA.</h2>
+            <p className="lead mt-5 text-ink-2">A Declaration of Value can take up to {dovRules.maxProcessingDays} days. Check first whether you need one at all.</p>
+          </div>
+          <div className="col-span-8">
+            <CheckList items={dovRules.points} />
+            <SourceNote ids={dovRules.sources} className="mt-6" />
+          </div>
+        </div>
+      </section>
+
+      {/* Where your file goes */}
+      <section className="section" aria-labelledby="missions-title">
+        <div className="page-container">
+          <h2 id="missions-title" className="max-w-[20ch]">
+            Four Italian missions in India.
+          </h2>
+          <p className="lead mt-5 text-ink-2">Which office handles your DOV and visa depends on where your degree was issued and where you live.</p>
+          <div className="mt-[var(--space-2xl)]">
             <IndiaMissionsMap />
           </div>
-          <p className="mt-8 text-xs text-muted">Country outline: Natural Earth, India point-of-view dataset.</p>
+          <p className="mt-8 text-sm text-muted">Country outline: Natural Earth, India point-of-view dataset.</p>
         </div>
       </section>
 
-      <section className="page-container mt-24">
-        <SectionHeading eyebrow="Checklist" title={<>Documents most students <span className="display-italic text-primary">will need.</span></>} />
-        <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-          {commonDocuments.map((doc) => (
-            <li key={doc.name} className="rounded-xl border border-border bg-card px-5 py-4">
-              <p className="font-bold text-ink">{doc.name}</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{doc.note}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-6 flex gap-3 text-sm leading-relaxed text-muted">
-          <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-          Never send passports or financial documents by email or WhatsApp. When we need your documents, we provide a secure, private way to share them.
-        </p>
-      </section>
-
-      <CtaSection title="Not sure where to start with your documents?" description="In your free consultation we review what you have and give you a dated plan for every attestation." />
+      <CtaSection title="Not sure where to start?" description="In your free consultation we review what you have and give you a dated plan for every attestation." />
     </>
   );
 }

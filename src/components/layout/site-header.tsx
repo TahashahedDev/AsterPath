@@ -19,6 +19,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [openedAt, setOpenedAt] = useState(pathname);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const [menuTop, setMenuTop] = useState(64);
 
   // Close the mobile menu after navigation (state adjusted during render, no effect needed).
   if (open && openedAt !== pathname) setOpen(false);
@@ -42,7 +44,16 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/70">
+      <div className="bg-inverse text-on-inverse">
+        <p className="page-container py-2 text-center text-[0.8125rem] sm:text-sm">
+          Now planning the September 2027 intake, with a limited number of students.{" "}
+          <Link href="/contact" className="font-medium text-accent-on-inverse underline underline-offset-4 hover:no-underline">
+            Book a free consultation
+          </Link>
+        </p>
+      </div>
+      <header ref={headerRef} className="sticky top-0 z-40 border-b border-border/70 bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/70">
+        <div className="scroll-progress" aria-hidden="true" />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
@@ -52,7 +63,7 @@ export function SiteHeader() {
         <div className="page-container flex h-16 items-center justify-between gap-6">
           <Logo />
 
-          <nav aria-label="Main" className="hidden lg:block">
+          <nav aria-label="Main" className="hidden xl:block">
             <ul className="flex items-center gap-1">
               {mainNav.map((item) => (
                 <li key={item.href}>
@@ -82,11 +93,13 @@ export function SiteHeader() {
             <button
               ref={toggleRef}
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-ink/5 lg:hidden"
+              className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-ink/5 xl:hidden"
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => {
+                // The banner sits above the bar until it scrolls away, so open the panel from the bar's real edge.
+                setMenuTop(headerRef.current?.getBoundingClientRect().bottom ?? 64);
                 setOpenedAt(pathname);
                 setOpen((value) => !value);
               }}
@@ -102,7 +115,8 @@ export function SiteHeader() {
         <div
           id="mobile-menu"
           hidden={!open}
-          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-paper pb-[env(safe-area-inset-bottom)] lg:hidden"
+          style={{ top: menuTop }}
+          className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-paper pb-[env(safe-area-inset-bottom)] xl:hidden"
         >
           <nav aria-label="Mobile" className="page-container flex flex-col py-6">
             {mainNav.map((item) => (
@@ -116,6 +130,13 @@ export function SiteHeader() {
                 {isActive(pathname, item.href) && <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />}
               </Link>
             ))}
+            <Link
+              href="/about"
+              aria-current={isActive(pathname, "/about") ? "page" : undefined}
+              className="flex items-center justify-between border-b border-border py-4 text-xl font-medium tracking-tight text-ink"
+            >
+              About
+            </Link>
             <div className="mt-8 grid gap-3">
               <ButtonLink href="/contact" size="lg">Free consultation</ButtonLink>
               <ButtonLink href="/sign-in" variant="secondary" size="lg">Sign in</ButtonLink>

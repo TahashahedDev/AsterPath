@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
+import { entranceTests } from "@/content/italy/facts";
 import { getLevel, studyLevels } from "@/content/italy/levels";
 import { processStages } from "@/content/italy/process";
+import { universities } from "@/content/italy/universities";
 import { CheckList, ReviewStatus, SourceNote } from "@/components/marketing/cards";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { ButtonLink } from "@/components/ui/button";
@@ -31,75 +32,116 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LevelPage({ params }: Props) {
   const level = getLevel((await params).level);
   if (!level) notFound();
-
-  const blocks = [
-    { title: "Who is eligible", items: level.eligibility },
-    { title: "How admission works", items: level.admissions },
-  ];
+  const showTests = level.slug === "bachelors";
 
   return (
     <>
-      <section className="atmosphere relative overflow-hidden border-b border-border">
-        <div className="page-container relative py-16 sm:py-24">
-          <nav aria-label="Breadcrumb" className="text-sm text-muted">
-            <Link href="/study-in-italy" className="hover:text-ink">Study in Italy</Link>
-            <span className="mx-2" aria-hidden="true">/</span>
-            <span aria-current="page" className="text-ink">{level.title}</span>
+      <section className="section-s">
+        <div className="page-container">
+          <nav aria-label="Breadcrumb" className="label">
+            <Link href="/study-in-italy" className="link">
+              Study in Italy
+            </Link>
           </nav>
-          <p className="mt-8 text-xs font-semibold tracking-[0.16em] text-terracotta-deep uppercase motion-safe:animate-rise">
-            {level.italianName} · {level.duration}
+          <h1 className="mt-6">{level.title}</h1>
+          <p className="label mt-4">
+            {level.italianName}, {level.duration}
           </p>
-          <h1 className="display mt-4 max-w-4xl text-[2.75rem] leading-[1.02] text-ink motion-safe:animate-rise sm:text-6xl lg:text-7xl">{level.title}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted motion-safe:animate-rise sm:text-xl">{level.summary}</p>
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <ButtonLink href={`/contact?level=${level.slug}`} size="lg">Book a free consultation</ButtonLink>
-            <ReviewStatus />
+          <p className="lead mt-6 text-ink-2">{level.summary}</p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <ButtonLink href={`/contact?level=${level.slug}`}>Book a free consultation</ButtonLink>
+            <ReviewStatus className="max-w-[52ch]" />
           </div>
         </div>
       </section>
 
-      <section className="page-container mt-16 grid gap-6 lg:grid-cols-2">
-        {blocks.map((block) => (
-          <div key={block.title} className="reveal rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9">
-            <h2 className="display text-3xl text-ink">{block.title}</h2>
-            <CheckList items={block.items} className="mt-6" />
+      <section className="section band-moss" aria-label="Eligibility and admission">
+        <div className="page-container cols gap-y-[var(--space-2xl)]">
+          <div className="col-span-6">
+            <h2 className="text-[length:var(--text-title)]">Who is eligible</h2>
+            <CheckList items={level.eligibility} className="mt-6" />
           </div>
-        ))}
+          <div className="col-span-6">
+            <h2 className="text-[length:var(--text-title)]">How admission works</h2>
+            <CheckList items={level.admissions} className="mt-6" />
+          </div>
+        </div>
       </section>
 
-      <section className="page-container mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="reveal rounded-[var(--radius-card)] border border-border bg-paper-deep/70 p-7 sm:p-9">
-          <h2 className="display text-3xl text-ink">Documents you will need</h2>
-          <p className="mt-3 text-[0.9375rem] text-muted">Your personal checklist depends on the programme and university.</p>
-          <CheckList items={level.documents} className="mt-6" />
-          <Link href="/documents" className="mt-6 inline-block text-sm font-semibold text-primary hover:text-primary-deep">
-            How attestation, apostille and DOV work →
-          </Link>
+      {showTests && (
+        <section className="section" aria-labelledby="tests-title">
+          <div className="page-container cols">
+            <h2 id="tests-title" className="col-span-4">
+              Entrance tests.
+            </h2>
+            <ul className="rows col-span-8">
+              {entranceTests.map((t) => (
+                <li key={t.name} className="py-6">
+                  <h3 className="text-[1.25rem]">{t.name}</h3>
+                  <p className="label mt-1">{t.who}</p>
+                  <p className="mt-3 max-w-[65ch] leading-relaxed text-ink-2">{t.body}</p>
+                </li>
+              ))}
+            </ul>
+            <SourceNote ids={["cisia"]} className="col-span-8 col-start-5 mt-6" />
+          </div>
+        </section>
+      )}
+
+      <section className="section" aria-label="Documents and watch-outs">
+        <div className="page-container cols gap-y-[var(--space-2xl)]">
+          <div className="col-span-7">
+            <h2 className="text-[length:var(--text-title)]">Documents you will need</h2>
+            <p className="mt-3 text-ink-2">Your exact list depends on the programme and university.</p>
+            <CheckList items={level.documents} className="mt-6" />
+            <Link href="/documents" className="btn btn--secondary mt-6">
+              Attestation, apostille and DOV
+            </Link>
+          </div>
+          <div className="col-span-5 bg-warning-bg p-[var(--space-xl)] text-warning-fg">
+            <h2 className="text-[length:var(--text-title)]">Watch out for</h2>
+            <ul className="mt-5 space-y-4">
+              {level.watchOuts.map((w) => (
+                <li key={w} className="leading-relaxed">
+                  {w}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div className="reveal rounded-[var(--radius-card)] border border-warning-border bg-warning-bg p-7 sm:p-9">
-          <h2 className="flex items-center gap-3 text-lg font-bold text-warning-fg">
-            <AlertTriangle className="size-5" aria-hidden="true" /> Watch out for
-          </h2>
-          <ul className="mt-5 space-y-4">
-            {level.watchOuts.map((w) => (
-              <li key={w} className="text-[0.9375rem] leading-relaxed text-warning-fg">{w}</li>
+      </section>
+
+      <section className="section" aria-labelledby="unis-title">
+        <div className="page-container cols items-end gap-y-6">
+          <div className="col-span-7">
+            <h2 id="unis-title">Where you can study.</h2>
+            <p className="lead mt-5 text-ink-2">
+              Our index lists all {universities.length} public universities, polytechnics and higher schools. Most offer this level; the higher schools
+              focus on graduate study and research. Programmes taught in English change each year, so we check each one for you.
+            </p>
+          </div>
+          <div className="col-span-5 lg:text-right">
+            <ButtonLink href="/universities" variant="secondary">
+              Browse the universities
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="how-title">
+        <div className="page-container">
+          <h2 id="how-title">How we take you through it.</h2>
+          <ol className="cols mt-[var(--space-2xl)] gap-y-10">
+            {processStages.map((stage, i) => (
+              <li key={stage.slug} className={i < 2 ? "col-span-3" : "col-span-2"}>
+                <span className="figure-xl block text-[clamp(2.75rem,4.5vw,4rem)] text-accent">{stage.number}</span>
+                <h3 className="mt-3">{stage.title}</h3>
+                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">{stage.outcome}</p>
+              </li>
             ))}
-          </ul>
+          </ol>
+          <SourceNote ids={["universitaly", "studyInItaly", "cimea"]} className="mt-[var(--space-xl)]" />
         </div>
-      </section>
-
-      <section className="page-container mt-24">
-        <h2 className="display text-4xl text-ink">How we take you through it</h2>
-        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {processStages.map((stage) => (
-            <li key={stage.slug} className="rounded-[var(--radius-card)] border border-border bg-card p-6">
-              <span className="display text-4xl text-terracotta tabular-nums">{String(stage.number).padStart(2, "0")}</span>
-              <h3 className="mt-4 font-bold text-ink">{stage.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{stage.outcome}</p>
-            </li>
-          ))}
-        </ol>
-        <SourceNote ids={["universitaly", "studyInItaly", "cimea"]} className="mt-10" />
       </section>
 
       <CtaSection title={`Planning ${ctaNoun[level.slug]} in Italy?`} />

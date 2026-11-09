@@ -1,6 +1,6 @@
 import { SectionHeading } from "@/components/ui/section-heading";
 
-export function PageHero({ eyebrow, title, description, children }: { eyebrow: string; title: React.ReactNode; description?: React.ReactNode; children?: React.ReactNode }) {
+export function PageHero({ eyebrow, title, description, children }: { eyebrow?: string; title: React.ReactNode; description?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <section className="atmosphere relative overflow-hidden border-b border-border">
       <div className="page-container relative py-16 sm:py-24">
