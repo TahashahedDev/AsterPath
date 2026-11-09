@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <Logo tone="inverse" />
         <AsterMark className="pointer-events-none absolute -right-24 -bottom-24 size-[32rem] opacity-[0.06]" />
         <div className="relative max-w-md">
-          <p className="font-serif text-4xl leading-tight">&ldquo;Every step, in one place — what&rsquo;s done, what&rsquo;s next, and who&rsquo;s responsible.&rdquo;</p>
+          <p className="font-display text-4xl leading-tight">&ldquo;Every step, in one place — what&rsquo;s done, what&rsquo;s next, and who&rsquo;s responsible.&rdquo;</p>
           <p className="mt-6 text-on-inverse/60">The AsterPath student portal</p>
         </div>
       </aside>

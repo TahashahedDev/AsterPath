@@ -1,23 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Instrument_Serif } from "next/font/google";
+import { Bodoni_Moda, Manrope } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { ThemeWatcher } from "@/components/theme/theme-controls";
 import { THEME_COLORS, themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
-  display: "swap",
-});
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
+// Bodoni: the classic Italian typeface (Parma, 1798) — used for headlines only.
+const bodoni = Bodoni_Moda({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-bodoni", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} — Study in Italy, Germany and France`,
+    default: `${siteConfig.name} — Study in Italy from India, done properly`,
     template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -26,7 +21,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: siteConfig.name,
     locale: "en_IN",
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    title: `${siteConfig.name} — ${siteConfig.positioning}`,
     description: siteConfig.description,
   },
   twitter: { card: "summary_large_image" },
@@ -48,7 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // data-theme is set by the inline script before React hydrates, hence suppressHydrationWarning.
-    <html lang="en" className={`${geist.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${manrope.variable} ${bodoni.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>

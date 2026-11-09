@@ -11,16 +11,22 @@ describe("enquiry schema", () => {
     expect(result.whatsapp).toBe("+919876543210");
   });
 
-  it("requires privacy acknowledgement and contact consent", () => {
-    const result = enquirySchema.safeParse({ ...validEnquiry, privacyAcknowledged: false, contactConsent: false });
+  it("requires privacy acknowledgement, contact consent and age or guardian confirmation", () => {
+    const result = enquirySchema.safeParse({ ...validEnquiry, privacyAcknowledged: false, contactConsent: false, ageConfirmed: false });
     expect(result.success).toBe(false);
     const paths = result.error?.issues.map((i) => i.path[0]);
     expect(paths).toContain("privacyAcknowledged");
     expect(paths).toContain("contactConsent");
+    expect(paths).toContain("ageConfirmed");
   });
 
-  it("rejects unknown destinations and invalid phone numbers", () => {
-    expect(enquirySchema.safeParse({ ...validEnquiry, destination: "spain" }).success).toBe(false);
+  it("only accepts Indian states and union territories, or outside India", () => {
+    expect(enquirySchema.safeParse({ ...validEnquiry, residence: "outside-india" }).success).toBe(true);
+    expect(enquirySchema.safeParse({ ...validEnquiry, residence: "Atlantis" }).success).toBe(false);
+  });
+
+  it("rejects unknown study levels and invalid phone numbers", () => {
+    expect(enquirySchema.safeParse({ ...validEnquiry, level: "diploma" }).success).toBe(false);
     expect(contactStepSchema.safeParse({ ...validEnquiry, whatsapp: "call me" }).success).toBe(false);
   });
 

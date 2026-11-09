@@ -77,7 +77,7 @@ export function SiteHeader() {
               Sign in
             </Link>
             <ButtonLink href="/contact" size="sm" className="hidden sm:inline-flex">
-              Build my study plan
+              Free consultation
             </ButtonLink>
             <button
               ref={toggleRef}
@@ -117,7 +117,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="mt-8 grid gap-3">
-              <ButtonLink href="/contact" size="lg">Build my study plan</ButtonLink>
+              <ButtonLink href="/contact" size="lg">Free consultation</ButtonLink>
               <ButtonLink href="/sign-in" variant="secondary" size="lg">Sign in</ButtonLink>
             </div>
             <div className="mt-10 flex flex-col gap-3">

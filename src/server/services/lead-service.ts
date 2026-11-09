@@ -36,23 +36,26 @@ export async function createLead(enquiry: Enquiry, now: Date = new Date()): Prom
       fullName: enquiry.fullName,
       email: enquiry.email,
       whatsapp: enquiry.whatsapp,
-      countryOfResidence: enquiry.countryOfResidence,
+      residence: enquiry.residence,
     },
     goals: {
-      destination: enquiry.destination,
-      pathway: enquiry.pathway,
       level: enquiry.level,
       intake: enquiry.intake,
+      fieldOfStudy: enquiry.fieldOfStudy,
+      scholarshipInterest: enquiry.scholarshipInterest,
     },
     background: {
+      highestQualification: enquiry.highestQualification,
       academicBackground: enquiry.academicBackground,
+      englishTest: enquiry.englishTest,
+      passportStatus: enquiry.passportStatus,
       budgetRange: enquiry.budgetRange,
-      applicationStatus: enquiry.applicationStatus,
     },
     preferences: { consultationMethod: enquiry.consultationMethod, message: enquiry.message },
     consent: {
       privacyNoticeVersion: PRIVACY_NOTICE_VERSION,
       contactConsent: enquiry.contactConsent,
+      ageOrGuardianConfirmed: enquiry.ageConfirmed,
       updatesConsent: enquiry.updatesConsent,
       recordedAt: createdAt,
     },
@@ -60,6 +63,6 @@ export async function createLead(enquiry: Enquiry, now: Date = new Date()): Prom
   };
 
   await store.create(lead);
-  await notifyTeamOfNewLead({ reference: lead.reference, destination: lead.goals.destination });
+  await notifyTeamOfNewLead({ reference: lead.reference, level: lead.goals.level });
   return { ok: true, reference: lead.reference };
 }

@@ -6,11 +6,3 @@ export function whatsappUrl(message: string = siteConfig.whatsapp.defaultMessage
   if (!digits) throw new Error("WhatsApp number is not configured");
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
-
-export function serviceEnquiryMessage(serviceTitle: string): string {
-  return `Hello AsterPath, I would like to know more about ${serviceTitle}.`;
-}
-
-export function destinationEnquiryMessage(countryName: string): string {
-  return `Hello AsterPath, I am interested in studying in ${countryName} and would like to discuss my options.`;
-}

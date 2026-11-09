@@ -4,29 +4,33 @@ import { CheckList } from "@/components/marketing/cards";
 import { formatInr, cn } from "@/lib/utils";
 
 function PricingCard({ pkg }: { pkg: ServicePackage }) {
+  const hi = pkg.highlighted;
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-[var(--radius-card)] border p-7",
-        pkg.highlighted ? "border-transparent bg-inverse text-on-inverse shadow-[var(--shadow-lift)] dark:border-primary/35" : "border-border bg-card",
+        "relative flex flex-col rounded-[var(--radius-card)] border p-7 sm:p-8",
+        hi ? "border-transparent bg-inverse text-on-inverse shadow-[var(--shadow-lift)] dark:border-primary/35" : "border-border bg-card",
       )}
     >
-      {pkg.highlighted && (
-        <span className="absolute -top-3 left-7 rounded-full bg-gold px-3 py-1 text-xs font-medium text-inverse">Most complete support</span>
-      )}
-      <h3 className={cn("text-lg font-semibold tracking-tight", pkg.highlighted ? "text-on-inverse" : "text-ink")}>{pkg.name}</h3>
-      <p className={cn("mt-2 min-h-12 text-sm leading-relaxed", pkg.highlighted ? "text-on-inverse/70" : "text-muted")}>{pkg.audience}</p>
+      {hi && <span className="absolute -top-3 left-7 rounded-full bg-terracotta-soft px-3 py-1 text-xs font-semibold text-terracotta-deep ring-1 ring-terracotta/30">Most complete</span>}
+      <h3 className={cn("display text-2xl", hi ? "text-on-inverse" : "text-ink")}>{pkg.name}</h3>
+      <p className={cn("mt-2 min-h-12 text-sm leading-relaxed", hi ? "text-on-inverse/75" : "text-muted")}>{pkg.audience}</p>
       <div className="mt-6">
-        <p className={cn("text-xs tracking-wide uppercase", pkg.highlighted ? "text-on-inverse/70" : "text-muted")}>Indicative from</p>
-        <p className="mt-1 text-4xl font-semibold tracking-[-0.03em] tabular-nums">{formatInr(pkg.startingPrice)}</p>
-        <p className={cn("mt-1 text-sm", pkg.highlighted ? "text-on-inverse/70" : "text-muted")}>Paid in milestones, not upfront</p>
+        <p className={cn("text-xs font-semibold tracking-wide uppercase", hi ? "text-on-inverse/75" : "text-muted")}>From</p>
+        <p className="mt-1 text-4xl font-bold tracking-[-0.03em] tabular-nums">{formatInr(pkg.startingPrice)}</p>
+        <p className={cn("mt-1 text-sm", hi ? "text-on-inverse/75" : "text-muted")}>In {pkg.milestones.length} instalments</p>
       </div>
-      <CheckList
-        items={pkg.features}
-        className={cn("mt-7 flex-1 border-t pt-6", pkg.highlighted ? "border-on-inverse/15 [&_li]:text-on-inverse/85 [&_svg]:text-gold" : "border-border")}
-      />
-      <ButtonLink href={`/contact?package=${pkg.slug}`} variant={pkg.highlighted ? "primary" : "secondary"} className="mt-8 w-full">
-        Get a free assessment
+      <CheckList items={pkg.features} className={cn("mt-7 flex-1 border-t pt-6", hi ? "border-on-inverse/15 [&_li]:text-on-inverse/90 [&_svg]:text-accent-on-inverse" : "border-border")} />
+      <div className={cn("mt-6 rounded-xl p-4 text-sm", hi ? "bg-on-inverse/10" : "bg-primary-soft/60")}>
+        <p className={cn("font-semibold", hi ? "text-on-inverse" : "text-primary-deep")}>Included university fees</p>
+        <ul className={cn("mt-1.5 space-y-1 leading-relaxed", hi ? "text-on-inverse/80" : "text-ink-soft")}>
+          {pkg.includedFees.map((fee) => (
+            <li key={fee}>{fee}</li>
+          ))}
+        </ul>
+      </div>
+      <ButtonLink href={`/contact?package=${pkg.slug}`} variant={hi ? "primary" : "secondary"} className="mt-6 w-full">
+        Book a free consultation
       </ButtonLink>
     </div>
   );

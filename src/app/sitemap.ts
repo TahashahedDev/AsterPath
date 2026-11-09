@@ -1,20 +1,22 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
-import { countries } from "@/content/countries";
-import { services } from "@/content/services";
+import { studyLevels } from "@/content/italy/levels";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "",
-    "/destinations",
-    ...countries.map((c) => `/destinations/${c.slug}`),
-    "/services",
-    ...services.map((s) => `/services/${s.slug}`),
-    "/how-it-works",
+    "/study-in-italy",
+    ...studyLevels.map((l) => `/study-in-italy/${l.slug}`),
+    "/scholarships",
+    "/process",
+    "/documents",
     "/pricing",
+    "/about",
     "/contact",
-    "/privacy",
-    "/terms",
+    "/legal/terms",
+    "/legal/privacy",
+    "/legal/refunds",
+    "/legal/disclaimer",
   ];
   return paths.map((path) => ({ url: `${siteConfig.url}${path}` }));
 }

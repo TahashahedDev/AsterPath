@@ -17,16 +17,16 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center", className)}>
-      {eyebrow && <p className="eyebrow mb-4">{eyebrow}</p>}
+      {eyebrow && <p className={cn("eyebrow mb-5", align === "center" && "justify-center")}>{eyebrow}</p>}
       <Heading
         className={cn(
-          "font-semibold tracking-[-0.025em] text-ink",
-          Heading === "h1" ? "text-4xl leading-[1.05] sm:text-5xl lg:text-6xl" : "text-3xl leading-[1.1] sm:text-4xl",
+          "display text-ink",
+          Heading === "h1" ? "text-[2.75rem] leading-[1.02] sm:text-6xl lg:text-7xl" : "text-[2.25rem] leading-[1.06] sm:text-5xl",
         )}
       >
         {title}
       </Heading>
-      {description && <p className="mt-5 text-lg leading-relaxed text-muted">{description}</p>}
+      {description && <p className="mt-6 text-lg leading-relaxed text-muted">{description}</p>}
     </div>
   );
 }

@@ -32,9 +32,9 @@ describe("milestone arithmetic", () => {
 });
 
 describe("seed packages", () => {
-  it("every example milestone schedule adds up to its package price", () => {
+  it("every instalment schedule adds up to its package price", () => {
     for (const pkg of servicePackages) {
-      if (pkg.exampleMilestones) expect(checkSchedule(pkg.exampleMilestones, pkg.startingPrice)).toEqual({ ok: true });
+      expect(checkSchedule(pkg.milestones, pkg.startingPrice), pkg.name).toEqual({ ok: true });
     }
   });
 });

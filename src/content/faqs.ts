@@ -1,44 +1,58 @@
-export type Faq = { question: string; answer: string };
+export type Faq = { question: string; answer: string; topic: "general" | "pricing" | "process" | "scholarships" };
 
 export const faqs: Faq[] = [
   {
+    topic: "general",
+    question: "Why only Italy?",
+    answer:
+      "Because doing one country properly is better than doing ten superficially. Italy's process has its own systems — Universitaly, the Declaration of Value, regional DSU scholarships, the ISEE parificato — and small mistakes cost months. We focus on it completely.",
+  },
+  {
+    topic: "general",
     question: "Do you guarantee admission or a visa?",
     answer:
-      "No. Universities decide admissions and governments decide visas. Anyone who guarantees either is not being honest with you. What we promise is careful preparation, clear information and accountability for our own work.",
+      "No. Universities decide admissions and the Italian mission decides visas. Anyone who guarantees either is not being honest with you. We guarantee our own work: complete, carefully checked applications and files, prepared on time.",
   },
   {
-    question: "Are your prices final?",
+    topic: "general",
+    question: "What does “no ghosting” actually mean?",
     answer:
-      "The prices on our site are indicative starting points. After a free profile assessment we confirm a written quote for your situation, including exactly which milestones you pay and when. Nothing is charged before you agree.",
+      "One named advisor owns your file from the first call to your arrival. We reply within one working day, send weekly updates during active stages, and if your advisor is ever unavailable you are introduced to their replacement — you never have to chase us.",
   },
   {
-    question: "What isn't included in your package price?",
+    topic: "pricing",
+    question: "Are university fees included?",
     answer:
-      "Third-party costs: university application fees, visa and visa-centre fees, translations, apostilles and legalisation, courier charges, tuition, insurance and travel. We list them openly and help you estimate them in advance.",
+      "University application fees are included up to the allowance in your package, and the Complete packages also include the enrolment administrative fees at your chosen university. Tuition, test fees, attestation, apostille, translation, visa and travel costs are not included — we list every one of them openly.",
   },
   {
-    question: "Do you do certified translations or apostilles yourselves?",
+    topic: "pricing",
+    question: "Do I pay everything upfront?",
     answer:
-      "No. Certified translations are made by qualified translators, and apostilles and legalisation are issued by government authorities. We coordinate these with authorised providers if you'd like us to, and show their fees upfront.",
+      "No. You pay in instalments as each stage starts — onboarding, applications, admission and pre-enrolment, then visa. Your written agreement sets out every amount and date before you pay anything. The first consultation is free.",
   },
   {
-    question: "Which countries do you support?",
+    topic: "process",
+    question: "When should I start for a September intake?",
     answer:
-      "We currently focus on Italy, Germany and France, because each has its own system and we would rather do three countries well. We plan to add more destinations over time.",
+      "Ideally 10–12 months before. Attestation and apostille take weeks, English tests may need a retake, many universities open applications from winter, and a DOV can take up to 90 days. Starting late is the most common cause of a missed intake.",
   },
   {
-    question: "I'm not based in India. Can you still help?",
+    topic: "process",
+    question: "My name is spelt differently on my passport and marksheets. Is that a problem?",
     answer:
-      "Our processes are built around applicants from India today. If you live elsewhere, send us an enquiry — we'll tell you honestly whether we can help.",
+      "It can be. Italian missions require an attested and apostilled “One and the same name” certificate to resolve the difference — affidavits are not accepted. We check for this in the first week so it never surprises you later.",
   },
   {
-    question: "How do milestone payments work?",
+    topic: "scholarships",
+    question: "Can Indian students get scholarships in Italy?",
     answer:
-      "Instead of one large upfront fee, you pay in stages as work is delivered — for example at onboarding, at the application stage and at visa preparation. Your schedule is set out in your written agreement.",
+      "Yes. Regional DSU grants are means-tested and open to international students at public universities, and can include a cash grant, housing, meals and a tuition waiver. You need an ISEE parificato to apply, which takes months to prepare. Awards are decided by the regional agency.",
   },
   {
-    question: "How do you handle my documents?",
+    topic: "general",
+    question: "Do you help with work visas?",
     answer:
-      "Documents will be uploaded to a private, access-controlled portal — never by email or the public enquiry form. Only the team members working on your case can see them, and every access is logged.",
+      "Not at the moment — we focus on students. After graduating in Italy you may be able to apply for a 12-month job-seeker permit, and we explain how that route works, but we do not provide job placement.",
   },
 ];

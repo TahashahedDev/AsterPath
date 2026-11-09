@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const DARK_PAPER = "rgb(11, 20, 32)";
-const LIGHT_PAPER = "rgb(247, 246, 240)";
+const LIGHT_PAPER = "rgb(248, 245, 238)";
 const bodyBackground = (page: import("@playwright/test").Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
 test.describe("theme", () => {
@@ -41,7 +41,7 @@ test.describe("theme", () => {
 
   test("footer switcher offers light, system and dark, with keyboard support", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "dark" });
-    await page.goto("/how-it-works");
+    await page.goto("/process");
     const group = page.getByRole("contentinfo").getByRole("radiogroup", { name: "Colour theme" });
     await expect(group.getByRole("radio", { name: "System theme" })).toHaveAttribute("aria-checked", "true");
 

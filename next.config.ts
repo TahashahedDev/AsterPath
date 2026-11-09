@@ -11,6 +11,7 @@ const contentSecurityPolicy = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
+  "media-src 'self'",
   "font-src 'self'",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",
@@ -34,6 +35,18 @@ const nextConfig: NextConfig = {
   // Pin the workspace root: a stray lockfile higher up the tree would otherwise be picked up.
   turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
   reactStrictMode: true,
+  // The site became Italy-only; old multi-country URLs point to their Italy equivalents.
+  async redirects() {
+    return [
+      { source: "/destinations/:path*", destination: "/study-in-italy", permanent: true },
+      { source: "/services/visa-preparation", destination: "/documents", permanent: true },
+      { source: "/services/scholarship-guidance", destination: "/scholarships", permanent: true },
+      { source: "/services/:path*", destination: "/process", permanent: true },
+      { source: "/how-it-works", destination: "/process", permanent: true },
+      { source: "/privacy", destination: "/legal/privacy", permanent: true },
+      { source: "/terms", destination: "/legal/terms", permanent: true },
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

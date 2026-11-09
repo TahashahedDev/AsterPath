@@ -10,13 +10,14 @@ export type LeadRecord = {
   status: "new";
   createdAt: string;
   followUpDueAt: string;
-  contact: Pick<Enquiry, "fullName" | "email" | "whatsapp" | "countryOfResidence">;
-  goals: Pick<Enquiry, "destination" | "pathway" | "level" | "intake">;
-  background: Pick<Enquiry, "academicBackground" | "budgetRange" | "applicationStatus">;
+  contact: Pick<Enquiry, "fullName" | "email" | "whatsapp" | "residence">;
+  goals: Pick<Enquiry, "level" | "intake" | "fieldOfStudy" | "scholarshipInterest">;
+  background: Pick<Enquiry, "highestQualification" | "academicBackground" | "englishTest" | "passportStatus" | "budgetRange">;
   preferences: Pick<Enquiry, "consultationMethod" | "message">;
   consent: {
     privacyNoticeVersion: string;
     contactConsent: true;
+    ageOrGuardianConfirmed: true;
     updatesConsent: boolean;
     recordedAt: string;
   };

@@ -7,8 +7,8 @@ import { EnquiryForm, PrefilledEnquiryForm } from "@/components/forms/enquiry-fo
 import { whatsappUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: "Contact — build your study plan",
-  description: "Tell us about your goals and background. An AsterPath advisor will get back to you to arrange a first conversation.",
+  title: "Book a free consultation — study in Italy",
+  description: "Tell us about your plans for Italy. An AsterPath advisor will contact you to arrange a free consultation.",
   alternates: { canonical: "/contact" },
 };
 
@@ -24,14 +24,13 @@ const nextSteps = [
 export default function ContactPage() {
   const intakes = upcomingIntakes();
   return (
-    <section className="relative">
-      <div className="hairline-grid pointer-events-none absolute inset-x-0 top-0 h-[32rem]" aria-hidden="true" />
-      {/* Phones: intro → form → details. Desktop: intro and details on the left, form on the right. */}
+    <section className="atmosphere relative">
+            {/* Phones: intro → form → details. Desktop: intro and details on the left, form on the right. */}
       <div className="page-container relative grid gap-10 py-14 sm:py-20 lg:grid-cols-[1fr_1.35fr] lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-10">
         <div className="motion-safe:animate-rise lg:col-start-1 lg:row-start-1">
-          <p className="eyebrow mb-4">Build my study plan</p>
-          <h1 className="text-4xl leading-[1.05] font-semibold tracking-[-0.03em] sm:text-5xl">
-            Let&rsquo;s start with <span className="serif-accent text-primary">where you are.</span>
+          <p className="eyebrow mb-4">Free consultation</p>
+          <h1 className="display text-[2.75rem] leading-[1.02] sm:text-6xl">
+            Let&rsquo;s start with <span className="display-italic text-primary">where you are.</span>
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-muted">
             Four short steps, about three minutes. We only ask what we need for a useful first conversation.

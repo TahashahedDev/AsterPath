@@ -5,13 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, MessageCircle } from "lucide-react";
 import {
-  applicationStatusOptions,
   budgetOptions,
   consultationOptions,
-  destinationOptions,
+  englishTestOptions,
   enquiryStepSchemas,
   levelOptions,
-  pathwayOptions,
+  passportOptions,
+  qualificationOptions,
+  residenceOptions,
+  scholarshipOptions,
   type EnquiryInput,
 } from "@/features/leads/schema";
 import { readAttribution } from "@/features/leads/attribution";
@@ -21,37 +23,41 @@ import { Button, ExternalButtonLink } from "@/components/ui/button";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
-type FormValues = Omit<EnquiryInput, "attribution" | "website" | "startedAt" | "privacyAcknowledged" | "contactConsent" | "updatesConsent"> & {
+type FormValues = Omit<EnquiryInput, "attribution" | "website" | "startedAt" | "privacyAcknowledged" | "contactConsent" | "ageConfirmed" | "updatesConsent"> & {
   privacyAcknowledged: boolean;
   contactConsent: boolean;
+  ageConfirmed: boolean;
   updatesConsent: boolean;
 };
 type FieldName = keyof FormValues;
 type Errors = Partial<Record<FieldName, string>>;
 
 const STEPS = [
-  { title: "About you", fields: ["fullName", "email", "whatsapp", "countryOfResidence"] },
-  { title: "Your goals", fields: ["destination", "pathway", "level", "intake"] },
-  { title: "Your background", fields: ["academicBackground", "budgetRange", "applicationStatus"] },
-  { title: "How we'll talk", fields: ["consultationMethod", "message", "privacyAcknowledged", "contactConsent", "updatesConsent"] },
+  { title: "About you", fields: ["fullName", "email", "whatsapp", "residence"] },
+  { title: "Your plans for Italy", fields: ["level", "intake", "fieldOfStudy", "scholarshipInterest"] },
+  { title: "Your background", fields: ["highestQualification", "academicBackground", "englishTest", "passportStatus", "budgetRange"] },
+  { title: "How we'll talk", fields: ["consultationMethod", "message", "privacyAcknowledged", "contactConsent", "ageConfirmed", "updatesConsent"] },
 ] as const satisfies readonly { title: string; fields: readonly FieldName[] }[];
 
 const initialValues: FormValues = {
   fullName: "",
   email: "",
   whatsapp: "",
-  countryOfResidence: "India",
-  destination: "" as FormValues["destination"],
-  pathway: "study",
+  residence: "" as FormValues["residence"],
   level: "" as FormValues["level"],
   intake: "",
+  fieldOfStudy: "",
+  scholarshipInterest: "" as FormValues["scholarshipInterest"],
+  highestQualification: "" as FormValues["highestQualification"],
   academicBackground: "",
+  englishTest: "" as FormValues["englishTest"],
+  passportStatus: "" as FormValues["passportStatus"],
   budgetRange: "" as FormValues["budgetRange"],
-  applicationStatus: "" as FormValues["applicationStatus"],
   consultationMethod: "whatsapp",
   message: "",
   privacyAcknowledged: false,
   contactConsent: false,
+  ageConfirmed: false,
   updatesConsent: false,
 };
 
@@ -70,13 +76,13 @@ function issuesToErrors(issues: { path: PropertyKey[]; message: string }[]): Err
   return errors;
 }
 
-/** Reads safe prefill values from links such as /contact?destination=italy or ?package=complete-journey. */
+/** Reads safe prefill values from links such as /contact?level=masters or ?package=complete. */
 function prefillFrom(params: URLSearchParams | null): FormValues {
-  const destination = params?.get("destination");
+  const level = params?.get("level");
   const pkg = params?.get("package");
   return {
     ...initialValues,
-    destination: destinationOptions.some((o) => o.value === destination) ? (destination as FormValues["destination"]) : initialValues.destination,
+    level: levelOptions.some((o) => o.value === level) ? (level as FormValues["level"]) : initialValues.level,
     message: pkg && /^[a-z-]{3,40}$/.test(pkg) ? `I'm interested in the ${pkg.replace(/-/g, " ")} package.` : initialValues.message,
   };
 }
@@ -179,9 +185,9 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
 
   const whatsappSummary = (reference?: string) =>
     [
-      `Hello AsterPath, I'm ${values.fullName || "interested in studying in Europe"}.`,
+      `Hello AsterPath, I'm ${values.fullName || "interested in studying in Italy"}.`,
       reference ? `My enquiry reference is ${reference}.` : null,
-      values.destination && values.destination !== "undecided" ? `I'm interested in ${destinationOptions.find((o) => o.value === values.destination)?.label}.` : null,
+      values.level ? `I'm interested in a ${levelOptions.find((o) => o.value === values.level)?.label} programme in Italy.` : null,
       "I'd like to discuss my options.",
     ]
       .filter(Boolean)
@@ -191,9 +197,9 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
     return (
       <div className="rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-10" role="status">
         <CheckCircle2 className="size-10 text-primary" strokeWidth={1.5} aria-hidden="true" />
-        <h2 className="mt-6 text-3xl font-semibold tracking-[-0.025em]">Thank you, {values.fullName.split(" ")[0]}.</h2>
+        <h2 className="display mt-6 text-4xl">Thank you, {values.fullName.split(" ")[0]}.</h2>
         <p className="mt-4 text-lg leading-relaxed text-muted">
-          We&rsquo;ve received your enquiry. An advisor will review it and contact you by your preferred method to arrange a first conversation.
+          We&rsquo;ve received your enquiry. An advisor will review it and contact you by your preferred method to arrange your free consultation.
         </p>
         <dl className="mt-8 rounded-xl bg-paper-deep/70 px-5 py-4">
           <dt className="text-sm text-muted">Your reference</dt>
@@ -203,7 +209,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
           <ExternalButtonLink href={whatsappUrl(whatsappSummary(status.reference))}>
             <MessageCircle aria-hidden="true" /> Continue on WhatsApp
           </ExternalButtonLink>
-          <Link href="/how-it-works" className="inline-flex h-11 items-center justify-center px-2 text-[0.9375rem] font-medium text-primary hover:text-primary-deep">
+          <Link href="/process" className="inline-flex h-11 items-center justify-center px-2 text-[0.9375rem] font-medium text-primary hover:text-primary-deep">
             See what happens next
           </Link>
         </div>
@@ -228,7 +234,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
         ))}
       </div>
 
-      <h2 ref={headingRef} tabIndex={-1} className="mt-8 text-2xl font-semibold tracking-tight focus:outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="display mt-8 text-3xl focus:outline-none">
         {current.title}
       </h2>
 
@@ -257,33 +263,44 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
               onChange={(e) => set("whatsapp", e.target.value)}
               error={errors.whatsapp}
             />
-            <TextField label="Country of residence" name="countryOfResidence" autoComplete="country-name" value={values.countryOfResidence} onChange={(e) => set("countryOfResidence", e.target.value)} error={errors.countryOfResidence} />
+            <SelectField
+              label="Where do you live?"
+              name="residence"
+              placeholder="Choose your state or union territory"
+              hint="This decides which Italian mission handles your visa."
+              options={residenceOptions}
+              value={values.residence}
+              onChange={(e) => set("residence", e.target.value as FormValues["residence"])}
+              error={errors.residence}
+            />
           </>
         )}
 
         {step === 1 && (
           <>
-            <ChoiceGroup legend="Where would you like to go?" name="destination" value={values.destination} options={destinationOptions} onChange={(v) => set("destination", v as FormValues["destination"])} error={errors.destination} />
-            <ChoiceGroup legend="What are you looking for?" name="pathway" value={values.pathway} options={pathwayOptions} onChange={(v) => set("pathway", v as FormValues["pathway"])} error={errors.pathway} columns={3} />
-            <ChoiceGroup legend="Study level" name="level" value={values.level} options={levelOptions} onChange={(v) => set("level", v as FormValues["level"])} error={errors.level} columns={4} />
+            <ChoiceGroup legend="What would you like to study in Italy?" name="level" value={values.level} options={levelOptions} onChange={(v) => set("level", v as FormValues["level"])} error={errors.level} columns={3} />
             <SelectField label="Intended intake" name="intake" placeholder="Choose an intake" options={intakes} value={values.intake} onChange={(e) => set("intake", e.target.value)} error={errors.intake} />
+            <TextField label="Field of study" name="fieldOfStudy" placeholder="e.g. Data Science, Architecture, Economics" value={values.fieldOfStudy} onChange={(e) => set("fieldOfStudy", e.target.value)} error={errors.fieldOfStudy} maxLength={120} />
+            <ChoiceGroup legend="Interested in regional scholarships (DSU)?" name="scholarshipInterest" value={values.scholarshipInterest} options={scholarshipOptions} onChange={(v) => set("scholarshipInterest", v as FormValues["scholarshipInterest"])} error={errors.scholarshipInterest} columns={3} />
           </>
         )}
 
         {step === 2 && (
           <>
+            <SelectField label="Highest qualification" name="highestQualification" placeholder="Choose one" options={qualificationOptions} value={values.highestQualification} onChange={(e) => set("highestQualification", e.target.value as FormValues["highestQualification"])} error={errors.highestQualification} />
             <TextAreaField
               label="Academic background"
               name="academicBackground"
-              placeholder="e.g. B.Tech in Mechanical Engineering, 2025, 7.8 CGPA. IELTS 7.0."
+              placeholder="e.g. B.Tech in Mechanical Engineering, 2025, 7.8 CGPA."
               hint="Your most recent qualification, year and results. Please don't upload or paste documents here."
               value={values.academicBackground}
               onChange={(e) => set("academicBackground", e.target.value)}
               error={errors.academicBackground}
               maxLength={600}
             />
+            <SelectField label="English test" name="englishTest" placeholder="Choose one" options={englishTestOptions} value={values.englishTest} onChange={(e) => set("englishTest", e.target.value as FormValues["englishTest"])} error={errors.englishTest} />
+            <ChoiceGroup legend="Passport" name="passportStatus" value={values.passportStatus} options={passportOptions} onChange={(v) => set("passportStatus", v as FormValues["passportStatus"])} error={errors.passportStatus} columns={3} />
             <SelectField label="Approximate yearly budget (tuition and living)" name="budgetRange" placeholder="Choose a range" options={budgetOptions} value={values.budgetRange} onChange={(e) => set("budgetRange", e.target.value as FormValues["budgetRange"])} error={errors.budgetRange} />
-            <SelectField label="Where are you in the process?" name="applicationStatus" placeholder="Choose one" options={applicationStatusOptions} value={values.applicationStatus} onChange={(e) => set("applicationStatus", e.target.value as FormValues["applicationStatus"])} error={errors.applicationStatus} />
           </>
         )}
 
@@ -294,13 +311,16 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
             <div className="grid gap-4 border-t border-border pt-5">
               <CheckboxField name="privacyAcknowledged" checked={values.privacyAcknowledged} onChange={(c) => set("privacyAcknowledged", c)} error={errors.privacyAcknowledged}>
                 I have read the{" "}
-                <Link href="/privacy" target="_blank" className="font-medium text-primary underline underline-offset-4">
-                  privacy notice<span className="sr-only"> (opens in a new tab)</span>
+                <Link href="/legal/privacy" target="_blank" className="font-medium text-primary underline underline-offset-4">
+                  privacy policy<span className="sr-only"> (opens in a new tab)</span>
                 </Link>
                 .
               </CheckboxField>
               <CheckboxField name="contactConsent" checked={values.contactConsent} onChange={(c) => set("contactConsent", c)} error={errors.contactConsent}>
                 AsterPath may contact me by email, WhatsApp or phone about this enquiry.
+              </CheckboxField>
+              <CheckboxField name="ageConfirmed" checked={values.ageConfirmed} onChange={(c) => set("ageConfirmed", c)} error={errors.ageConfirmed}>
+                I am 18 or older, or my parent or guardian has agreed to this enquiry.
               </CheckboxField>
               <CheckboxField name="updatesConsent" checked={values.updatesConsent} onChange={(c) => set("updatesConsent", c)}>
                 <span>

@@ -2,6 +2,33 @@ import Link from "next/link";
 import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+/** Consents recorded at sign-up. Required ones must be ticked before an account is created. */
+const signUpConsents: { id: string; label: React.ReactNode; required: boolean }[] = [
+  {
+    id: "terms",
+    required: true,
+    label: (
+      <>
+        I agree to the <Link href="/legal/terms" className="font-semibold text-primary underline underline-offset-2">terms of service</Link> and{" "}
+        <Link href="/legal/refunds" className="font-semibold text-primary underline underline-offset-2">refund policy</Link>.
+      </>
+    ),
+  },
+  {
+    id: "privacy",
+    required: true,
+    label: (
+      <>
+        I have read the <Link href="/legal/privacy" className="font-semibold text-primary underline underline-offset-2">privacy policy</Link> and consent to AsterPath processing my data to provide its services.
+      </>
+    ),
+  },
+  { id: "age", required: true, label: "I am 18 or older, or my parent or guardian consents to this account." },
+  { id: "noGuarantee", required: true, label: "I understand AsterPath does not guarantee admission, scholarships or visas." },
+  { id: "truthful", required: true, label: "The information and documents I provide will be true and genuine." },
+  { id: "updates", required: false, label: "Send me occasional updates about intakes and deadlines." },
+];
+
 const inputClass =
   "block h-12 w-full rounded-xl border border-border-strong bg-card px-4 text-[1rem] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/12 disabled:cursor-not-allowed disabled:bg-paper-deep/60";
 
@@ -52,6 +79,20 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           </label>
           <input id="auth-password" name="password" type="password" autoComplete={isSignIn ? "current-password" : "new-password"} className={inputClass} />
         </div>
+        {!isSignIn && (
+          <fieldset className="grid gap-3 rounded-xl border border-border bg-paper-deep/50 p-4">
+            <legend className="px-1 text-sm font-semibold text-ink">Before you create your account</legend>
+            {signUpConsents.map((consent) => (
+              <label key={consent.id} className="flex gap-3 text-sm leading-relaxed text-ink-soft">
+                <input type="checkbox" name={consent.id} required={consent.required} className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]" />
+                <span>
+                  {consent.label}
+                  {!consent.required && <span className="text-muted"> (optional)</span>}
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        )}
         <Button size="lg" className="w-full">{isSignIn ? "Sign in" : "Create account"}</Button>
       </fieldset>
 

@@ -14,7 +14,8 @@ src/
     api/             route handlers (only /api/enquiries today)
   components/        ui/ (primitives), layout/, marketing/, forms/, dashboard/
   config/site.ts     public, non-secret settings (WhatsApp number, contact email, nav)
-  content/           Phase 1 seed content: countries, services, packages, journey, FAQs
+  content/           seed content: italy/ (facts, regions, levels, process, documents, sources), packages, FAQs
+  content/geo/       map data: Natural Earth India point-of-view borders, ISTAT Italian regions
   features/          domain logic shared by client and server (schemas, pure calculations)
   lib/               env validation, security helpers, small utilities
   server/            server-only code: services/, repositories/, integrations/
@@ -47,7 +48,13 @@ Theming: light and dark tokens live together in `globals.css`; components only u
 
 Responsive: mobile-first Tailwind breakpoints; gutters and the floating WhatsApp button respect iOS safe-area insets (`viewport-fit=cover`); wide tables and carousels scroll inside focusable regions, never the page. Note: anything `position: fixed` must not live inside the header — its `backdrop-filter` becomes the containing block.
 
-Motion: scroll reveals use CSS scroll-driven animations (no JS; content is simply visible where unsupported). The hero globe is a canvas orthographic projection (d3-geo + Natural Earth 110m land, ~37 KB gzipped) loaded after hydration, paused when off-screen, static under `prefers-reduced-motion`, and skipped on data-saver connections. Three.js / Motion / GSAP were deliberately not added; reconsider only for a concrete need.
+Typography: Bodoni Moda (display) and Manrope (text) via `next/font`. Palette adds terracotta to ivory, ink and emerald.
+
+Maps: `src/lib/geo.ts` (server-only) projects TopoJSON with d3-geo and returns SVG path strings, so pages ship no map library. India's outline must follow India's official boundaries — always use the Natural Earth *India point-of-view* dataset (`countries-india-pov.json`), never default world borders. The home journey map animates entirely in CSS (route draw → camera zoom into Italy); the scholarship region explorer is a small client component.
+
+Motion: scroll reveals use CSS scroll-driven animations (no JS; content is simply visible where unsupported). Everything respects `prefers-reduced-motion`, which jumps straight to the final state.
+
+Video: Remotion project in `video/`, excluded from the app's TypeScript, lint and tests.
 
 ## Security baseline
 
@@ -61,6 +68,8 @@ Security headers and CSP in `next.config.ts`. `script-src` currently allows `'un
 | 1 Brand & frontend | Done, except items listed below |
 | 2+ | Not started |
 
-Phase 1 gaps: newsletter signup (needs email provider + consent storage), real team/about page (needs founder input), OG images.
+Positioning: Italy only, students only (no work-visa services — placing people in jobs abroad requires a recruiting-agent licence in India). Old multi-country URLs redirect in `next.config.ts`.
+
+Phase 1 gaps: newsletter signup (needs email provider + consent storage), founder profiles (`founders` in site config), OG images, photography (Higgsfield account had no credits).
 
 Testing: `tests/unit` (Vitest) and `tests/e2e` (Playwright against a production build: no sideways scrolling on any page at 320–1920px in both themes, axe WCAG 2.1 AA including colour contrast, theme persistence and no-flash, mobile navigation).

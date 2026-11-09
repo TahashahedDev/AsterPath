@@ -4,55 +4,58 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * AsterPath design tokens. Change brand values here only; the dark theme
- * overrides the same names further down, so components never branch on theme.
- * `muted` is darkened from the suggested #727D89 so body copy meets WCAG AA on
- * paper; the original value lives on as `subtle` for non-text decoration.
- * Gold is decorative; use `gold-deep` when gold must carry text.
- * `inverse` is the deep-navy surface used for emphasis panels in both themes.
+ * AsterPath design tokens — Italian palette: ivory paper, midnight ink,
+ * emerald (Italian green) for actions, terracotta for warmth and accents.
+ * Change brand values here only; the dark theme overrides the same names
+ * further down, so components never branch on theme.
+ * `muted` meets WCAG AA for body copy; `subtle` is for decoration only.
+ * Gold and terracotta carry text only through their `-deep` variants.
  */
 @theme {
   --color-ink: #101d2c;
   --color-ink-soft: #2a3747;
-  --color-paper: #f7f6f0;
-  --color-paper-deep: #efede4;
-  --color-card: #fdfdfb;
+  --color-paper: #f8f5ee;
+  --color-paper-deep: #f0ebe0;
+  --color-card: #fffdf8;
   --color-primary: #187a66;
   --color-primary-deep: #11604f;
   --color-primary-soft: #dcebe4;
+  --color-terracotta: #c4643f;
+  --color-terracotta-deep: #a14a28;
+  --color-terracotta-soft: #f6e3d8;
   --color-gold: #c7a66a;
   --color-gold-soft: #f2eadb;
   --color-gold-deep: #77592c;
-  --color-muted: #5a6573;
-  --color-subtle: #727d89;
-  --color-border: #e7e8e4;
-  --color-border-strong: #d6d8d2;
+  --color-muted: #59626e;
+  --color-subtle: #7b8590;
+  --color-border: #e6e1d6;
+  --color-border-strong: #d5cfc2;
   --color-danger: #b42318;
   --color-on-primary: #ffffff;
   --color-inverse: #101d2c;
-  --color-on-inverse: #f7f6f0;
+  --color-on-inverse: #f8f5ee;
   --color-accent-on-inverse: #4cc3a3;
   --color-warning-bg: #fdf3e2;
   --color-warning-border: #e9c98f;
   --color-warning-fg: #5c3a09;
-  --color-globe-hi: #ffffff;
-  --color-globe-mid: #f9f8f3;
-  --color-globe-lo: #ebe9df;
+  --color-map-land: #e9e3d6;
+  --color-map-border: #d4ccbd;
 
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bodoni), "Didot", ui-serif, Georgia, serif;
 
-  --radius-card: 1rem;
-  --shadow-card: 0 1px 2px rgb(16 29 44 / 0.04), 0 8px 24px -12px rgb(16 29 44 / 0.08);
-  --shadow-lift: 0 2px 4px rgb(16 29 44 / 0.04), 0 18px 40px -16px rgb(16 29 44 / 0.18);
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(16 29 44 / 0.04), 0 10px 30px -14px rgb(16 29 44 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(16 29 44 / 0.05), 0 24px 48px -20px rgb(16 29 44 / 0.25);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 
   --animate-rise: rise 0.9s var(--ease-out-soft) both;
   --animate-fade: fade 1.2s var(--ease-out-soft) both;
 
   @keyframes rise {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(18px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes fade {
@@ -68,68 +71,81 @@
  */
 :root {
   color-scheme: light;
+  --grain-opacity: 0.07;
+  --glow-a: rgb(24 122 102 / 0.13);
+  --glow-b: rgb(196 100 63 / 0.11);
 }
 :root[data-theme="dark"] {
-  --color-ink: #edefe9;
-  --color-ink-soft: #c5ccd2;
+  --color-ink: #efece4;
+  --color-ink-soft: #c9cdd0;
   --color-paper: #0b1420;
   --color-paper-deep: #0f1a27;
   --color-card: #13202f;
   --color-primary: #4cc3a3;
   --color-primary-deep: #74d6bb;
   --color-primary-soft: #123a33;
+  --color-terracotta: #e08a64;
+  --color-terracotta-deep: #eba383;
+  --color-terracotta-soft: #3a2219;
   --color-gold: #c7a66a;
   --color-gold-soft: #2a2316;
   --color-gold-deep: #dcc08a;
-  --color-muted: #9ba6b1;
+  --color-muted: #9ca6b0;
   --color-subtle: #6f7c89;
   --color-border: #1f2d3d;
   --color-border-strong: #2c3d50;
   --color-danger: #f97066;
   --color-on-primary: #04211a;
   --color-inverse: #172e45;
-  --color-on-inverse: #edefe9;
+  --color-on-inverse: #efece4;
   --color-accent-on-inverse: #5fd0b0;
   --color-warning-bg: #2a1f0e;
   --color-warning-border: #5a4420;
   --color-warning-fg: #f1d39c;
-  --color-globe-hi: #1f3349;
-  --color-globe-mid: #152538;
-  --color-globe-lo: #0d1826;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -16px rgb(0 0 0 / 0.65);
+  --color-map-land: #1a2a3b;
+  --color-map-border: #2b3e52;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -14px rgb(0 0 0 / 0.55);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 48px -20px rgb(0 0 0 / 0.7);
+  --grain-opacity: 0.05;
+  --glow-a: rgb(76 195 163 / 0.09);
+  --glow-b: rgb(224 138 100 / 0.07);
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-ink: #edefe9;
-    --color-ink-soft: #c5ccd2;
+    --color-ink: #efece4;
+    --color-ink-soft: #c9cdd0;
     --color-paper: #0b1420;
     --color-paper-deep: #0f1a27;
     --color-card: #13202f;
     --color-primary: #4cc3a3;
     --color-primary-deep: #74d6bb;
     --color-primary-soft: #123a33;
+    --color-terracotta: #e08a64;
+    --color-terracotta-deep: #eba383;
+    --color-terracotta-soft: #3a2219;
     --color-gold: #c7a66a;
     --color-gold-soft: #2a2316;
     --color-gold-deep: #dcc08a;
-    --color-muted: #9ba6b1;
+    --color-muted: #9ca6b0;
     --color-subtle: #6f7c89;
     --color-border: #1f2d3d;
     --color-border-strong: #2c3d50;
     --color-danger: #f97066;
     --color-on-primary: #04211a;
     --color-inverse: #172e45;
-    --color-on-inverse: #edefe9;
-  --color-accent-on-inverse: #5fd0b0;
+    --color-on-inverse: #efece4;
+    --color-accent-on-inverse: #5fd0b0;
     --color-warning-bg: #2a1f0e;
     --color-warning-border: #5a4420;
     --color-warning-fg: #f1d39c;
-    --color-globe-hi: #1f3349;
-    --color-globe-mid: #152538;
-    --color-globe-lo: #0d1826;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -16px rgb(0 0 0 / 0.65);
+    --color-map-land: #1a2a3b;
+    --color-map-border: #2b3e52;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -14px rgb(0 0 0 / 0.55);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 48px -20px rgb(0 0 0 / 0.7);
+    --grain-opacity: 0.05;
+    --glow-a: rgb(76 195 163 / 0.09);
+    --glow-b: rgb(224 138 100 / 0.07);
     color-scheme: dark;
   }
 }
@@ -143,9 +159,23 @@
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  /* Fine paper grain over the whole page — texture without a pattern. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  body > * {
+    position: relative;
+    z-index: 1;
   }
   ::selection {
     background: var(--color-primary-soft);
@@ -182,27 +212,56 @@
   }
 
   .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-primary);
   }
-
-  /* Editorial serif accents inside sans headlines. */
-  .serif-accent {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: -0.01em;
+  .eyebrow::before {
+    content: "";
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
   }
 
-  .hairline-grid {
-    background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--color-ink) 4.5%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 4.5%, transparent) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+  /* Editorial display type: Bodoni for headlines, set tight and large. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    font-optical-sizing: auto;
+  }
+  .display-italic {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* Soft colour glows behind hero sections — replaces the old grid pattern. */
+  .atmosphere {
+    background:
+      radial-gradient(60rem 30rem at 12% -10%, var(--glow-a), transparent 70%),
+      radial-gradient(50rem 28rem at 95% 10%, var(--glow-b), transparent 70%);
+  }
+
+  /* Thin rule with a terracotta diamond, used between editorial sections. */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-terracotta);
+  }
+  .ornament::before,
+  .ornament::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--color-border-strong);
   }
 }
 
@@ -220,7 +279,64 @@
   }
 }
 
-/* Gentle flag movement: a travelling sheen plus a slight wave on hover. */
+/* ── Journey map (home hero): routes draw, then the camera settles on Italy. ── */
+.journey-route {
+  stroke-dasharray: var(--len) var(--len);
+  stroke-dashoffset: var(--len);
+  animation: route-draw 2.2s var(--ease-in-out-soft) forwards;
+  animation-delay: var(--delay, 0s);
+}
+.journey-camera {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: camera-to-italy 1.8s var(--ease-in-out-soft) 2.9s forwards;
+}
+.journey-italy-detail {
+  opacity: 0;
+  animation: fade 1s var(--ease-out-soft) 4.2s forwards;
+}
+.journey-city {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: city-pop 0.6s var(--ease-out-soft) forwards;
+  animation-delay: calc(4.5s + var(--i) * 0.08s);
+}
+.journey-early {
+  animation: fade 0.6s ease forwards reverse;
+  animation-delay: 2.9s;
+}
+.journey-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 2.4s ease-out infinite;
+}
+@keyframes route-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes camera-to-italy {
+  to { transform: translate(var(--zx), var(--zy)) scale(var(--zs)); }
+}
+@keyframes city-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(3.2); }
+}
+
+/* Interactive region map: smooth focus on the selected region. */
+.region-camera {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transition: transform 0.9s var(--ease-in-out-soft);
+}
+.region-shape {
+  transition: fill 0.35s ease, opacity 0.35s ease;
+}
+
+/* Flags: a travelling sheen. */
 .flag {
   position: relative;
   overflow: hidden;
@@ -230,7 +346,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.38) 50%, transparent 65%);
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.4) 50%, transparent 65%);
   transform: translateX(-120%);
   pointer-events: none;
 }
@@ -238,26 +354,19 @@
   .flag::after {
     animation: flag-sheen 6s var(--ease-out-soft) infinite;
   }
-  .group:hover .flag svg,
-  .group:focus-visible .flag svg {
-    animation: flag-wave 1.6s ease-in-out infinite;
-    transform-origin: left center;
-  }
 }
 @keyframes flag-sheen {
   0%, 55% { transform: translateX(-120%); }
   100% { transform: translateX(120%); }
-}
-@keyframes flag-wave {
-  0%, 100% { transform: skewY(0deg) scaleX(1); }
-  50% { transform: skewY(-2.5deg) scaleX(0.985); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .journey-pulse { display: none; }
 }
