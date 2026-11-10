@@ -1,58 +1,61 @@
 import Link from "next/link";
-import { Construction } from "lucide-react";
+import { Construction, LogOut } from "lucide-react";
+import { signOut } from "@/app/(auth)/actions";
 import { AsterMark } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/theme/theme-controls";
-import { cn } from "@/lib/utils";
+import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 
-export type ShellNavItem = { label: string; href?: string; phase?: string };
-
-/**
- * Layout foundation shared by the student portal and the admin workspace.
- * Items without an href are not built yet and render as inert labels, never as dead links.
- */
-export function DashboardShell({ area, nav, activeHref, children }: { area: string; nav: ShellNavItem[]; activeHref: string; children: React.ReactNode }) {
+/** Layout shared by the student portal and the admin workspace. */
+export function DashboardShell({
+  area,
+  account,
+  children,
+}: {
+  area: "admin" | "student";
+  /** The signed-in person. Without it the shell is a development-only layout preview. */
+  account?: { name: string; detail: string };
+  children: React.ReactNode;
+}) {
   return (
     <div className="min-h-dvh bg-paper">
-      <div className="flex items-center gap-3 border-b border-warning-border bg-warning-bg px-4 py-2.5 text-sm text-warning-fg" role="status">
-        <Construction className="size-4 shrink-0" aria-hidden="true" />
-        <p>
-          <strong className="font-medium">Layout preview (development only).</strong> No authentication or data is connected. This route returns 404 in production.
-        </p>
-      </div>
-      <div className="lg:grid lg:grid-cols-[16rem_1fr]">
-        <aside className="border-b border-border bg-card lg:min-h-[calc(100dvh-2.75rem)] lg:border-r lg:border-b-0">
-          <div className="flex h-16 items-center gap-2.5 px-5">
+      {!account && (
+        <div className="flex items-center gap-3 border-b border-warning-border bg-warning-bg px-4 py-2.5 text-sm text-warning-fg" role="status">
+          <Construction className="size-4 shrink-0" aria-hidden="true" />
+          <p>
+            <strong className="font-medium">Preview (development only).</strong> Supabase is not connected, so there is no sign-in. This area returns 404 in production until it is.
+          </p>
+        </div>
+      )}
+      <div className="lg:grid lg:grid-cols-[16.5rem_minmax(0,1fr)]">
+        <aside className="border-b border-border bg-card lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:border-r lg:border-b-0">
+          <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
             <Link href="/" className="flex items-center gap-2.5" aria-label="AsterPath home">
               <AsterMark className="size-6" />
               <span className="font-semibold tracking-[-0.03em]">AsterPath</span>
             </Link>
-            <span className="rounded-full bg-ink/5 px-2 py-0.5 text-xs text-muted">{area}</span>
+            <span className="rounded-full bg-ink/5 px-2 py-0.5 text-xs text-muted">{area === "admin" ? "Admin" : "Student"}</span>
             <ThemeToggle className="ml-auto" />
           </div>
-          <nav aria-label={`${area} navigation`} className="overflow-x-auto px-3 pb-4 lg:overflow-visible">
-            <ul className="flex gap-1 lg:flex-col">
-              {nav.map((item) => (
-                <li key={item.label}>
-                  {item.href ? (
-                    <Link
-                      href={item.href}
-                      aria-current={item.href === activeHref ? "page" : undefined}
-                      className={cn("flex items-center rounded-lg px-3 py-2 text-sm whitespace-nowrap", item.href === activeHref ? "bg-primary-soft font-medium text-primary-deep" : "text-ink-soft hover:bg-ink/5")}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <span className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm whitespace-nowrap text-subtle" aria-disabled="true">
-                      {item.label}
-                      {item.phase && <span className="text-[0.6875rem] tracking-wide uppercase">{item.phase}</span>}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+            <DashboardNav area={area} />
+          </div>
+          {account && (
+            <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-ink">{account.name}</p>
+                <p className="truncate text-xs text-muted">{account.detail}</p>
+              </div>
+              <form action={signOut}>
+                <button type="submit" className="inline-flex size-9 items-center justify-center rounded-full text-ink-soft hover:bg-ink/5 hover:text-ink" aria-label="Sign out" title="Sign out">
+                  <LogOut className="size-4" aria-hidden="true" />
+                </button>
+              </form>
+            </div>
+          )}
         </aside>
-        <main id="main" className="px-4 py-8 sm:px-8 lg:px-10">{children}</main>
+        <main id="main" className="min-w-0 px-4 py-8 sm:px-8 lg:px-10 lg:py-10">
+          <div className="mx-auto max-w-6xl">{children}</div>
+        </main>
       </div>
     </div>
   );

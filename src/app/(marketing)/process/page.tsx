@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { commitments } from "@/config/site";
 import { entranceTests } from "@/content/italy/facts";
-import { processStages } from "@/content/italy/process";
+import { processStages, responsibilityLaneLabels, responsibilityLanes, type ResponsibilityLane } from "@/content/italy/process";
 import { sources } from "@/content/italy/sources";
 import { CheckList, ReviewStatus } from "@/components/marketing/cards";
 import { CtaSection } from "@/components/marketing/cta-section";
@@ -19,6 +19,14 @@ const promises = [
   `${commitments.activeStageUpdateCadence.charAt(0).toUpperCase()}${commitments.activeStageUpdateCadence.slice(1)} updates during active stages`,
   "A limited number of students each intake",
 ];
+
+const laneOrder: ResponsibilityLane[] = ["you", "asterpath", "university", "authority"];
+const laneTone: Record<ResponsibilityLane, string> = {
+  you: "bg-card",
+  asterpath: "bg-primary-soft/60",
+  university: "bg-card",
+  authority: "bg-gold-soft/50",
+};
 
 export default function ProcessPage() {
   return (
@@ -41,6 +49,58 @@ export default function ProcessPage() {
               {p}
             </p>
           ))}
+        </div>
+      </section>
+
+      <section className="page-container mt-20" aria-labelledby="lanes-title">
+        <div className="reveal max-w-2xl">
+          <p className="eyebrow mb-5">Who does what</p>
+          <h2 id="lanes-title" className="display text-4xl leading-[1.06] text-ink sm:text-5xl">
+            Who does what, and when
+          </h2>
+          <p className="mt-6 text-lg leading-relaxed text-muted">
+            At every stage, some steps are yours, some are ours, and the decisions belong to the university or the authorities. Processes differ by
+            country: this is the timeline for Italy.
+          </p>
+        </div>
+
+        <div className="mt-12">
+          <div className="hidden gap-3 px-1 pb-3 lg:grid lg:grid-cols-[12rem_repeat(4,minmax(0,1fr))]" aria-hidden="true">
+            <span />
+            {laneOrder.map((lane) => (
+              <span key={lane} className="text-xs font-semibold tracking-[0.16em] text-terracotta-deep uppercase">
+                {responsibilityLaneLabels[lane]}
+              </span>
+            ))}
+          </div>
+          <ol className="grid gap-4">
+            {processStages.map((stage) => {
+              const lanes = responsibilityLanes[stage.slug];
+              if (!lanes) return null;
+              return (
+                <li key={stage.slug} className="reveal grid gap-3 rounded-[var(--radius-card)] border border-border bg-card/60 p-4 sm:p-5 lg:grid-cols-[12rem_repeat(4,minmax(0,1fr))] lg:items-stretch">
+                  <div className="flex items-baseline gap-3 lg:block lg:pr-2">
+                    <span className="display text-4xl leading-none text-terracotta tabular-nums">{String(stage.number).padStart(2, "0")}</span>
+                    <a href={`#${stage.slug}`} className="font-bold tracking-tight text-ink hover:text-primary lg:mt-3 lg:block">
+                      {stage.title}
+                    </a>
+                  </div>
+                  <dl className="contents">
+                    {laneOrder.map((lane) => (
+                      <div key={lane} className={`rounded-2xl p-4 ring-1 ring-border ${laneTone[lane]}`}>
+                        <dt className="text-xs font-semibold tracking-[0.16em] text-terracotta-deep uppercase lg:sr-only">{responsibilityLaneLabels[lane]}</dt>
+                        <dd className="mt-1 text-[0.9375rem] leading-relaxed text-ink-soft lg:mt-0">{lanes[lane]}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </li>
+              );
+            })}
+          </ol>
+          <p className="mt-5 text-sm text-muted">
+            AsterPath prepares and coordinates. We do not decide admission, scholarships, visas or permits, and we do not issue attestations or
+            translations.
+          </p>
         </div>
       </section>
 

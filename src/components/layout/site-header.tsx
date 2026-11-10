@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { mainNav } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button";
+import { Magnetic } from "@/components/motion/magnetic";
 import { Logo } from "@/components/layout/logo";
 import { ThemeSwitcher, ThemeToggle } from "@/components/theme/theme-controls";
 import { cn } from "@/lib/utils";
@@ -87,9 +88,11 @@ export function SiteHeader() {
             <Link href="/sign-in" className="hidden rounded-full px-3.5 py-2 text-[0.9375rem] text-ink-soft hover:text-ink sm:inline-flex">
               Sign in
             </Link>
-            <ButtonLink href="/contact" size="sm" className="hidden sm:inline-flex">
-              Free consultation
-            </ButtonLink>
+            <Magnetic className="hidden sm:inline-flex">
+              <ButtonLink href="/contact" size="sm">
+                Free consultation
+              </ButtonLink>
+            </Magnetic>
             <button
               ref={toggleRef}
               type="button"

@@ -251,7 +251,7 @@ function CtaScene() {
         </Rise>
         <Rise delay={18}>
           <div style={{ display: "inline-block", fontFamily: sans, fontWeight: 700, fontSize: 40 * u, color: "#fff", background: C.primary, borderRadius: 999, padding: `${22 * u}px ${48 * u}px`, marginTop: 50 * u }}>
-            WhatsApp +39 333 110 4575
+            WhatsApp +39 331 110 4575
           </div>
         </Rise>
         <Rise delay={26}>

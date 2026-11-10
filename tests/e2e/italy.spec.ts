@@ -25,9 +25,11 @@ test.describe("Italy site interactions", () => {
     await expect(page.getByRole("link", { name: /Visit the official website/ })).toHaveAttribute("href", "https://www.unicas.it");
   });
 
-  test("old multi-country URLs redirect to their Italy pages", async ({ page }) => {
-    await page.goto("/destinations/germany");
+  test("legacy URLs redirect, and /destinations/italy goes to the Italy guide", async ({ page }) => {
+    await page.goto("/destinations/italy");
     await expect(page).toHaveURL(/\/study-in-italy$/);
+    await page.goto("/services/visa-preparation");
+    await expect(page).toHaveURL(/\/documents$/);
     await page.goto("/how-it-works");
     await expect(page).toHaveURL(/\/process$/);
     await page.goto("/privacy");
@@ -48,7 +50,7 @@ test.describe("Italy site interactions", () => {
     await expect(page.getByText("Choose where you live")).toBeVisible();
     await page.getByLabel("Where do you live?").selectOption("Karnataka");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByRole("heading", { name: "Your plans for Italy" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your plans" })).toBeVisible();
     await expect(page.getByRole("radio", { name: "Master's" })).toBeChecked();
   });
 });

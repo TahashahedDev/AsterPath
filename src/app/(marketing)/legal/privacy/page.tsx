@@ -16,7 +16,7 @@ const sections: LegalSection[] = [
     body: [
       <p key="a">
         {legalEntity.registeredName}, {legalEntity.registeredAddress}, is the data fiduciary (data controller) for personal data collected through this
-        website and our services. Contact: {siteConfig.contactEmail}.
+        website and our services. Contact: {siteConfig.contactEmailLive ? siteConfig.contactEmail : "[contact email to be confirmed]"}.
       </p>,
     ],
   },

@@ -13,11 +13,13 @@
  * Gold and terracotta carry text only through their `-deep` variants.
  */
 @theme {
-  --color-ink: #141a1f;
-  --color-ink-soft: #323b44;
-  --color-paper: #f8f5ef;
-  --color-paper-deep: #f0eadf;
-  --color-card: #fffdf9;
+  --color-ink: #16201c;
+  --color-ink-soft: #33403a;
+  --color-paper: #f7f3eb;
+  --color-paper-deep: #eee7da;
+  --color-card: #fffdf8;
+  /* Soft sage: a calm second surface for alternating bands. */
+  --color-sage: #e6ece3;
   --color-primary: #1f4d40;
   --color-primary-deep: #163a30;
   --color-primary-soft: #e2ebe5;
@@ -27,10 +29,10 @@
   --color-gold: #977338;
   --color-gold-soft: #f3eadb;
   --color-gold-deep: #7a5c2a;
-  --color-muted: #5c636b;
-  --color-subtle: #80868c;
-  --color-border: #e6dfd2;
-  --color-border-strong: #d5cbb9;
+  --color-muted: #58605a;
+  --color-subtle: #7d837d;
+  --color-border: #e4ddcf;
+  --color-border-strong: #d3c8b4;
   --color-danger: #b42318;
   --color-on-primary: #ffffff;
   --color-inverse: #10241e;
@@ -56,7 +58,7 @@
   --color-field-ink: var(--color-on-inverse);
 
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-bodoni), "Didot", ui-serif, Georgia, serif;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Garamond, ui-serif, Georgia, serif;
 
   --radius-card: 1.25rem;
   --shadow-card: 0 1px 2px rgb(20 26 31 / 0.04), 0 10px 30px -14px rgb(20 26 31 / 0.12);
@@ -100,12 +102,12 @@
   --text-section: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
   --text-display-s: clamp(1.875rem, 1.4rem + 1.8vw, 2.75rem);
   --text-lead: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
-  --grain-opacity: 0.07;
-  --glow-a: rgb(31 77 64 / 0.12);
-  --glow-b: rgb(176 141 87 / 0.16);
-  --aurora-a: rgb(31 77 64 / 0.22);
-  --aurora-b: rgb(201 166 106 / 0.32);
-  --aurora-c: rgb(120 160 140 / 0.18);
+  --grain-opacity: 0.035;
+  --glow-a: rgb(120 165 140 / 0.14);
+  --glow-b: rgb(214 182 120 / 0.2);
+  --aurora-a: rgb(140 178 156 / 0.26);
+  --aurora-b: rgb(222 190 128 / 0.34);
+  --aurora-c: rgb(185 109 84 / 0.1);
   --shine: #c9a66a;
 }
 :root[data-theme="dark"] {
@@ -113,6 +115,7 @@
   --color-ink-soft: #d0cabe;
   --color-paper: #0c1513;
   --color-paper-deep: #101c19;
+  --color-sage: #12211c;
   --color-card: #14221e;
   --color-primary: #d9bd84;
   --color-primary-deep: #e8d3a6;
@@ -158,6 +161,7 @@
     --color-ink-soft: #d0cabe;
     --color-paper: #0c1513;
     --color-paper-deep: #101c19;
+    --color-sage: #12211c;
     --color-card: #14221e;
     --color-primary: #d9bd84;
     --color-primary-deep: #e8d3a6;
@@ -238,20 +242,23 @@
   h1, h2, h3 {
     text-wrap: balance;
   }
-  /* Page headings default to Bodoni; components that need another size set their own. */
+  h1, h2, .display-italic, .statement, .poster, .figure-xl {
+    font-feature-settings: "lnum" 1;
+  }
+  /* Page headings default to the display serif; components that need another size set their own. */
   h1 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 600;
     font-size: clamp(2.75rem, 2rem + 3.2vw, 4.5rem);
     line-height: 1.02;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.005em;
   }
   h2 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 600;
     font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
     line-height: 1.08;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.005em;
   }
   h3 {
     font-weight: 700;
@@ -299,17 +306,19 @@
     opacity: 0.6;
   }
 
-  /* Editorial display type: Bodoni for headlines, set tight and large. */
+  /* Editorial display type: Cormorant Garamond for headlines, semibold so it holds up at every size. */
   .display {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.015em;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    /* Lining figures, so gold numerals like 01–05 sit on the baseline (set as a feature so Tailwind's numeric utilities can't undo it). */
+    font-feature-settings: "lnum" 1;
     font-optical-sizing: auto;
   }
   .display-italic {
     font-family: var(--font-display);
     font-style: italic;
-    font-weight: 400;
+    font-weight: 500;
   }
 
   /* Soft colour glows behind hero sections — replaces the old grid pattern. */
@@ -363,6 +372,7 @@
   /* Gradient edge that lights up when a card is hovered. */
   .glow-card, .card {
     position: relative;
+    box-shadow: var(--shadow-card);
     transition: transform 0.5s var(--ease-out-soft), box-shadow 0.5s var(--ease-out-soft);
   }
   .glow-card::before, .card::before {
@@ -476,9 +486,9 @@
   .label { display: inline-block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-terracotta-deep); }
   .field .label { color: var(--color-accent-on-inverse); }
   .caption { font-size: 0.875rem; line-height: 1.5; color: var(--color-muted); }
-  .statement { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.875rem, 1.4rem + 1.8vw, 2.75rem); line-height: 1.15; letter-spacing: -0.015em; text-wrap: balance; }
-  .poster { font-family: var(--font-display); font-weight: 500; font-size: clamp(2.75rem, 2rem + 3.2vw, 4.5rem); line-height: 1.02; letter-spacing: -0.015em; }
-  .figure-xl { font-family: var(--font-display); font-weight: 500; line-height: 0.95; letter-spacing: -0.02em; color: var(--color-terracotta); font-variant-numeric: lining-nums tabular-nums; }
+  .statement { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.875rem, 1.4rem + 1.8vw, 2.75rem); line-height: 1.15; letter-spacing: -0.005em; text-wrap: balance; }
+  .poster { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.75rem, 2rem + 3.2vw, 4.5rem); line-height: 1.02; letter-spacing: -0.005em; }
+  .figure-xl { font-family: var(--font-display); font-weight: 600; line-height: 0.95; letter-spacing: -0.02em; color: var(--color-terracotta); font-variant-numeric: lining-nums tabular-nums; }
   .rows > * + * { border-top: 1px solid var(--color-border); }
   .field .rows > * + * { border-top-color: color-mix(in oklab, var(--color-on-inverse) 15%, transparent); }
   .well { border-radius: 1rem; background: var(--color-paper-deep); }
@@ -646,4 +656,98 @@
   .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
   .marquee-track > [aria-hidden="true"] { display: none; }
   .glow-card:hover, .card:hover { transform: none; }
+}
+
+/* ── Motion and button effects (all switched off by the reduced-motion rule above) ── */
+@layer components {
+  /* Arrows in buttons and text links nudge in the direction they point. */
+  a svg.lucide-arrow-right, button svg.lucide-arrow-right, a svg.lucide-arrow-up-right {
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+  a:hover svg.lucide-arrow-right, button:hover svg.lucide-arrow-right { transform: translateX(4px); }
+  a:hover svg.lucide-arrow-up-right { transform: translate(2px, -2px); }
+
+  /* Secondary buttons: a soft evergreen wash rises from the bottom on hover. */
+  .btn-fill { position: relative; overflow: hidden; isolation: isolate; }
+  .btn-fill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-primary-soft);
+    border-radius: inherit;
+    transform: translateY(101%);
+    transition: transform 0.45s var(--ease-out-soft);
+  }
+  .btn-fill:hover::before { transform: translateY(0); }
+
+  /* Cards: a spotlight follows the mouse (position set by PointerGlow). */
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out-soft);
+    pointer-events: none;
+  }
+  .glow-card:hover::after { opacity: 1; }
+
+  /* Hero headline: each word rises out of a soft blur, one after another. */
+  .word-rise { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .word-rise { animation: word-rise 1s var(--ease-out-soft) both; animation-delay: calc(var(--i, 0) * 90ms + 120ms); }
+  }
+
+  /* An outline that draws itself when it scrolls into view (paths need pathLength="1"). */
+  @media (prefers-reduced-motion: no-preference) {
+    .draw-on-view path {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw-line linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+
+  /* Instalment track: each connector fills from the previous step as you scroll. */
+  @media (prefers-reduced-motion: no-preference) {
+    .track-fill {
+      transform-origin: left;
+      animation: grow-x linear both;
+      animation-timeline: view();
+      animation-range: entry calc(30% + var(--i, 0) * 8%) cover calc(38% + var(--i, 0) * 8%);
+    }
+  }
+
+  /* Floating WhatsApp: a slow ring that invites a tap, plus a lift on hover. */
+  .wa-pulse { position: relative; }
+  @media (prefers-reduced-motion: no-preference) {
+    .wa-pulse::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgb(37 211 102 / 0.45);
+      animation: wa-ring 2.8s var(--ease-out-soft) 2s infinite;
+      pointer-events: none;
+    }
+  }
+
+  /* Numbered rows: the numeral warms to evergreen and the row eases right on hover. */
+  .row-hover { transition: transform 0.5s var(--ease-out-soft); }
+  .row-hover:hover { transform: translateX(6px); }
+  .row-hover .row-num { transition: color 0.4s var(--ease-out-soft); }
+  .row-hover:hover .row-num { color: var(--color-primary); }
+}
+
+@keyframes word-rise {
+  from { opacity: 0; transform: translateY(0.45em); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes draw-line { to { stroke-dashoffset: 0; } }
+@keyframes wa-ring {
+  0% { box-shadow: 0 0 0 0 rgb(37 211 102 / 0.4); }
+  70%, 100% { box-shadow: 0 0 0 16px rgb(37 211 102 / 0); }
 }

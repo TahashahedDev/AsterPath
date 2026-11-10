@@ -39,6 +39,8 @@ export async function createLead(enquiry: Enquiry, now: Date = new Date()): Prom
       residence: enquiry.residence,
     },
     goals: {
+      destination: enquiry.destination,
+      pathway: enquiry.pathway,
       level: enquiry.level,
       intake: enquiry.intake,
       fieldOfStudy: enquiry.fieldOfStudy,

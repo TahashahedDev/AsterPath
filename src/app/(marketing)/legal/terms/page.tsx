@@ -157,7 +157,7 @@ const sections: LegalSection[] = [
     body: [
       <p key="a">
         We may update these terms; the version and date above change when we do. Changes do not affect agreements already signed unless you agree.
-        Contact: {siteConfig.contactEmail}.
+        Contact: {siteConfig.contactEmailLive ? siteConfig.contactEmail : "[contact email to be confirmed]"}.
       </p>,
     ],
   },

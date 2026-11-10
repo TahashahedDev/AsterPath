@@ -9,7 +9,8 @@ const columns = [
   {
     title: "Study in Italy",
     links: [
-      { href: "/study-in-italy", label: "Overview" },
+      { href: "/destinations", label: "All destinations" },
+      { href: "/study-in-italy", label: "Study in Italy" },
       { href: "/study-in-italy/bachelors", label: "Bachelor's" },
       { href: "/study-in-italy/masters", label: "Master's" },
       { href: "/study-in-italy/phd", label: "PhD and research" },
@@ -20,7 +21,8 @@ const columns = [
   {
     title: "Working with us",
     links: [
-      { href: "/process", label: "How we work" },
+      { href: "/services", label: "Services" },
+      { href: "/process", label: "How it works" },
       { href: "/documents", label: "Documents and DOV" },
       { href: "/pricing", label: "The plan" },
       { href: "/about", label: "About" },
@@ -34,6 +36,7 @@ const columns = [
       { href: "/legal/privacy", label: "Privacy policy" },
       { href: "/legal/refunds", label: "Refunds and cancellation" },
       { href: "/legal/disclaimer", label: "Disclaimer" },
+      { href: "/staff/sign-in", label: "Team sign-in" },
     ],
   },
 ];
@@ -56,9 +59,11 @@ export function SiteFooter() {
             <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="block text-ink hover:text-primary">
               WhatsApp {siteConfig.whatsapp.display}
             </a>
-            <a href={`mailto:${siteConfig.contactEmail}`} className="block text-ink hover:text-primary">
-              {siteConfig.contactEmail}
-            </a>
+            {siteConfig.contactEmailLive && (
+              <a href={`mailto:${siteConfig.contactEmail}`} className="block text-ink hover:text-primary">
+                {siteConfig.contactEmail}
+              </a>
+            )}
           </div>
         </div>
 
@@ -88,9 +93,11 @@ export function SiteFooter() {
               and visa decisions by the Italian authorities. We do not guarantee admission, scholarships or visas, and we are not affiliated with the Italian
               government or any university.
             </p>
-            <p>
-              {legalEntity.registeredName} · {legalEntity.registeredAddress}
-            </p>
+            {legalEntity.confirmed && (
+              <p>
+                {legalEntity.registeredName} · {legalEntity.registeredAddress}
+              </p>
+            )}
           </div>
           <p className="shrink-0">
             © {new Date().getFullYear()} {siteConfig.name}

@@ -1,27 +1,27 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { DashboardShell, type ShellNavItem } from "@/components/dashboard/dashboard-shell";
+import { notFound, redirect } from "next/navigation";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { getViewer } from "@/server/auth/viewer";
 
 export const metadata: Metadata = { title: "Student portal", robots: { index: false, follow: false } };
 
-const nav: ShellNavItem[] = [
-  { label: "Overview", href: "/portal" },
-  { label: "My journey", phase: "P4" },
-  { label: "Applications", phase: "P4" },
-  { label: "Documents", phase: "P5" },
-  { label: "Tasks", phase: "P4" },
-  { label: "Payments", phase: "P6" },
-  { label: "Messages", phase: "P4" },
-  { label: "Resources", phase: "P7" },
-  { label: "My profile", phase: "P4" },
-  { label: "Support", phase: "P4" },
-];
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
-  // Layout preview only until authentication exists (Phase 2).
-  if (process.env.NODE_ENV === "production") notFound();
+export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+  const viewer = await getViewer();
+  if (viewer.status === "not-configured") {
+    // Without Supabase this is a layout preview, never served in production.
+    if (process.env.NODE_ENV === "production") notFound();
+    return (
+      <DashboardShell area="student">
+        {children}
+      </DashboardShell>
+    );
+  }
+  if (viewer.status === "signed-out") redirect("/sign-in?next=/portal");
+  // The portal is for students; team members work in the admin workspace.
+  if (viewer.role) redirect("/admin");
   return (
-    <DashboardShell area="Student" nav={nav} activeHref="/portal">
+    <DashboardShell area="student" account={{ name: viewer.name ?? viewer.email, detail: viewer.email }}>
       {children}
     </DashboardShell>
   );

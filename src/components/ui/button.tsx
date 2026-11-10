@@ -6,12 +6,12 @@ type Variant = "primary" | "secondary" | "ghost" | "dark";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0";
 
 const variants: Record<Variant, string> = {
   primary:
-    "btn-sheen bg-[linear-gradient(135deg,var(--color-primary),var(--color-primary-deep))] text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_10px_24px_-12px_var(--color-primary)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_14px_30px_-12px_var(--color-primary)] hover:-translate-y-px",
-  secondary: "bg-card text-ink ring-1 ring-border-strong hover:ring-ink/30",
+    "btn-sheen bg-[linear-gradient(135deg,var(--color-primary),var(--color-primary-deep))] text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_10px_24px_-12px_var(--color-primary)] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_0_0_4px_color-mix(in_oklab,var(--color-gold)_22%,transparent),0_16px_34px_-12px_var(--color-primary)] hover:-translate-y-0.5",
+  secondary: "btn-fill bg-card text-ink ring-1 ring-border-strong hover:text-primary-deep hover:ring-primary/40",
   ghost: "text-ink hover:bg-ink/5",
   dark: "bg-ink text-paper hover:bg-ink-soft",
 };

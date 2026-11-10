@@ -10,6 +10,8 @@ import {
   englishTestOptions,
   enquiryStepSchemas,
   levelOptions,
+  destinationOptions,
+  pathwayOptions,
   passportOptions,
   qualificationOptions,
   residenceOptions,
@@ -34,7 +36,7 @@ type Errors = Partial<Record<FieldName, string>>;
 
 const STEPS = [
   { title: "About you", fields: ["fullName", "email", "whatsapp", "residence"] },
-  { title: "Your plans for Italy", fields: ["level", "intake", "fieldOfStudy", "scholarshipInterest"] },
+  { title: "Your plans", fields: ["destination", "pathway", "level", "intake", "fieldOfStudy", "scholarshipInterest"] },
   { title: "Your background", fields: ["highestQualification", "academicBackground", "englishTest", "passportStatus", "budgetRange"] },
   { title: "How we'll talk", fields: ["consultationMethod", "message", "privacyAcknowledged", "contactConsent", "ageConfirmed", "updatesConsent"] },
 ] as const satisfies readonly { title: string; fields: readonly FieldName[] }[];
@@ -44,6 +46,8 @@ const initialValues: FormValues = {
   email: "",
   whatsapp: "",
   residence: "" as FormValues["residence"],
+  destination: "italy",
+  pathway: "study",
   level: "" as FormValues["level"],
   intake: "",
   fieldOfStudy: "",
@@ -79,10 +83,12 @@ function issuesToErrors(issues: { path: PropertyKey[]; message: string }[]): Err
 /** Reads safe prefill values from links such as /contact?level=masters or ?package=complete. */
 function prefillFrom(params: URLSearchParams | null): FormValues {
   const level = params?.get("level");
+  const destination = params?.get("destination");
   const pkg = params?.get("package");
   return {
     ...initialValues,
     level: levelOptions.some((o) => o.value === level) ? (level as FormValues["level"]) : initialValues.level,
+    destination: destinationOptions.some((o) => o.value === destination) ? (destination as FormValues["destination"]) : initialValues.destination,
     message: pkg && /^[a-z-]{3,40}$/.test(pkg) ? `I'm interested in the ${pkg.replace(/-/g, " ")} package.` : initialValues.message,
   };
 }
@@ -278,7 +284,14 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
 
         {step === 1 && (
           <>
-            <ChoiceGroup legend="What would you like to study in Italy?" name="level" value={values.level} options={levelOptions} onChange={(v) => set("level", v as FormValues["level"])} error={errors.level} columns={3} />
+            <ChoiceGroup legend="Where would you like to go?" name="destination" value={values.destination} options={destinationOptions} onChange={(v) => set("destination", v as FormValues["destination"])} error={errors.destination} columns={4} />
+            <ChoiceGroup legend="Are you looking to study or work?" name="pathway" value={values.pathway} options={pathwayOptions} onChange={(v) => set("pathway", v as FormValues["pathway"])} error={errors.pathway} columns={2} />
+            {values.pathway === "work" && (
+              <p className="rounded-xl bg-paper-deep px-4 py-3 text-sm leading-relaxed text-ink-soft">
+                We explain official work-visa routes and paperwork. We don&rsquo;t recruit, find jobs or place candidates.
+              </p>
+            )}
+            <ChoiceGroup legend="Which level?" name="level" value={values.level} options={levelOptions} onChange={(v) => set("level", v as FormValues["level"])} error={errors.level} columns={3} />
             <SelectField label="Intended intake" name="intake" placeholder="Choose an intake" options={intakes} value={values.intake} onChange={(e) => set("intake", e.target.value)} error={errors.intake} />
             <TextField label="Field of study" name="fieldOfStudy" placeholder="e.g. Data Science, Architecture, Economics" value={values.fieldOfStudy} onChange={(e) => set("fieldOfStudy", e.target.value)} error={errors.fieldOfStudy} maxLength={120} />
             <ChoiceGroup legend="Interested in regional scholarships (DSU)?" name="scholarshipInterest" value={values.scholarshipInterest} options={scholarshipOptions} onChange={(v) => set("scholarshipInterest", v as FormValues["scholarshipInterest"])} error={errors.scholarshipInterest} columns={3} />

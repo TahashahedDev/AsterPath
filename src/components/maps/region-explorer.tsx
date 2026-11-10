@@ -30,7 +30,7 @@ export function RegionExplorer({ map, regions, universities }: { map: RegionMapD
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start">
       <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-border bg-card">
         <svg viewBox={`0 0 ${map.width} ${map.height}`} className="h-auto w-full" aria-hidden="true">
           <g className="region-camera" style={{ transform } as CSSProperties}>

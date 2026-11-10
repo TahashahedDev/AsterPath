@@ -4,6 +4,8 @@ export const validEnquiry = {
   email: "Test.Student@Example.com",
   whatsapp: "+91 98765-43210",
   residence: "Karnataka",
+  destination: "italy",
+  pathway: "study",
   level: "masters",
   intake: "autumn-2027",
   fieldOfStudy: "Data Science",

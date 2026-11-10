@@ -57,6 +57,6 @@ describe("formatting and links", () => {
   });
 
   it("builds an encoded WhatsApp click-to-chat link", () => {
-    expect(whatsappUrl("Hello & welcome", "+39 333 1104575")).toBe("https://wa.me/393331104575?text=Hello%20%26%20welcome");
+    expect(whatsappUrl("Hello & welcome", "+39 331 1104575")).toBe("https://wa.me/393311104575?text=Hello%20%26%20welcome");
   });
 });

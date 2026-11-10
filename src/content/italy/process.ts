@@ -95,3 +95,49 @@ export const processStages: ProcessStage[] = [
     sources: ["studyInItaly"],
   },
 ];
+
+export type ResponsibilityLane = "you" | "asterpath" | "university" | "authority";
+
+export const responsibilityLaneLabels: Record<ResponsibilityLane, string> = {
+  you: "You",
+  asterpath: "AsterPath",
+  university: "University",
+  authority: "Consulate or authority",
+};
+
+/**
+ * Who owns what at each stage, for Italy. AsterPath prepares and coordinates;
+ * universities and authorities decide. Keyed by process stage slug.
+ */
+export const responsibilityLanes: Record<string, Record<ResponsibilityLane, string>> = {
+  documents: {
+    you: "Renew your passport if needed and collect originals",
+    asterpath: "Audit every document and plan the attestation chain",
+    university: "Sets which documents it needs from you",
+    authority: "State Higher Education Department attests; the MEA issues the apostille",
+  },
+  english: {
+    you: "Sit the English and entrance tests",
+    asterpath: "Checks accepted tests and scores, and plans test dates",
+    university: "Sets its own language and admission test rules",
+    authority: "Test providers such as CISIA run the tests and issue results",
+  },
+  applications: {
+    you: "Submit applications and your Universitaly pre-enrolment",
+    asterpath: "Builds the shortlist, reviews every application, prepares the DOV or CIMEA request",
+    university: "Decides admission and validates your pre-enrolment",
+    authority: "The Italian mission issues the DOV, or CIMEA issues its statement",
+  },
+  visa: {
+    you: "Arrange funds, book the appointment and attend in person",
+    asterpath: "Builds your file against the mission's current checklist and reviews it",
+    university: "Its admission and validated pre-enrolment support your file",
+    authority: "The Italian consulate decides the study visa",
+  },
+  arrival: {
+    you: "Apply for your residence permit in person and complete enrolment",
+    asterpath: "Walks you through the permit, tax code, registration and health cover",
+    university: "Completes your registration",
+    authority: "The Italian immigration office (Questura) decides the residence permit",
+  },
+};

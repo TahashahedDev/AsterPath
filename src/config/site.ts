@@ -3,7 +3,7 @@
  * NEXT_PUBLIC_* variables so they can change without a code edit. These will move
  * to admin-editable site settings once the database exists.
  */
-const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "393331104575").replace(/\D/g, "");
+const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "393311104575").replace(/\D/g, "");
 
 /** The canonical origin: https, or plain http only on this machine. A bad value fails the build loudly. */
 export function parseSiteUrl(raw: string | undefined): string {
@@ -23,6 +23,8 @@ export const siteConfig = {
     "AsterPath is an Italy-specialist study consultancy for students from India: universities, Universitaly, DOV and attestation, regional DSU scholarships and the Italian study visa, in one plan with one dedicated advisor.",
   url: parseSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@asterpath.example",
+  /** False while the address is the reserved .example placeholder: never show it as a working address. */
+  contactEmailLive: !(process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@asterpath.example").endsWith(".example"),
   whatsapp: {
     number: whatsappNumber,
     display: formatWhatsappDisplay(whatsappNumber),
@@ -58,7 +60,7 @@ export const commitments = {
 } as const;
 
 function formatWhatsappDisplay(digits: string): string {
-  // Italian mobile numbers: +39 333 110 4575 style grouping; fall back to raw digits.
+  // Italian mobile numbers: +39 331 110 4575 style grouping; fall back to raw digits.
   if (digits.startsWith("39") && digits.length === 12) {
     return `+39 ${digits.slice(2, 5)} ${digits.slice(5, 12)}`;
   }
@@ -66,10 +68,10 @@ function formatWhatsappDisplay(digits: string): string {
 }
 
 export const mainNav = [
-  { href: "/study-in-italy", label: "Study in Italy" },
+  { href: "/destinations", label: "Destinations" },
   { href: "/universities", label: "Universities" },
   { href: "/scholarships", label: "Scholarships" },
-  { href: "/process", label: "How we work" },
-  { href: "/documents", label: "Documents" },
+  { href: "/services", label: "Services" },
+  { href: "/process", label: "How it works" },
   { href: "/pricing", label: "The plan" },
 ] as const;

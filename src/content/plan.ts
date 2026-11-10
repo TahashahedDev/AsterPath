@@ -44,10 +44,10 @@ export const plan = {
     { item: "Rent, deposits and living costs", why: "We guide the search, and the contract is yours." },
   ],
   instalments: [
-    { stage: "Onboarding", when: "When you join", covers: "Your document plan and profile work" },
-    { stage: "Applications", when: "When applications open", covers: "English test, shortlist and every application" },
-    { stage: "Admission", when: "When an offer arrives", covers: "Universitaly, DOV or CIMEA, scholarships" },
+    { stage: "Onboarding", when: "When you sign", covers: "Your document plan and profile work" },
+    { stage: "Applications", when: "When your first application goes in", covers: "English test, shortlist and every application" },
+    { stage: "Admission", when: "When your first offer arrives", covers: "Universitaly, DOV or CIMEA, scholarships" },
     { stage: "Visa", when: "When your visa file starts", covers: "Visa file, insurance and appointment preparation" },
-    { stage: "Arrival", when: "Before you fly", covers: "Pre-departure and arrival guidance" },
+    { stage: "Arrival", when: "Once your visa is granted", covers: "Pre-departure and arrival guidance. Never charged if your visa is refused." },
   ],
 };

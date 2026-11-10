@@ -17,8 +17,16 @@ export const revalidate = 86400;
 
 const nextSteps = [
   "An advisor reads your details before the call.",
-  "Thirty minutes: your profile, your options in Italy and the timeline.",
+  "Thirty minutes: your profile, your options and the timeline.",
   "A written figure for your plan, with no obligation.",
+];
+
+const quickMessages = [
+  { label: "Master's in Italy", message: "Hello AsterPath, I'd like to discuss a master's degree in Italy." },
+  { label: "Bachelor's in Italy", message: "Hello AsterPath, I'd like to discuss a bachelor's degree in Italy." },
+  { label: "Scholarships (DSU)", message: "Hello AsterPath, I'd like to know about regional (DSU) scholarships in Italy." },
+  { label: "Documents and DOV", message: "Hello AsterPath, I have a question about document attestation and the Declaration of Value." },
+  { label: "Germany or France", message: "Hello AsterPath, I'm interested in studying in Germany or France. Please add me to the list." },
 ];
 
 export default function ContactPage() {
@@ -42,13 +50,13 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="pb-[var(--section-gap-s)]" aria-label="Choose a time">
+      <section id="book" className="scroll-mt-24 pb-[var(--section-gap-s)]" aria-label="Choose a time">
         <div className="page-container">
           <BookingEmbed />
         </div>
       </section>
 
-      <section className="section band-moss" aria-labelledby="write-title">
+      <section id="enquiry" className="section band-moss scroll-mt-24" aria-labelledby="write-title">
         <div className="page-container cols gap-y-10">
           <div className="col-span-4">
             <h2 id="write-title">Prefer to write first?</h2>
@@ -57,9 +65,28 @@ export default function ContactPage() {
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="link block">
                 WhatsApp {siteConfig.whatsapp.display}
               </a>
-              <a href={`mailto:${siteConfig.contactEmail}`} className="link block">
-                {siteConfig.contactEmail}
-              </a>
+              {siteConfig.contactEmailLive && (
+                <a href={`mailto:${siteConfig.contactEmail}`} className="link block">
+                  {siteConfig.contactEmail}
+                </a>
+              )}
+            </div>
+            <div className="mt-8">
+              <p className="text-sm font-semibold text-ink">Or start a WhatsApp chat about:</p>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {quickMessages.map((q) => (
+                  <li key={q.label}>
+                    <a
+                      href={whatsappUrl(q.message)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-10 items-center rounded-full bg-card px-4 text-sm text-ink ring-1 ring-border transition-colors hover:ring-primary"
+                    >
+                      {q.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
             <p className="mt-8 max-w-[38ch] text-sm leading-relaxed text-muted">
               Please do not share passports, bank statements or other documents here. When documents are needed, we give you a secure, private way to share them.

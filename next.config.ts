@@ -37,13 +37,12 @@ const nextConfig: NextConfig = {
   // Pin the workspace root: a stray lockfile higher up the tree would otherwise be picked up.
   turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
   reactStrictMode: true,
-  // The site became Italy-only; old multi-country URLs point to their Italy equivalents.
+  // Legacy URLs from the first site. /destinations/italy redirects from its page; Germany and France have their own pages.
   async redirects() {
     return [
-      { source: "/destinations/:path*", destination: "/study-in-italy", permanent: true },
       { source: "/services/visa-preparation", destination: "/documents", permanent: true },
       { source: "/services/scholarship-guidance", destination: "/scholarships", permanent: true },
-      { source: "/services/:path*", destination: "/process", permanent: true },
+      { source: "/services/:path+", destination: "/services", permanent: true },
       { source: "/how-it-works", destination: "/process", permanent: true },
       { source: "/privacy", destination: "/legal/privacy", permanent: true },
       { source: "/terms", destination: "/legal/terms", permanent: true },

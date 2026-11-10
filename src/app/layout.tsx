@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Bodoni_Moda, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { ThemeWatcher } from "@/components/theme/theme-controls";
 import { THEME_COLORS, themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
-// Bodoni: the classic Italian typeface (Parma, 1798), used for headlines only.
-const bodoni = Bodoni_Moda({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-bodoni", display: "swap" });
+// Cormorant Garamond: a classical Garamond for headlines only; Manrope carries everything else.
+const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600", "700"], style: ["normal", "italic"], variable: "--font-cormorant", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -43,7 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // data-theme is set by the inline script before React hydrates, hence suppressHydrationWarning.
-    <html lang="en" className={`${manrope.variable} ${bodoni.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${manrope.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>

@@ -22,6 +22,18 @@ export const levelOptions = [
   { value: "phd", label: "PhD / research" },
 ] as const;
 
+export const destinationOptions = [
+  { value: "italy", label: "Italy" },
+  { value: "germany", label: "Germany" },
+  { value: "france", label: "France" },
+  { value: "undecided", label: "Not sure yet" },
+] as const;
+
+export const pathwayOptions = [
+  { value: "study", label: "Study" },
+  { value: "work", label: "Work visa guidance" },
+] as const;
+
 export const scholarshipOptions = [
   { value: "yes", label: "Yes" },
   { value: "no", label: "No" },
@@ -88,6 +100,8 @@ export const contactStepSchema = z.object({
 });
 
 export const goalsStepSchema = z.object({
+  destination: enumOf(destinationOptions, "Choose a destination"),
+  pathway: enumOf(pathwayOptions, "Choose study or work"),
   level: enumOf(levelOptions, "Choose a study level"),
   intake: trimmed(2, 40, "Intended intake"),
   fieldOfStudy: trimmed(2, 120, "Field of study"),
