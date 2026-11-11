@@ -7,6 +7,8 @@ import { DemoUnavailable, FilterBar } from "@/components/admin/admin-ui";
 import { applicationStatuses, applicationStatusTone, daysBetween, param, relativeDays } from "@/components/admin/format";
 import { DEMO_TODAY, demoApplications, isDemoWorkspaceEnabled, staffById, studentById } from "@/server/demo/workspace";
 import { cn } from "@/lib/utils";
+import { LiveApplications } from "@/components/admin/live-lists";
+import { listAllApplications } from "@/server/services/cases";
 
 export const metadata: Metadata = { title: "Applications" };
 
@@ -25,6 +27,8 @@ function Deadline({ app }: { app: Application }) {
 
 export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const header = <PageHeader eyebrow="Casework" title="Applications" description="Every university application as its own row. Deadlines within three weeks are highlighted." />;
+  const live = await listAllApplications();
+  if (live) return <div>{header}<LiveApplications rows={live} now={new Date()} /></div>;
   if (!isDemoWorkspaceEnabled()) return <div>{header}<DemoUnavailable module="Applications" /></div>;
 
   const status = param((await searchParams).status);

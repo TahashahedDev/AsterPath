@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import { DataTable, EmptyState, PageHeader, Panel, StatusPill, formatDate, type Column, type PillTone } from "@/components/dashboard/ui";
-import { AddCaseTaskForm, CaseStageForm, ConfirmPaymentForm } from "@/components/admin/casework-forms";
+import { AddApplicationForm, AddCaseTaskForm, CaseStageForm, ConfirmPaymentForm } from "@/components/admin/casework-forms";
 import { workflowLabel } from "@/components/admin/format";
-import { setCaseTaskDone } from "@/app/(admin)/admin/students/actions";
+import { setCaseTaskDone, updateApplication } from "@/app/(admin)/admin/students/actions";
 import { setInstalmentStatus } from "@/app/(admin)/admin/payments/actions";
-import type { CaseStatus, InstalmentRowStatus, StudentCaseRow } from "@/lib/supabase/types";
+import type { ApplicationRowStatus, CaseStatus, InstalmentRowStatus, StudentCaseRow } from "@/lib/supabase/types";
+import { applicationStatusLabels } from "@/features/operations/types";
 import type { StaffMember } from "@/features/operations/types";
 import { formatInr } from "@/lib/utils";
 import type { CaseWithMoney, LedgerRow } from "@/server/services/cases";
@@ -68,10 +69,42 @@ export function LiveCaseDetail({ c, team }: { c: CaseWithMoney; team: StaffMembe
           <dl className="grid gap-2 text-sm">
             <div><dt className="text-xs text-muted">Advisor</dt><dd className="text-ink">{team.find((m) => m.id === c.advisor_id)?.name ?? "Unassigned (set it on the lead)"}</dd></div>
             <div><dt className="text-xs text-muted">Student email</dt><dd className="break-all text-ink">{c.student_email}</dd></div>
+            {c.referral_code && <div><dt className="text-xs text-muted">Referral code</dt><dd className="font-mono text-ink">{c.referral_code}{c.referrals.length > 0 && <span className="ml-2 font-sans text-xs text-muted">used {c.referrals.length}×</span>}</dd></div>}
             <div><dt className="text-xs text-muted">Portal</dt><dd className="text-ink">{c.student_user_id ? "Linked to their account" : "Not linked yet: they sign up with this email"}</dd></div>
           </dl>
         </Panel>
       </div>
+
+      <Panel title="University applications" className="mt-4">
+        <AddApplicationForm caseId={c.id} />
+        {c.applications.length > 0 && (
+          <ul className="mt-5 divide-y divide-border">
+            {c.applications.map((a) => (
+              <li key={a.id} className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{a.university}</p>
+                  <p className="text-sm text-muted">
+                    {a.programme}
+                    {a.deadline && <> · deadline <span className="tabular-nums">{formatDate(a.deadline)}</span></>}
+                    {a.submitted_on && <> · submitted {formatDate(a.submitted_on)}</>}
+                  </p>
+                </div>
+                <form action={updateApplication} className="flex flex-wrap items-center gap-2">
+                  <input type="hidden" name="caseId" value={c.id} />
+                  <input type="hidden" name="applicationId" value={a.id} />
+                  <label className="sr-only" htmlFor={`st-${a.id}`}>Status for {a.university}</label>
+                  <select id={`st-${a.id}`} name="status" defaultValue={a.status} className="h-9 rounded-lg border border-border-strong bg-paper px-2 text-sm text-ink">
+                    {(Object.keys(applicationStatusLabels) as ApplicationRowStatus[]).map((st) => <option key={st} value={st}>{applicationStatusLabels[st]}</option>)}
+                  </select>
+                  <label className="sr-only" htmlFor={`ref-${a.id}`}>Portal reference for {a.university}</label>
+                  <input id={`ref-${a.id}`} name="portalReference" defaultValue={a.portal_reference ?? ""} placeholder="Portal ref." maxLength={80} className="h-9 w-28 rounded-lg border border-border-strong bg-paper px-2 text-sm text-ink" />
+                  <button type="submit" className={smallButton}>Save</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
 
       <Panel title="Tasks for the student" className="mt-4">
         <AddCaseTaskForm caseId={c.id} />

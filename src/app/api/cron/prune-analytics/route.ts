@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { timingSafeEqual } from "node:crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { isCronRequest } from "@/server/cron";
 
 /**
  * Daily Vercel cron (see vercel.json): deletes website analytics older than 13
@@ -8,12 +8,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
  * token; any other caller is refused.
  */
 export async function GET(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  const given = request.headers.get("authorization") ?? "";
-  const expected = `Bearer ${secret}`;
-  if (!secret || given.length !== expected.length || !timingSafeEqual(Buffer.from(given), Buffer.from(expected))) {
-    return NextResponse.json({ error: "unauthorised" }, { status: 401 });
-  }
+  if (!isCronRequest(request)) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const admin = createSupabaseAdminClient();
   if (!admin) return NextResponse.json({ skipped: "Supabase not configured" });
   const { data, error } = await admin.rpc("prune_site_events");

@@ -35,18 +35,18 @@ export async function sendEmail(email: Email): Promise<"sent" | "not-configured"
   }
 }
 
-const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+export const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const label = (options: readonly { value: string; label: string }[], value: string) => options.find((o) => o.value === value)?.label ?? value;
 const intakeLabel = (v: string) => (v === "undecided" ? "Not decided" : v.replace(/^([a-z]+)-(\d{4})$/, (_, s: string, y: string) => `${s[0]!.toUpperCase()}${s.slice(1)} ${y}`));
 
-function button(href: string, text: string, primary = false) {
+export function button(href: string, text: string, primary = false) {
   const style = primary
     ? "background:#1f4d40;color:#ffffff;border:1px solid #1f4d40"
     : "background:#ffffff;color:#1f4d40;border:1px solid #d3c8b4";
   return `<a href="${escape(href)}" style="display:inline-block;margin:0 8px 8px 0;padding:12px 18px;border-radius:999px;font-weight:600;text-decoration:none;${style}">${escape(text)}</a>`;
 }
 
-function layout(title: string, body: string) {
+export function layout(title: string, body: string) {
   return `<!doctype html><html><body style="margin:0;background:#f7f3eb;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#16201c">
 <div style="max-width:560px;margin:0 auto;padding:28px 20px">
 <p style="margin:0 0 20px;font-size:14px;color:#58605a">${escape(siteConfig.name)}</p>

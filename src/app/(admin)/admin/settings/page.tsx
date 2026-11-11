@@ -17,11 +17,12 @@ const legalFields: { key: Exclude<keyof typeof legalEntity, "confirmed">; label:
 ];
 
 const security: { label: string; done: boolean; note: string }[] = [
-  { label: "Multi-factor authentication for owners, administrators and document reviewers", done: false, note: "Required before any real student data is stored." },
-  { label: "Row Level Security on every table holding personal data", done: false, note: "Policies exist for profiles, enquiries and the team; casework tables follow." },
-  { label: "Private document storage with signed URLs", done: false, note: "No real documents are accepted until this ships." },
-  { label: "Append-only audit log", done: true, note: "Changes to profiles, enquiries, team and permissions are recorded." },
-  { label: "Least-privilege roles (finance and marketing cannot open sensitive documents)", done: false, note: "Enforced in the database, not only in the interface." },
+  { label: "Two-factor sign-in for every team member", done: true, note: "Enforced in the database: without the second factor, staff accounts can read nothing." },
+  { label: "Row Level Security on every table holding personal data", done: true, note: "Enquiries, cases, payments, applications, referrals, bookings and analytics; checked by the database test suite." },
+  { label: "Append-only audit log", done: true, note: "Every change to personal and financial records is recorded with who made it." },
+  { label: "Least-privilege roles", done: true, note: "Finance sees payments, not documents; marketing sees anonymous counts only; advisors cannot touch money." },
+  { label: "Private document storage with expiring links", done: false, note: "Not built yet. No passports or bank statements are accepted through the platform until it is tested." },
+  { label: "Legal entity details on the website", done: legalEntity.confirmed, note: "Terms, privacy and refunds show placeholders until the business details below are filled in." },
 ];
 
 const isPlaceholder = (v: string) => v.startsWith("[");

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { discountRules } from "@/content/pricing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type PaymentFormState = { status: "idle" | "error" | "saved"; message?: string };
@@ -53,4 +54,32 @@ export async function setInstalmentStatus(form: FormData): Promise<void> {
     .eq("id", parsed.data.instalmentId)
     .neq("status", "paid");
   revalidatePath("/admin/payments");
+}
+
+const referralSchema = z.object({ referralId: z.uuid(), decision: z.enum(["approved", "declined"]) });
+
+/**
+ * Approves or declines a referral credit (the amount comes from the pricing
+ * rules, never the form). Finance, admins and owners only, by RLS; audited.
+ */
+export async function decideReferral(form: FormData): Promise<void> {
+  const parsed = referralSchema.safeParse({ referralId: form.get("referralId"), decision: form.get("decision") });
+  if (!parsed.success) return;
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase
+    .from("referrals")
+    .update({
+      status: parsed.data.decision,
+      reward_amount: parsed.data.decision === "approved" ? discountRules.referralCredit.amount : null,
+      decided_by: user.id,
+      decided_at: new Date().toISOString(),
+    })
+    .eq("id", parsed.data.referralId)
+    .eq("status", "enquired");
+  revalidatePath("/admin/referrals");
 }

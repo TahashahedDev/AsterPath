@@ -3,7 +3,9 @@ import { ArrowRight, Check, Compass, ListChecks, Receipt } from "lucide-react";
 import { EmptyState, Panel, StatusPill, formatDate } from "@/components/dashboard/ui";
 import { stageCopy } from "@/components/portal/journey-copy";
 import { instalmentLabels, instalmentTone } from "@/components/portal/tones";
-import type { WorkflowStage } from "@/features/operations/types";
+import { applicationStatusLabels, type WorkflowStage } from "@/features/operations/types";
+import { discountRules } from "@/content/pricing";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { formatInr } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import type { CaseWithMoney } from "@/server/services/cases";
@@ -192,6 +194,117 @@ export function LivePayments({ c }: { c: CaseWithMoney }) {
         Online payment isn&apos;t switched on. Your advisor sends verified bank details in writing; finance confirms each payment against the bank record and
         it shows here as paid.
       </p>
+    </div>
+  );
+}
+
+const portalAppTone = {
+  planned: "neutral", in_preparation: "gold", submitted: "primary", under_review: "primary", admitted: "success", waitlisted: "warning", rejected: "danger", withdrawn: "neutral",
+} as const;
+
+export function LivePortalApplications({ c }: { c: CaseWithMoney }) {
+  if (c.applications.length === 0) {
+    return <div className="mt-8"><EmptyState icon={ListChecks} title="No applications yet" description="Once you and your advisor agree your shortlist, each university appears here with its deadline and status." /></div>;
+  }
+  return (
+    <ul className="mt-8 grid gap-3">
+      {c.applications.map((a) => (
+        <li key={a.id} className="rounded-[var(--radius-card)] border border-border bg-card p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="font-semibold text-ink">{a.university}</h2>
+              <p className="text-sm text-muted">{a.programme}</p>
+            </div>
+            <StatusPill tone={portalAppTone[a.status]}>{applicationStatusLabels[a.status]}</StatusPill>
+          </div>
+          <dl className="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+            <div><dt className="text-xs text-muted">Deadline</dt><dd className="text-ink tabular-nums">{a.deadline ? formatDate(a.deadline) : "To be confirmed"}</dd></div>
+            <div><dt className="text-xs text-muted">Submitted</dt><dd className="text-ink tabular-nums">{a.submitted_on ? formatDate(a.submitted_on) : "Not yet"}</dd></div>
+            {a.portal_reference && <div><dt className="text-xs text-muted">University reference</dt><dd className="font-mono text-ink">{a.portal_reference}</dd></div>}
+          </dl>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function LivePortalReferrals({ c }: { c: CaseWithMoney }) {
+  if (!c.referral_code) return null;
+  const link = `${siteConfig.url}/?ref=${c.referral_code}`;
+  const message = `I'm planning my studies in Italy with AsterPath. If you're thinking about it too, start here: ${link}`;
+  const approved = c.referrals.filter((r) => r.status === "approved");
+  return (
+    <div className="mt-8 grid gap-6">
+      <section className="rounded-[var(--radius-card)] bg-inverse p-6 text-on-inverse sm:p-8" aria-label="Your referral link">
+        <p className="text-xs font-semibold tracking-[0.16em] text-accent-on-inverse uppercase">Your code</p>
+        <p className="display mt-2 text-4xl tracking-wide">{c.referral_code}</p>
+        <p className="mt-3 break-all text-sm text-on-inverse/75">{link}</p>
+        <a href={`https://wa.me/?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-accent-on-inverse px-5 text-sm font-medium text-inverse">
+          Share on WhatsApp <ArrowRight className="size-4" aria-hidden="true" />
+        </a>
+      </section>
+      <Panel title="How it works">
+        <ul className="grid gap-2 text-sm text-ink-soft">
+          <li>Your friend gets {formatInr(discountRules.referralCredit.amount)} off our service fee when they join through your link.</li>
+          <li>You get {formatInr(discountRules.referralCredit.amount)} off your next instalment once they sign and pay their first instalment.</li>
+          <li>We never tell you who used your link or anything about their case.</li>
+        </ul>
+        <p className="mt-4 text-sm text-muted">
+          {c.referrals.length === 0 ? "No one has used your link yet." : `Used ${c.referrals.length} time${c.referrals.length === 1 ? "" : "s"}${approved.length ? `; ${approved.length} credit${approved.length === 1 ? "" : "s"} approved` : ""}.`}
+        </p>
+      </Panel>
+    </div>
+  );
+}
+
+export function LivePortalProfile({ c, email }: { c: CaseWithMoney; email: string }) {
+  const rows: [string, string][] = [
+    ["Name", c.full_name],
+    ["Email", email],
+    ["Destination", c.destination.charAt(0).toUpperCase() + c.destination.slice(1)],
+    ["Level", c.level],
+    ["Intake", c.intake],
+    ["Case opened", formatDate(c.opened_at)],
+  ];
+  return (
+    <div className="mt-8 grid gap-4">
+      <Panel title="What we hold">
+        <dl className="grid gap-3 text-sm sm:grid-cols-2">
+          {rows.map(([k, v]) => <div key={k}><dt className="text-xs text-muted">{k}</dt><dd className="text-ink">{v}</dd></div>)}
+        </dl>
+      </Panel>
+      <p className="text-sm text-muted">
+        Something wrong? <a href={whatsappUrl(`Hello, please correct my details on my AsterPath case (${c.full_name}).`)} className="font-medium text-primary underline-offset-4 hover:underline">Tell your advisor</a> and they&apos;ll update it.
+        To change your password, use <Link href="/forgot-password" className="font-medium text-primary underline-offset-4 hover:underline">reset password</Link>.
+      </p>
+    </div>
+  );
+}
+
+/** Documents: honest about secure uploads, clear about what to do meanwhile. */
+export function LivePortalDocuments() {
+  return (
+    <div className="mt-8 grid gap-4">
+      <Panel title="Sharing documents">
+        <p className="text-sm leading-relaxed text-ink-soft">
+          Your advisor gives you a document checklist in your tasks, in the order you&apos;ll need each one. Secure uploads open here soon. Until then,
+          please don&apos;t send passports, bank statements or other sensitive documents by WhatsApp or email; your advisor will tell you how to share them safely.
+        </p>
+        <Link href="/portal/tasks" className="mt-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary">See your tasks <ArrowRight className="size-4" aria-hidden="true" /></Link>
+      </Panel>
+    </div>
+  );
+}
+
+export function LivePortalMessages({ c }: { c: CaseWithMoney }) {
+  return (
+    <div className="mt-8 grid gap-4">
+      <Panel title="Talk to your advisor">
+        <p className="text-sm leading-relaxed text-ink-soft">Your advisor replies on WhatsApp within one working day, and sends a weekly update while a stage is active.</p>
+        <a href={whatsappUrl(`Hello, this is ${c.full_name} (AsterPath student).`)} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-on-primary hover:bg-primary-deep">
+          Message on WhatsApp <ArrowRight className="size-4" aria-hidden="true" />
+        </a>
+      </Panel>
     </div>
   );
 }

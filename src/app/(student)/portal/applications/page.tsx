@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { FileCheck2, Stamp } from "lucide-react";
 import { DemoNotice, PageHeader, Panel, StatusPill, formatDate } from "@/components/dashboard/ui";
 import { DueLabel } from "@/components/portal/due-label";
+import { LivePortalApplications, NoCaseYet } from "@/components/portal/live-case";
 import { PortalUnavailable } from "@/components/portal/portal-unavailable";
+import { getMyCase } from "@/server/services/cases";
 import { applicationTone, visaTone } from "@/components/portal/tones";
 import { applicationStatusLabels, visaStatusLabels } from "@/features/operations/types";
 import { getDemoPortal } from "@/server/demo/portal";
@@ -10,8 +12,10 @@ import { isPortalDemoEnabled } from "@/server/demo/workspace";
 
 export const metadata: Metadata = { title: "Applications" };
 
-export default function ApplicationsPage() {
+export default async function ApplicationsPage() {
   const header = <PageHeader eyebrow="Applications" title="Your university applications" description="Each university is a separate application with its own deadline, status and documents. Admission decisions are made by the university." />;
+  const live = await getMyCase();
+  if (live !== null) return <>{header}{live ? <LivePortalApplications c={live} /> : <NoCaseYet />}</>;
   if (!isPortalDemoEnabled()) return <>{header}<PortalUnavailable what="applications" /></>;
   const p = getDemoPortal();
   const apps = [...p.applications].sort((a, b) => a.deadline.localeCompare(b.deadline));

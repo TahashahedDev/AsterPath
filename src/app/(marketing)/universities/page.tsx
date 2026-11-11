@@ -23,7 +23,7 @@ export default function UniversitiesPage() {
             {universities.length} public universities, <span className="display-italic text-primary">one index.</span>
           </>
         }
-        description="Every Italian state university, polytechnic and higher school, by region. Search by name or city, open one for how applying from India works there, or go straight to its website."
+        description="Every Italian state university, polytechnic and higher school, by region. Search by name or city."
       />
 
       <section className="pt-[var(--space-xl)] pb-[var(--section-gap)]">

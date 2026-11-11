@@ -1,10 +1,13 @@
 import { bookingLinkFor } from "@/lib/booking";
 import { whatsappUrl } from "@/lib/whatsapp";
 
-/** "+91 98765 43210" → "919876543210"; numbers without a country code are assumed Indian. */
+/** "+91 98765 43210", "098765 43210" or "98765 43210" → "919876543210"; numbers without a country code are assumed Indian. */
 export function whatsappDigits(raw: string): string {
   const digits = raw.replace(/\D/g, "");
-  if (raw.trim().startsWith("+") || digits.length > 10) return digits.replace(/^00/, "");
+  if (raw.trim().startsWith("+")) return digits;
+  if (digits.startsWith("00")) return digits.slice(2);
+  // Indian trunk prefix: "0 98765 43210" is the same mobile as "+91 98765 43210".
+  if (digits.length === 11 && digits.startsWith("0")) return `91${digits.slice(1)}`;
   return digits.length === 10 ? `91${digits}` : digits;
 }
 

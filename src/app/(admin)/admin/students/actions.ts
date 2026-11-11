@@ -54,3 +54,53 @@ export async function setCaseTaskDone(form: FormData): Promise<void> {
   await supabase.from("case_tasks").update({ done: parsed.data.done }).eq("id", parsed.data.taskId);
   revalidatePath(`/admin/students/${parsed.data.caseId}`);
 }
+
+const applicationStatuses = ["planned", "in_preparation", "submitted", "under_review", "admitted", "waitlisted", "rejected", "withdrawn"] as const;
+const optionalDate = z.union([z.iso.date(), z.literal("")]);
+
+const addApplicationSchema = z.object({
+  caseId: z.uuid(),
+  university: z.string().trim().min(2, { error: "Name the university." }).max(160),
+  programme: z.string().trim().min(2, { error: "Name the programme." }).max(200),
+  deadline: optionalDate,
+});
+
+/** Adds a university application to a case; the student sees it in their portal. */
+export async function addApplication(_: CaseFormState, form: FormData): Promise<CaseFormState> {
+  const parsed = addApplicationSchema.safeParse({ caseId: form.get("caseId"), university: form.get("university"), programme: form.get("programme"), deadline: form.get("deadline") ?? "" });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the application.");
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return fail("Supabase isn't connected.");
+  const { error } = await supabase.from("case_applications").insert({ case_id: parsed.data.caseId, university: parsed.data.university, programme: parsed.data.programme, deadline: parsed.data.deadline || null });
+  if (error) return fail(denied);
+  revalidatePath(`/admin/students/${parsed.data.caseId}`);
+  revalidatePath("/admin/applications");
+  return { status: "saved", message: "Application added." };
+}
+
+const updateApplicationSchema = z.object({
+  caseId: z.uuid(),
+  applicationId: z.uuid(),
+  status: z.enum(applicationStatuses),
+  portalReference: z.string().trim().max(80),
+});
+
+/** Moves an application along; marking it submitted records today's date. */
+export async function updateApplication(form: FormData): Promise<void> {
+  const parsed = updateApplicationSchema.safeParse({
+    caseId: form.get("caseId"),
+    applicationId: form.get("applicationId"),
+    status: form.get("status"),
+    portalReference: form.get("portalReference") ?? "",
+  });
+  if (!parsed.success) return;
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return;
+  const submitted = parsed.data.status === "submitted" ? { submitted_on: new Date().toISOString().slice(0, 10) } : {};
+  await supabase
+    .from("case_applications")
+    .update({ status: parsed.data.status, portal_reference: parsed.data.portalReference || null, ...submitted })
+    .eq("id", parsed.data.applicationId);
+  revalidatePath(`/admin/students/${parsed.data.caseId}`);
+  revalidatePath("/admin/applications");
+}

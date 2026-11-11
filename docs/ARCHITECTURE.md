@@ -114,6 +114,7 @@ Testing: `tests/unit` (Vitest) and `tests/e2e` (Playwright against a production 
 ## Founder notifications and bookings
 
 - **New enquiry:** after the enquiry is saved and the student has their reference, `after()` sends two emails through Resend: an alert to `LEAD_NOTIFY_EMAIL` (details plus one-tap "Reply on WhatsApp", "Email them" and "Open in admin") and a confirmation to the student (reference, next steps, prefilled booking link). Email failures are logged and never affect the saved enquiry. Without Resend nothing is sent and a reference-only log line is written.
+- **Morning briefing:** Vercel cron `/api/cron/daily-digest` (08:00 IST, `CRON_SECRET`) emails `LEAD_NOTIFY_EMAIL` one summary: leads waiting for a first reply, calls in the next 24 hours, follow-ups due, application deadlines within 14 days, overdue student tasks, instalments due within 7 days, and referral credits to decide. It reads with the service role (cron only), carries names, dates and admin links but no contact details or messages, and sends nothing on a day with nothing to do.
 - **Booking:** `NEXT_PUBLIC_BOOKING_URL` (Cal.com, connected to Google Calendar with Google Meet as the location). The enquiry success screen and every WhatsApp first reply link to it with name, email and the enquiry reference prefilled.
 - **Booked calls:** Cal.com posts to `/api/webhooks/cal`, verified with `CAL_WEBHOOK_SECRET` (HMAC-SHA256). The call is stored in `bookings` (migration `20261111120000_bookings.sql`, service role only, readable with `leads.read`), linked to the lead by reference or email, and a new or contacted lead moves to "consultation booked".
 - **Admin:** the overview starts with "Waiting for a first reply" (one-tap WhatsApp with the message written) and "Upcoming calls" (one-tap Join Meet). Lead pages and the CRM drawer have the same reply button and show booked calls.
@@ -126,3 +127,10 @@ Testing: `tests/unit` (Vitest) and `tests/e2e` (Playwright against a production 
 - The pages read during a visit stay on the device and are sent only inside an enquiry; the lead page shows "How they found us".
 - Retention: Vercel cron `/api/cron/prune-analytics` (daily, `CRON_SECRET`) calls `prune_site_events()` to keep 13 months.
 - Deliberately not built: identifying anonymous visitors or contacting people who have not enquired (DPDP Act 2023 consent rules, TRAI rules on unsolicited calls).
+
+## Applications, referrals and the journey map
+
+- `case_applications` (migration `20261111140000_applications_referrals.sql`): each university a student applies to, with deadline, status and portal reference. Staff manage them on the student case; the student sees their own in the portal. Admin → Applications lists all of them by deadline; Admin → Calendar combines booked calls, application deadlines, student tasks and instalments due.
+- Referrals: every case has a `referral_code`. A visit with `?ref=CODE` is remembered on the device and sent with an enquiry; after the enquiry is saved, `recordReferral` (service role) links it to the referring case (self-referrals ignored). Finance, admins and owners approve or decline the credit (amount from `content/pricing.ts`) in Admin → Referrals. The referring student sees only that their code was used.
+- The portal's applications, referrals, profile, documents and messages pages read the student's own case once Supabase is configured. Documents stay closed for uploads until private storage ships.
+- `content/playbook.ts` now records, for every stage, what the student sees and where the team does it in the admin, rendered on Admin → Playbook as the end-to-end journey map.

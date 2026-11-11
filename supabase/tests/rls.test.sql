@@ -114,6 +114,23 @@ select pg_temp.check(pg_temp.refused($$update public.instalments set status = 'p
 select pg_temp.check(pg_temp.affected($$update public.instalments set status = 'paid', paid_at = now(), payment_reference = 'UTR 1234', confirmed_by = '00000000-0000-4000-8000-000000000001' where position = 1$$) = 1, 'the owner can confirm a payment with its reference');
 select pg_temp.check((select status from public.student_cases) = 'active', 'confirming the first instalment activates the case');
 
+-- Applications and referrals on that case ───────────────────────────────────
+select pg_temp.act_as(:advisor);
+select pg_temp.check(pg_temp.affected($$insert into public.case_applications (case_id, university, programme, deadline) select id, 'Politecnico di Milano', 'MSc Data Science', current_date + 60 from public.student_cases$$) = 1, 'an advisor can add a university application');
+select pg_temp.act_as(:student);
+select pg_temp.check((select count(*) from public.case_applications) = 1, 'a student sees their own applications');
+select pg_temp.check(pg_temp.affected($$update public.case_applications set status = 'admitted'$$) = 0, 'a student cannot change an application status');
+select pg_temp.check((select referral_code from public.student_cases) ~ '^[A-Z0-9]{8}$', 'every case gets a shareable referral code');
+reset role;
+insert into public.referrals (referral_code, referrer_case_id) select referral_code, id from public.student_cases;
+select pg_temp.act_as(:student);
+select pg_temp.check((select count(*) from public.referrals) = 1, 'a referring student sees their code was used');
+select pg_temp.check(pg_temp.affected($$update public.referrals set status = 'approved', reward_amount = 5000$$) = 0, 'a student cannot approve their own referral credit');
+select pg_temp.act_as(:advisor);
+select pg_temp.check(pg_temp.affected($$update public.referrals set status = 'approved', reward_amount = 5000$$) = 0, 'an advisor cannot approve a referral credit');
+select pg_temp.act_as(:owner);
+select pg_temp.check(pg_temp.affected($$update public.referrals set status = 'approved', reward_amount = 5000, decided_by = '00000000-0000-4000-8000-000000000001', decided_at = now()$$) = 1, 'the owner can approve a referral credit');
+
 -- Bookings (written only by the Cal.com webhook with the service role) ──────
 reset role;
 insert into public.bookings (cal_uid, starts_at, attendee_name, attendee_email, meeting_url)

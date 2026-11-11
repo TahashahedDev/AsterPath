@@ -5,6 +5,7 @@ import { getServerEnv } from "@/lib/env";
 import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
 import { acknowledgeEnquiry, notifyTeamOfNewLead } from "@/server/integrations/notifications";
 import { createLead } from "@/server/services/lead-service";
+import { recordReferral } from "@/server/services/referrals";
 
 const MAX_BODY_BYTES = 16 * 1024;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -93,7 +94,14 @@ export async function POST(request: NextRequest) {
     if (result.ok) {
       // The enquiry is saved; emails go out after the response so they can never delay or undo it.
       const { lead } = result;
-      after(() => Promise.allSettled([notifyTeamOfNewLead(lead), acknowledgeEnquiry(lead)]));
+      const code = lead.attribution?.referralCode;
+      after(() =>
+        Promise.allSettled([
+          notifyTeamOfNewLead(lead),
+          acknowledgeEnquiry(lead),
+          ...(code && getServerEnv().LEAD_STORE === "supabase" ? [recordReferral({ id: lead.id, email: lead.contact.email }, code)] : []),
+        ]),
+      );
       return NextResponse.json({ reference: result.reference }, { status: 201 });
     }
     if (result.reason === "spam") return error(422, "rejected", "This enquiry couldn't be submitted. Please message us on WhatsApp instead.");

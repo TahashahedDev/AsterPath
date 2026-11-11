@@ -46,6 +46,12 @@ describe("intake options", () => {
     expect(values).toEqual(["spring-2027", "autumn-2027", "spring-2028", "autumn-2028", "undecided"]);
   });
 
+  it("labels intakes less than six months away as late", () => {
+    const options = upcomingIntakes(new Date(2026, 10, 8));
+    expect(options[0]?.label).toBe("Spring 2027 (February or March), late: limited options");
+    expect(options[1]?.label).toBe("Autumn 2027 (September or October)");
+  });
+
   it("includes this year's autumn intake before September", () => {
     expect(upcomingIntakes(new Date(2026, 2, 1))[0]?.value).toBe("autumn-2026");
   });

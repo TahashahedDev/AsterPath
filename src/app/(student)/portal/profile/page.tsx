@@ -3,15 +3,19 @@ import { Lock } from "lucide-react";
 import { DemoNotice, PageHeader, Panel } from "@/components/dashboard/ui";
 import { AdvisorCard } from "@/components/portal/advisor-card";
 import { DisabledAction } from "@/components/portal/disabled-action";
+import { LivePortalProfile, NoCaseYet } from "@/components/portal/live-case";
 import { PortalUnavailable } from "@/components/portal/portal-unavailable";
+import { getMyCase } from "@/server/services/cases";
 import { degreeLabels, destinationLabels } from "@/features/operations/types";
 import { getDemoPortal } from "@/server/demo/portal";
 import { isPortalDemoEnabled } from "@/server/demo/workspace";
 
 export const metadata: Metadata = { title: "Profile" };
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
   const header = <PageHeader eyebrow="Profile" title="Your details" description="What we hold about you and your plan. Tell your advisor if anything is wrong." />;
+  const live = await getMyCase();
+  if (live !== null) return <>{header}{live ? <LivePortalProfile c={live} email={live.student_email} /> : <NoCaseYet />}</>;
   if (!isPortalDemoEnabled()) return <>{header}<PortalUnavailable what="profile" /></>;
   const p = getDemoPortal();
   const s = p.student;

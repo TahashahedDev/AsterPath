@@ -74,6 +74,7 @@ export type StudentCaseRow = {
   intake: string;
   stage: CaseStage;
   status: CaseStatus;
+  referral_code: string | null;
   opened_at: string;
   updated_at: string;
 };
@@ -138,6 +139,33 @@ export type MarketingSummary = {
   daily: { day: string; visits: number; enquiries: number }[];
 };
 
+export type ApplicationRowStatus = "planned" | "in_preparation" | "submitted" | "under_review" | "admitted" | "waitlisted" | "rejected" | "withdrawn";
+export type CaseApplicationRow = {
+  id: string;
+  case_id: string;
+  university: string;
+  programme: string;
+  deadline: string | null;
+  status: ApplicationRowStatus;
+  submitted_on: string | null;
+  portal_reference: string | null;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+export type ReferralRow = {
+  id: string;
+  referral_code: string;
+  referrer_case_id: string;
+  lead_id: string | null;
+  status: "enquired" | "approved" | "declined";
+  reward_amount: number | null;
+  decided_by: string | null;
+  decided_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 type AuditEventRow = {
   id: number;
   occurred_at: string;
@@ -164,6 +192,8 @@ export type Database = {
       instalments: Table<InstalmentRow, never, Partial<Pick<InstalmentRow, "status" | "due_on" | "paid_at" | "payment_reference" | "confirmed_by">>>;
       bookings: Table<BookingRow, Omit<BookingRow, "id" | "created_at" | "updated_at"> & Partial<Pick<BookingRow, "id">>>;
       site_events: Table<SiteEventRow, Omit<SiteEventRow, "id" | "at">, never>;
+      case_applications: Table<CaseApplicationRow, Pick<CaseApplicationRow, "case_id" | "university" | "programme"> & Partial<Pick<CaseApplicationRow, "deadline" | "notes">>, Partial<Pick<CaseApplicationRow, "status" | "deadline" | "submitted_on" | "portal_reference" | "notes">>>;
+      referrals: Table<ReferralRow, Pick<ReferralRow, "referral_code" | "referrer_case_id"> & Partial<Pick<ReferralRow, "lead_id">>, Partial<Pick<ReferralRow, "status" | "reward_amount" | "decided_by" | "decided_at">>>;
       case_tasks: Table<CaseTaskRow, Pick<CaseTaskRow, "case_id" | "title"> & Partial<Pick<CaseTaskRow, "due_on">>, Partial<Pick<CaseTaskRow, "done" | "title" | "due_on">>>;
     };
     Views: Record<never, never>;

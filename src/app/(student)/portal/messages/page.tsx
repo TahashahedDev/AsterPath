@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
 import { DemoNotice, PageHeader, formatDateTime } from "@/components/dashboard/ui";
 import { AdvisorCard } from "@/components/portal/advisor-card";
+import { LivePortalMessages, NoCaseYet } from "@/components/portal/live-case";
 import { PortalUnavailable } from "@/components/portal/portal-unavailable";
+import { getMyCase } from "@/server/services/cases";
 import { ExternalButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { whatsappUrl } from "@/lib/whatsapp";
@@ -11,8 +13,10 @@ import { isPortalDemoEnabled } from "@/server/demo/workspace";
 
 export const metadata: Metadata = { title: "Messages" };
 
-export default function MessagesPage() {
+export default async function MessagesPage() {
   const header = <PageHeader eyebrow="Messages" title="Conversation with your advisor" description="One thread, kept with your case so nothing gets lost between calls." />;
+  const live = await getMyCase();
+  if (live !== null) return <>{header}{live ? <LivePortalMessages c={live} /> : <NoCaseYet />}</>;
   if (!isPortalDemoEnabled()) return <>{header}<PortalUnavailable what="messages" /></>;
   const p = getDemoPortal();
 

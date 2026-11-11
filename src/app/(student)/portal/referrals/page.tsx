@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Gift } from "lucide-react";
 import { DemoNotice, EmptyState, PageHeader, Panel, StatusPill, formatDate, type PillTone } from "@/components/dashboard/ui";
 import { CopyButton } from "@/components/portal/copy-button";
+import { LivePortalReferrals, NoCaseYet } from "@/components/portal/live-case";
 import { PortalUnavailable } from "@/components/portal/portal-unavailable";
+import { getMyCase } from "@/server/services/cases";
 import { siteConfig } from "@/config/site";
 import type { Referral } from "@/features/operations/types";
 import { getDemoPortal } from "@/server/demo/portal";
@@ -17,8 +19,10 @@ const rewardLabel: Record<Referral["rewardStatus"], [string, PillTone]> = {
   approved: ["Reward confirmed", "success"],
 };
 
-export default function ReferralsPage() {
+export default async function ReferralsPage() {
   const header = <PageHeader eyebrow="Referrals" title="Bring a friend to Italy" description="Share your code with friends who are thinking about studying in Italy. We'll treat them with the same care." />;
+  const live = await getMyCase();
+  if (live !== null) return <>{header}{live ? <LivePortalReferrals c={live} /> : <NoCaseYet />}</>;
   if (!isPortalDemoEnabled()) return <>{header}<PortalUnavailable what="referrals" /></>;
   const referrals = getDemoPortal().referrals;
   const code = referrals[0]?.code;

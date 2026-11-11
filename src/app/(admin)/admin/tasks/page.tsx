@@ -6,6 +6,8 @@ import { DataTable, DemoNotice, PageHeader, StatusPill, formatDate, type Column 
 import { DemoUnavailable } from "@/components/admin/admin-ui";
 import { daysBetween, priorityLabels, priorityTone, relativeDays } from "@/components/admin/format";
 import { DEMO_TODAY, demoTasks, isDemoWorkspaceEnabled, staffById, studentById } from "@/server/demo/workspace";
+import { LiveTasks } from "@/components/admin/live-lists";
+import { listAllTasks } from "@/server/services/cases";
 
 export const metadata: Metadata = { title: "Tasks" };
 
@@ -46,8 +48,10 @@ const columns: Column<Task>[] = [
   },
 ];
 
-export default function TasksPage() {
+export default async function TasksPage() {
   const header = <PageHeader eyebrow="Operations" title="Tasks" description="Open work by due date. Student tasks appear in the student’s portal; internal tasks never do." />;
+  const live = await listAllTasks();
+  if (live) return <div>{header}<LiveTasks rows={live} now={new Date()} /></div>;
   if (!isDemoWorkspaceEnabled()) return <div>{header}<DemoUnavailable module="Tasks" /></div>;
 
   const open = demoTasks.filter((t) => t.status !== "done").sort((a, b) => Date.parse(a.dueAt) - Date.parse(b.dueAt));

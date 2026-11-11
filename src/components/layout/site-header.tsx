@@ -44,6 +44,13 @@ export function SiteHeader() {
 
   return (
     <>
+      {/* First in the page, so keyboard users reach it before anything else. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
+      >
+        Skip to content
+      </a>
       <div className="bg-inverse text-on-inverse">
         <p className="page-container py-2 text-center text-[0.8125rem] sm:text-sm">
           Now planning the September 2027 intake, with a limited number of students.{" "}
@@ -54,12 +61,6 @@ export function SiteHeader() {
       </div>
       <header ref={headerRef} className="sticky top-0 z-40 border-b border-border/70 bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/70">
         <div className="scroll-progress" aria-hidden="true" />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
-        >
-          Skip to content
-        </a>
         <div className="page-container flex h-16 items-center justify-between gap-6">
           <Logo />
 

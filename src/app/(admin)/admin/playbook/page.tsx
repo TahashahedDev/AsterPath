@@ -17,7 +17,7 @@ export default function PlaybookPage() {
             The playbook, <span className="display-italic text-primary">stage by stage.</span>
           </>
         }
-        description="From first message to first week abroad: who owns each stage, how fast we move, and what has to be true before a case moves on. Proposed operating model — founder to confirm."
+        description="The whole student journey, from first message to first week abroad: who owns each stage, how fast we move, what the student sees, and where you do it in this workspace. Proposed operating model; founder to confirm."
       />
 
       <Panel title="Rules we never break" className="mt-8">
@@ -55,11 +55,19 @@ export default function PlaybookPage() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl bg-paper-deep/60 p-4 text-sm">
-              <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-muted uppercase">
-                <Flag className="size-3.5" aria-hidden="true" /> Moves on when
-              </p>
-              <p className="mt-2 leading-relaxed text-ink-soft">{stage.exit}</p>
+            <div className="grid content-start gap-3 text-sm">
+              <div className="rounded-xl bg-paper-deep/60 p-4">
+                <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-muted uppercase">
+                  <Flag className="size-3.5" aria-hidden="true" /> Moves on when
+                </p>
+                <p className="mt-2 leading-relaxed text-ink-soft">{stage.exit}</p>
+              </div>
+              <div className="rounded-xl border border-border p-4">
+                <p className="text-xs font-semibold tracking-wide text-muted uppercase">The student sees</p>
+                <p className="mt-2 leading-relaxed text-ink-soft">{stage.student}</p>
+                <p className="mt-3 text-xs font-semibold tracking-wide text-muted uppercase">You do it in</p>
+                <p className="mt-2 leading-relaxed text-ink-soft">{stage.inApp}</p>
+              </div>
             </div>
           </li>
         ))}

@@ -4,6 +4,8 @@ import type { Referral } from "@/features/operations/types";
 import { DataTable, DemoNotice, PageHeader, StatusPill, formatDate, type Column, type PillTone } from "@/components/dashboard/ui";
 import { DemoUnavailable, DisabledActions, RuleList } from "@/components/admin/admin-ui";
 import { demoReferrals, isDemoWorkspaceEnabled, studentById } from "@/server/demo/workspace";
+import { LiveReferrals } from "@/components/admin/live-lists";
+import { listReferrals } from "@/server/services/cases";
 
 export const metadata: Metadata = { title: "Referrals" };
 
@@ -35,8 +37,10 @@ const columns: Column<Referral>[] = [
   { key: "created", header: "Since", cell: (r) => formatDate(r.createdAt), className: "whitespace-nowrap tabular-nums" },
 ];
 
-export default function ReferralsPage() {
+export default async function ReferralsPage() {
   const header = <PageHeader eyebrow="Growth" title="Referrals" description="Who referred whom, how far each referral got, and rewards waiting for approval." />;
+  const live = await listReferrals();
+  if (live) return <div>{header}<LiveReferrals rows={live} /></div>;
   if (!isDemoWorkspaceEnabled()) return <div>{header}<DemoUnavailable module="Referrals" /></div>;
 
   const codes = [...new Set(demoReferrals.map((r) => r.code))];

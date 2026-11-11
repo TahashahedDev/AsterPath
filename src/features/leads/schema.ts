@@ -139,6 +139,8 @@ export const attributionSchema = z
     utmTerm: attributionField,
     landingPage: attributionField,
     referrer: attributionField,
+    // A student's referral code from a shared link (?ref=CODE).
+    referralCode: z.string().regex(/^[A-Z0-9]{6,12}$/).optional(),
     // Pages read during the visit, kept on the device and sent only with the enquiry.
     journey: z.array(z.string().max(200).regex(/^\/[^\s]*$/)).max(20).optional(),
   })

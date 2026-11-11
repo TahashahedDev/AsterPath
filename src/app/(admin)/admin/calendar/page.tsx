@@ -5,6 +5,9 @@ import { DemoNotice, PageHeader, StatusPill, formatDate } from "@/components/das
 import { DemoUnavailable } from "@/components/admin/admin-ui";
 import { dayKey, daysBetween, relativeDays } from "@/components/admin/format";
 import { DEMO_TODAY, demoApplications, demoCalendar, isDemoWorkspaceEnabled, studentById } from "@/server/demo/workspace";
+import { LiveCalendar } from "@/components/admin/live-lists";
+import { listAllApplications, listAllTasks, listDatedInstalments } from "@/server/services/cases";
+import { listUpcomingBookings } from "@/server/services/bookings";
 
 export const metadata: Metadata = { title: "Calendar" };
 
@@ -21,8 +24,12 @@ const kindMeta = {
 const timeFmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
 const dayFmt = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
-export default function CalendarPage() {
+export default async function CalendarPage() {
   const header = <PageHeader eyebrow="Operations" title="Calendar" description="Consultations, internal reviews and every deadline in one agenda. Times are shown in India Standard Time." />;
+  const [bookings, applications, tasks, instalments] = await Promise.all([listUpcomingBookings(60), listAllApplications(), listAllTasks(), listDatedInstalments()]);
+  if (applications && tasks) {
+    return <div>{header}<LiveCalendar bookings={bookings ?? []} applications={applications} tasks={tasks} instalments={instalments ?? []} now={new Date()} /></div>;
+  }
   if (!isDemoWorkspaceEnabled()) return <div>{header}<DemoUnavailable module="The calendar" /></div>;
 
   const entries: Entry[] = [

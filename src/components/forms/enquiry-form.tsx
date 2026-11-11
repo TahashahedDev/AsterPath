@@ -102,6 +102,8 @@ export function PrefilledEnquiryForm({ intakes }: { intakes: IntakeOption[] }) {
   return <EnquiryForm intakes={intakes} initial={prefillFrom(params)} />;
 }
 
+const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /** First-touch attribution plus the pages read on this visit, sent only with the enquiry. */
 function withJourney(attribution: Attribution | undefined): Attribution | undefined {
   const journey = readJourney();
@@ -130,11 +132,23 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
     startedAt.current = Date.now();
   }, []);
 
-  // Move focus to the new step heading so screen-reader and keyboard users keep their place.
+  // Move focus to the new step heading so screen-reader and keyboard users keep their place,
+  // and bring the top of the form into view (on phones the Continue button sits far below it).
   useEffect(() => {
-    if (stepChanged.current) headingRef.current?.focus();
+    if (stepChanged.current) {
+      headingRef.current?.focus({ preventScroll: true });
+      formRef.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    }
     stepChanged.current = true;
   }, [step]);
+
+  // After a successful send, show the confirmation from its first line.
+  const successRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status.kind !== "success") return;
+    successRef.current?.focus({ preventScroll: true });
+    successRef.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  }, [status.kind]);
 
   const set = <K extends FieldName>(field: K, value: FormValues[K]) => {
     setValues((v) => ({ ...v, [field]: value }));
@@ -219,7 +233,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
   if (status.kind === "success") {
     const booking = bookingLinkFor({ name: values.fullName, email: values.email, reference: status.reference });
     return (
-      <div className="rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-10" role="status">
+      <div ref={successRef} tabIndex={-1} className="scroll-mt-28 rounded-[var(--radius-card)] border border-border bg-card p-7 focus:outline-none sm:p-10" role="status">
         <CheckCircle2 className="size-10 text-primary" strokeWidth={1.5} aria-hidden="true" />
         <h2 className="display mt-6 text-4xl">Thank you, {values.fullName.split(" ")[0]}.</h2>
         <p className="mt-4 text-lg leading-relaxed text-muted">
@@ -255,7 +269,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
   const submitting = status.kind === "submitting";
 
   return (
-    <form ref={formRef} onSubmit={submit} onFocusCapture={markStarted} noValidate className="rounded-[var(--radius-card)] border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-9">
+    <form ref={formRef} onSubmit={submit} onFocusCapture={markStarted} noValidate className="scroll-mt-28 rounded-[var(--radius-card)] border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-9">
       {/* Progress */}
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-ink">Step {step + 1} of {STEPS.length}</span>

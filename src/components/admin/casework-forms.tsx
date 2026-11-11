@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { addLeadNote, openCase, type FormState } from "@/app/(admin)/admin/crm/actions";
-import { addCaseTask, updateCaseStage } from "@/app/(admin)/admin/students/actions";
+import { addApplication, addCaseTask, updateCaseStage } from "@/app/(admin)/admin/students/actions";
 import { confirmInstalment } from "@/app/(admin)/admin/payments/actions";
 import { workflowStages } from "@/features/operations/types";
 import type { CaseStage } from "@/lib/supabase/types";
@@ -107,6 +107,29 @@ export function ConfirmPaymentForm({ instalmentId, label }: { instalmentId: stri
       </div>
       <Button type="submit" size="md" disabled={pending}>{pending ? "Saving…" : "Confirm paid"}</Button>
       <div className="sm:col-span-3"><Message state={state} /></div>
+    </form>
+  );
+}
+
+export function AddApplicationForm({ caseId }: { caseId: string }) {
+  const [state, action, pending] = useActionState(addApplication, idle);
+  return (
+    <form action={action} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_10rem_auto] sm:items-end">
+      <input type="hidden" name="caseId" value={caseId} />
+      <div>
+        <label htmlFor="app-uni" className="mb-1.5 block text-xs font-medium text-muted">University</label>
+        <input id="app-uni" name="university" required maxLength={160} className={field} placeholder="e.g. Politecnico di Milano" />
+      </div>
+      <div>
+        <label htmlFor="app-prog" className="mb-1.5 block text-xs font-medium text-muted">Programme</label>
+        <input id="app-prog" name="programme" required maxLength={200} className={field} placeholder="e.g. MSc Data Science" />
+      </div>
+      <div>
+        <label htmlFor="app-deadline" className="mb-1.5 block text-xs font-medium text-muted">Deadline</label>
+        <input id="app-deadline" name="deadline" type="date" className={field} />
+      </div>
+      <Button type="submit" size="md" disabled={pending}>{pending ? "Adding…" : "Add"}</Button>
+      <div className="sm:col-span-4"><Message state={state} /></div>
     </form>
   );
 }
