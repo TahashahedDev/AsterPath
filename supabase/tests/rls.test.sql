@@ -114,11 +114,35 @@ select pg_temp.check(pg_temp.refused($$update public.instalments set status = 'p
 select pg_temp.check(pg_temp.affected($$update public.instalments set status = 'paid', paid_at = now(), payment_reference = 'UTR 1234', confirmed_by = '00000000-0000-4000-8000-000000000001' where position = 1$$) = 1, 'the owner can confirm a payment with its reference');
 select pg_temp.check((select status from public.student_cases) = 'active', 'confirming the first instalment activates the case');
 
+-- Bookings (written only by the Cal.com webhook with the service role) ──────
+reset role;
+insert into public.bookings (cal_uid, starts_at, attendee_name, attendee_email, meeting_url)
+  values ('cal-test-1', now() + interval '2 days', 'Synthetic Booker', 'booker@asterpath.test', 'https://meet.google.com/aaa-bbbb-ccc');
+select pg_temp.check(pg_temp.refused($$insert into public.bookings (cal_uid, starts_at, attendee_name, attendee_email, meeting_url) values ('bad', now(), 'X', 'x@example.com', 'javascript:alert(1)')$$), 'even the webhook cannot store a non-https meeting link');
+select pg_temp.act_as(:student);
+select pg_temp.check((select count(*) from public.bookings) = 0, 'a student cannot see booked calls');
+select pg_temp.act_as(:advisor);
+select pg_temp.check((select count(*) from public.bookings) = 1, 'an advisor sees booked calls');
+select pg_temp.check(pg_temp.refused($$insert into public.bookings (cal_uid, starts_at, attendee_name, attendee_email) values ('forged', now(), 'X', 'x@example.com')$$), 'staff cannot create bookings directly');
+
+-- Website analytics (anonymous; written only by /api/events with the service role) ─
+reset role;
+insert into public.site_events (session_id, name, path, source, device) values
+  ('6f1c3a52-2b7d-4c1e-9d55-0a4c1b2e3f40', 'pageview', '/', 'instagram', 'mobile'),
+  ('6f1c3a52-2b7d-4c1e-9d55-0a4c1b2e3f40', 'enquiry_submitted', '/contact', 'instagram', 'mobile');
+select pg_temp.act_as(:student);
+select pg_temp.check((select count(*) from public.site_events) = 0, 'a student cannot read website analytics');
+select pg_temp.act_as(:advisor);
+select pg_temp.check((select count(*) from public.site_events) = 0, 'an advisor without report access cannot read website analytics');
+select pg_temp.check(pg_temp.refused($$insert into public.site_events (session_id, name, path, device) values (gen_random_uuid(), 'pageview', '/', 'mobile')$$), 'nobody signed in can write analytics events directly');
+
 -- Owner ──────────────────────────────────────────────────────────────────────
 select pg_temp.act_as(:owner);
 select pg_temp.check((select count(*) from public.team_members) = 2, 'the owner sees the whole team');
 select pg_temp.check(pg_temp.affected($$insert into public.team_members (user_id, role) values ('00000000-0000-4000-8000-000000000003', 'admin')$$) = 1, 'the owner can add an admin');
 select pg_temp.check(pg_temp.affected($$delete from public.team_members where user_id = '00000000-0000-4000-8000-000000000001'$$) = 0, 'the owner cannot remove themselves');
+select pg_temp.check((public.marketing_summary(30) ->> 'visits')::int = 1 and (public.marketing_summary(30) ->> 'enquiries')::int = 1, 'the owner sees the visit and enquiry counts');
+select pg_temp.check((public.marketing_summary(30) -> 'channels' -> 0 ->> 'channel') = 'instagram', 'visits are grouped by the channel that sent them');
 select pg_temp.check(pg_temp.refused('update public.audit_events set action = ''delete'''), 'nobody can edit the audit log');
 select pg_temp.check(pg_temp.refused('delete from public.audit_events'), 'nobody can delete from the audit log');
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, Loader2, MessageCircle } from "lucide-react";
 import {
   budgetOptions,
   consultationOptions,
@@ -19,9 +19,12 @@ import {
   type EnquiryInput,
 } from "@/features/leads/schema";
 import { readAttribution } from "@/features/leads/attribution";
+import { readJourney, track } from "@/features/analytics/client";
+import type { Attribution } from "@/features/leads/schema";
 import type { IntakeOption } from "@/features/leads/intakes";
 import { CheckboxField, ChoiceGroup, SelectField, TextAreaField, TextField } from "@/components/forms/fields";
 import { Button, ExternalButtonLink } from "@/components/ui/button";
+import { bookingLinkFor } from "@/lib/booking";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
@@ -99,6 +102,13 @@ export function PrefilledEnquiryForm({ intakes }: { intakes: IntakeOption[] }) {
   return <EnquiryForm intakes={intakes} initial={prefillFrom(params)} />;
 }
 
+/** First-touch attribution plus the pages read on this visit, sent only with the enquiry. */
+function withJourney(attribution: Attribution | undefined): Attribution | undefined {
+  const journey = readJourney();
+  if (!attribution && journey.length === 0) return undefined;
+  return { ...attribution, ...(journey.length ? { journey } : {}) };
+}
+
 export function EnquiryForm({ intakes, initial = initialValues }: { intakes: IntakeOption[]; initial?: FormValues }) {
   const [values, setValues] = useState<FormValues>(initial);
   const [errors, setErrors] = useState<Errors>({});
@@ -107,6 +117,12 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
   const startedAt = useRef(0);
   const honeypot = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const started = useRef(false);
+  const markStarted = () => {
+    if (started.current) return;
+    started.current = true;
+    track("enquiry_started");
+  };
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stepChanged = useRef(false);
 
@@ -160,7 +176,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
-          attribution: readAttribution(),
+          attribution: withJourney(readAttribution()),
           website: honeypot.current?.value ?? "",
           startedAt: startedAt.current,
         }),
@@ -169,6 +185,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
 
       if (response.status === 201 && data && typeof data === "object" && "reference" in data && typeof data.reference === "string") {
         setStatus({ kind: "success", reference: data.reference });
+        track("enquiry_submitted");
         return;
       }
 
@@ -200,6 +217,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
       .join(" ");
 
   if (status.kind === "success") {
+    const booking = bookingLinkFor({ name: values.fullName, email: values.email, reference: status.reference });
     return (
       <div className="rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-10" role="status">
         <CheckCircle2 className="size-10 text-primary" strokeWidth={1.5} aria-hidden="true" />
@@ -211,8 +229,17 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
           <dt className="text-sm text-muted">Your reference</dt>
           <dd className="mt-1 font-mono text-lg font-medium tracking-wide">{status.reference}</dd>
         </dl>
+        {booking && (
+          <div className="mt-8 rounded-xl border border-border bg-paper p-5">
+            <p className="font-semibold text-ink">Pick a time for your free call now</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted">Thirty minutes on Google Meet. Your details are filled in; you only choose a slot, and the invite lands in your calendar.</p>
+            <ExternalButtonLink href={booking} className="mt-4 w-full sm:w-auto">
+              <CalendarCheck aria-hidden="true" /> Choose a time
+            </ExternalButtonLink>
+          </div>
+        )}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ExternalButtonLink href={whatsappUrl(whatsappSummary(status.reference))}>
+          <ExternalButtonLink href={whatsappUrl(whatsappSummary(status.reference))} variant={booking ? "secondary" : "primary"}>
             <MessageCircle aria-hidden="true" /> Continue on WhatsApp
           </ExternalButtonLink>
           <Link href="/process" className="inline-flex h-11 items-center justify-center px-2 text-[0.9375rem] font-medium text-primary hover:text-primary-deep">
@@ -228,7 +255,7 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
   const submitting = status.kind === "submitting";
 
   return (
-    <form ref={formRef} onSubmit={submit} noValidate className="rounded-[var(--radius-card)] border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-9">
+    <form ref={formRef} onSubmit={submit} onFocusCapture={markStarted} noValidate className="rounded-[var(--radius-card)] border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-9">
       {/* Progress */}
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-ink">Step {step + 1} of {STEPS.length}</span>

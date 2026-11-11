@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CalendarCheck, Check, MessageCircle } from "lucide-react";
 import { commitments, siteConfig } from "@/config/site";
@@ -12,8 +11,6 @@ import { universities } from "@/content/italy/universities";
 import { plan } from "@/content/plan";
 import { buildItalyRegionMap } from "@/lib/geo";
 import { JourneyMap } from "@/components/maps/journey-map";
-import { Magnetic } from "@/components/motion/magnetic";
-import { TiltCard } from "@/components/motion/tilt-card";
 import { RegionExplorer } from "@/components/maps/region-explorer";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { FaqList, faqJsonLd } from "@/components/marketing/faq-list";
@@ -69,36 +66,23 @@ export default function HomePage() {
       <section className="atmosphere relative overflow-hidden">
         <div className="page-container relative grid items-center gap-10 pt-12 pb-16 sm:pt-16 lg:grid-cols-[1fr_1.05fr] lg:gap-12 lg:pt-20 lg:pb-24">
           <div className="max-w-xl">
-            <p className="eyebrow motion-safe:animate-rise">Your next chapter starts here</p>
+            <p className="eyebrow">Your next chapter starts here</p>
             <h1 className="display mt-6 text-[3.375rem] leading-[0.95] text-ink sm:text-[5rem] lg:text-[5.875rem]">
-              {["Study", "in", "Italy,"].map((word, i) => (
-                <Fragment key={word}>
-                  <span className="word-rise" style={{ "--i": i } as React.CSSProperties}>
-                    {word}
-                  </span>{" "}
-                </Fragment>
-              ))}
-              <span className="word-rise" style={{ "--i": 3 } as React.CSSProperties}>
-                <span className="display-italic text-primary">done properly.</span>
-              </span>
+              Study in Italy, <span className="display-italic text-primary">done properly.</span>
             </h1>
-            <p className="mt-7 text-lg leading-relaxed text-muted motion-safe:animate-rise motion-safe:[animation-delay:160ms] sm:text-xl">
+            <p className="mt-7 text-lg leading-relaxed text-muted sm:text-xl">
               For students from India: universities, entrance tests, your Declaration of Value, regional scholarships and an early visa file, handled by
               one dedicated advisor in one plan, paid in instalments.
             </p>
-            <div className="mt-9 flex flex-col gap-3 motion-safe:animate-rise motion-safe:[animation-delay:240ms] sm:flex-row">
-              <Magnetic className="flex sm:inline-flex">
-                <ButtonLink href="/contact#enquiry" size="lg" className="w-full">
-                  Start your journey <ArrowRight aria-hidden="true" />
-                </ButtonLink>
-              </Magnetic>
-              <Magnetic className="flex sm:inline-flex">
-                <ButtonLink href="/contact#book" variant="secondary" size="lg" className="w-full">
-                  <CalendarCheck aria-hidden="true" /> Book a consultation
-                </ButtonLink>
-              </Magnetic>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="/contact#enquiry" size="lg" className="w-full sm:w-auto" data-track="hero: profile review">
+                Get a free profile review <ArrowRight aria-hidden="true" />
+              </ButtonLink>
+              <ButtonLink href="/contact#book" variant="secondary" size="lg" className="w-full sm:w-auto" data-track="hero: book a call">
+                <CalendarCheck aria-hidden="true" /> Book a 30-minute call
+              </ButtonLink>
             </div>
-            <p className="mt-5 text-sm text-muted motion-safe:animate-rise motion-safe:[animation-delay:300ms]">
+            <p className="mt-5 text-sm text-muted">
               Prefer WhatsApp?{" "}
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-primary underline-offset-4 hover:underline">
                 <MessageCircle className="size-3.5" aria-hidden="true" /> WhatsApp an advisor
@@ -107,15 +91,13 @@ export default function HomePage() {
           </div>
 
           <figure className="relative motion-safe:animate-fade">
-            <TiltCard>
-              <div className="ring-gradient float-soft overflow-hidden rounded-[1.75rem] p-2 shadow-[var(--shadow-lift)] sm:p-4">
-                <JourneyMap />
-              </div>
-            </TiltCard>
-            <figcaption className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-muted">
-              <Flag code="india" className="h-3.5 w-5" />
+            <div className="ring-gradient overflow-hidden rounded-[1.75rem] p-2 shadow-[var(--shadow-lift)] sm:p-4">
+              <JourneyMap />
+            </div>
+            <figcaption className="mt-4 flex items-center justify-center gap-3 text-center text-sm text-muted">
+              <Flag code="india" className="hidden h-3.5 w-5 shrink-0 sm:inline-block" />
               From the Italian missions in New Delhi, Mumbai, Kolkata and Bengaluru to Italy
-              <Flag code="italy" className="h-3.5 w-5" />
+              <Flag code="italy" className="hidden h-3.5 w-5 shrink-0 sm:inline-block" />
             </figcaption>
           </figure>
         </div>
@@ -193,7 +175,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="reveal mt-12 rounded-[var(--radius-card)] border border-border bg-card p-5 sm:p-8">
-          <div className="hidden grid-cols-[16rem_minmax(0,1fr)] gap-6 pb-3 text-xs text-subtle md:grid" aria-hidden="true">
+          <div className="hidden grid-cols-[16rem_minmax(0,1fr)] gap-6 pb-3 text-xs text-muted md:grid" aria-hidden="true">
             <span />
             <span className="grid grid-cols-14 tabular-nums">
               {timelineMonths.map((m) => (
@@ -253,15 +235,6 @@ export default function HomePage() {
         <div className="mt-12 grid gap-5 lg:grid-cols-[1.5fr_1fr]">
           <Link href="/study-in-italy" className="reveal group relative flex min-h-80 flex-col justify-end overflow-hidden rounded-[1.75rem] bg-inverse p-7 text-on-inverse sm:p-10">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_22rem_at_100%_0%,rgb(176_141_87/0.28),transparent_70%)]" aria-hidden="true" />
-            <svg
-              viewBox={`0 0 ${regionMap.width} ${regionMap.height}`}
-              className="draw-on-view pointer-events-none absolute -top-6 right-0 h-[115%] w-auto opacity-[0.16] transition-[transform,opacity] duration-700 group-hover:-translate-y-1 group-hover:opacity-25 sm:-right-4"
-              aria-hidden="true"
-            >
-              {regionMap.regions.map((r) => (
-                <path key={r.code} d={r.d} pathLength={1} fill="none" stroke="currentColor" strokeWidth={1.2} className="text-accent-on-inverse" />
-              ))}
-            </svg>
             <span className="absolute top-7 left-7 sm:top-10 sm:left-10">
               <Flag code="italy" className="h-6 w-9" />
             </span>
@@ -281,7 +254,7 @@ export default function HomePage() {
               <Link
                 key={d.code}
                 href={`/destinations/${d.code}`}
-                className="reveal glow-card group flex flex-col justify-between rounded-[var(--radius-card)] border border-border bg-card p-7"
+                className="reveal group flex flex-col justify-between rounded-[var(--radius-card)] border border-border bg-card p-7"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold tracking-[0.16em] text-terracotta-deep uppercase">Opening next</p>

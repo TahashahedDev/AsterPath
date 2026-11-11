@@ -20,7 +20,7 @@ export const siteConfig = {
   tagline: "Your next chapter starts here.",
   positioning: "Study in Italy, done properly.",
   description:
-    "AsterPath is an Italy-specialist study consultancy for students from India: universities, Universitaly, DOV and attestation, regional DSU scholarships and the Italian study visa, in one plan with one dedicated advisor.",
+    "Study in Italy from India with one dedicated advisor: universities, Universitaly, DOV and attestation, DSU scholarships and the study visa, in one plan.",
   url: parseSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@asterpath.example",
   /** False while the address is the reserved .example placeholder: never show it as a working address. */

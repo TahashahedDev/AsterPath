@@ -9,7 +9,7 @@ import { PageHero } from "@/components/marketing/page-hero";
 import { ReviewStatus, SourceNote } from "@/components/marketing/cards";
 
 export const metadata: Metadata = {
-  title: "Scholarships in Italy for Indian students: DSU, ISEE and more",
+  title: "Scholarships in Italy for Indian students",
   description: "How regional DSU scholarships work, the 2026/27 amounts and income limits, the ISEE parificato documents an Indian family needs, and government and university awards.",
   alternates: { canonical: "/scholarships" },
 };
@@ -72,7 +72,7 @@ export default function ScholarshipsPage() {
       <section className="section" aria-labelledby="covers-title">
         <div className="page-container cols gap-y-10">
           <h2 id="covers-title" className="col-span-12">
-            What a DSU scholarship can cover.
+            What a DSU scholarship can cover
           </h2>
           {covers.map((c) => (
             <div key={c.title} className="card col-span-3">
@@ -87,7 +87,7 @@ export default function ScholarshipsPage() {
         <div className="page-container">
           <div className="cols items-end">
             <h2 id="where-title" className="col-span-6">
-              Who runs support where.
+              Who runs support where
             </h2>
             <p className="lead col-span-5 col-start-8 text-ink-2">You apply to the office serving your university&rsquo;s region, not the region you live in.</p>
           </div>
@@ -101,7 +101,7 @@ export default function ScholarshipsPage() {
       <section className="section" aria-labelledby="isee-title">
         <div className="page-container cols">
           <div className="col-span-4">
-            <h2 id="isee-title">The ISEE parificato, for an Indian family.</h2>
+            <h2 id="isee-title">The ISEE parificato, for an Indian family</h2>
             <p className="lead mt-5 text-ink-2">{iseeDocuments.rule}</p>
             <p className="mt-4 text-ink-2">{iseeDocuments.referenceYear}</p>
           </div>
@@ -120,7 +120,7 @@ export default function ScholarshipsPage() {
       <section className="section" aria-labelledby="work-title">
         <div className="page-container">
           <h2 id="work-title" className="max-w-[18ch]">
-            How we handle the paperwork.
+            How we handle the paperwork
           </h2>
           <ol className="cols mt-[var(--space-2xl)] gap-y-12">
             {ourWork.map((s, i) => (
@@ -138,7 +138,7 @@ export default function ScholarshipsPage() {
       <section className="section" aria-labelledby="other-title">
         <div className="page-container cols gap-y-10">
           <h2 id="other-title" className="col-span-4">
-            Other awards.
+            Other awards
           </h2>
           <div className="col-span-4">
             <h3>Italian government</h3>

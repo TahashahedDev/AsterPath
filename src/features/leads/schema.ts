@@ -139,6 +139,8 @@ export const attributionSchema = z
     utmTerm: attributionField,
     landingPage: attributionField,
     referrer: attributionField,
+    // Pages read during the visit, kept on the device and sent only with the enquiry.
+    journey: z.array(z.string().max(200).regex(/^\/[^\s]*$/)).max(20).optional(),
   })
   .strict();
 

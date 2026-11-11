@@ -53,7 +53,7 @@ export function JourneyMap() {
               <circle cx={city.x} cy={city.y} r={4.5 * inv} className="fill-card stroke-terracotta-deep" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
               <circle cx={city.x} cy={city.y} r={2 * inv} className="fill-terracotta-deep" />
               {LABELLED_CITIES.has(city.name) && (
-                <text x={city.x + 7 * inv} y={city.y + 4 * inv} fontSize={12 * inv} className="fill-ink font-sans" fontWeight={600}>
+                <text x={city.x + 7 * inv} y={city.y + 4 * inv} fontSize={12 * inv} className="journey-label fill-ink font-sans" fontWeight={600}>
                   {city.name}
                 </text>
               )}

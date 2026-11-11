@@ -76,7 +76,12 @@ export function buildJourneyMap(width = 800, height = 640): JourneyMapData {
     geometry: { type: "MultiPoint", coordinates: [[6, 8], [95, 8], [6, 49], [95, 49]] },
   };
   const projection = geoMercator().fitExtent([[24, 24], [width - 24, height - 24]], frame);
-  const path = geoPath(projection);
+  // Countries outside the visible frame add weight and nothing else.
+  const visible = geoMercator().scale(projection.scale()).translate(projection.translate()).clipExtent([[0, 0], [width, height]]);
+  const visiblePath = geoPath(visible).digits(1);
+  // One decimal is sub-pixel at this size; Italy's regions are drawn zoomed in, so they keep two.
+  const path = geoPath(projection).digits(1);
+  const regionPath = geoPath(projection).digits(2);
 
   const india = countryByIso("IND");
   const italy = countryByIso("ITA");
@@ -96,7 +101,7 @@ export function buildJourneyMap(width = 800, height = 640): JourneyMapData {
     height,
     countries: countries.features
       .filter((f) => f.properties.iso !== "IND" && f.properties.iso !== "ITA")
-      .map((f) => ({ iso: f.properties.iso, d: path(f) ?? "" }))
+      .map((f) => ({ iso: f.properties.iso, d: visiblePath(f) ?? "" }))
       .filter((c) => c.d),
     india: path(india) ?? "",
     italy: path(italy) ?? "",
@@ -107,7 +112,7 @@ export function buildJourneyMap(width = 800, height = 640): JourneyMapData {
       italy: projection([16, 46.5])!.map(round) as [number, number],
     },
     camera: { x: round(width / 2 - scale * cx), y: round(height / 2 - scale * cy), scale: round(scale * 100) / 100 },
-    regions: italyRegions.features.map((f) => ({ code: f.properties.code, d: path(f) ?? "" })),
+    regions: italyRegions.features.map((f) => ({ code: f.properties.code, d: regionPath(f) ?? "" })),
     cities: regionContent.flatMap((r) => r.cities).map((c) => ({ name: c.name, ...projectPoint(c.coordinates) })),
   };
 }
@@ -121,7 +126,7 @@ export type RegionMapData = {
 /** Italy alone, sized for the interactive scholarship map. */
 export function buildItalyRegionMap(width = 560, height = 640): RegionMapData {
   const projection = geoConicConformal().parallels([38, 46]).rotate([-12.5, 0]).fitExtent([[16, 16], [width - 16, height - 16]], italyRegions);
-  const path = geoPath(projection);
+  const path = geoPath(projection).digits(1);
   return {
     width,
     height,

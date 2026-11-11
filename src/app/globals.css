@@ -405,7 +405,6 @@
   }
 
   /* Gentle float for the hero map card. */
-  .float-soft { animation: float-soft 7s ease-in-out infinite; }
 
   /* Gradient ring around a featured surface. */
   .ring-gradient {
@@ -427,19 +426,6 @@
     transition: transform 0.8s var(--ease-out-soft);
   }
   .btn-sheen:hover::after { transform: translateX(120%); }
-
-  /* University names scrolling past under the hero. */
-  .marquee {
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  }
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 90s linear infinite;
-  }
-  .marquee:hover .marquee-track { animation-play-state: paused; }
 
   /* Hairline that fades in from both ends, gold at its centre. */
   .rule-gradient { height: 1px; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-gold) 60%, transparent), transparent); }
@@ -542,8 +528,6 @@
 @keyframes drift-b { to { transform: translate3d(-12rem, 10rem, 0) scale(0.92); } }
 @keyframes shine { 0%, 30% { background-position: 100% 0; } 70%, 100% { background-position: 0% 0; } }
 @keyframes spin { to { transform: rotate(1turn); } }
-@keyframes float-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes marquee { to { transform: translateX(-50%); } }
 @keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* Reading progress under the header, driven by scroll, no JavaScript. */
@@ -653,8 +637,6 @@
     transition-duration: 0.01ms !important;
   }
   .journey-pulse { display: none; }
-  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
-  .marquee-track > [aria-hidden="true"] { display: none; }
   .glow-card:hover, .card:hover { transform: none; }
 }
 
@@ -681,25 +663,6 @@
   }
   .btn-fill:hover::before { transform: translateY(0); }
 
-  /* Cards: a spotlight follows the mouse (position set by PointerGlow). */
-  .glow-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 65%);
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-out-soft);
-    pointer-events: none;
-  }
-  .glow-card:hover::after { opacity: 1; }
-
-  /* Hero headline: each word rises out of a soft blur, one after another. */
-  .word-rise { display: inline-block; }
-  @media (prefers-reduced-motion: no-preference) {
-    .word-rise { animation: word-rise 1s var(--ease-out-soft) both; animation-delay: calc(var(--i, 0) * 90ms + 120ms); }
-  }
-
   /* An outline that draws itself when it scrolls into view (paths need pathLength="1"). */
   @media (prefers-reduced-motion: no-preference) {
     .draw-on-view path {
@@ -721,20 +684,6 @@
     }
   }
 
-  /* Floating WhatsApp: a slow ring that invites a tap, plus a lift on hover. */
-  .wa-pulse { position: relative; }
-  @media (prefers-reduced-motion: no-preference) {
-    .wa-pulse::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      box-shadow: 0 0 0 0 rgb(37 211 102 / 0.45);
-      animation: wa-ring 2.8s var(--ease-out-soft) 2s infinite;
-      pointer-events: none;
-    }
-  }
-
   /* Numbered rows: the numeral warms to evergreen and the row eases right on hover. */
   .row-hover { transition: transform 0.5s var(--ease-out-soft); }
   .row-hover:hover { transform: translateX(6px); }
@@ -742,12 +691,18 @@
   .row-hover:hover .row-num { color: var(--color-primary); }
 }
 
-@keyframes word-rise {
-  from { opacity: 0; transform: translateY(0.45em); filter: blur(8px); }
-  to { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
 @keyframes draw-line { to { stroke-dashoffset: 0; } }
-@keyframes wa-ring {
-  0% { box-shadow: 0 0 0 0 rgb(37 211 102 / 0.4); }
-  70%, 100% { box-shadow: 0 0 0 16px rgb(37 211 102 / 0); }
+
+/* Touch screens: every standalone link and control gets a thumb-sized target (44px).
+   Links inside running text are left alone; they're spaced by the line height. */
+@media (pointer: coarse) {
+  a.inline-flex, button.inline-flex { min-height: 44px; }
+  li > a:only-child:not(.flex):not(.inline-flex):not(.block):not(.grid):not(.cols) { display: inline-flex; align-items: center; min-height: 44px; }
+  footer li > a, footer a.block { display: inline-flex; align-items: center; min-height: 44px; }
+  nav > a.link, li > a.link, a.label.link { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* On phones the hero map is too small for city names to be legible; the dots stay. */
+@media (max-width: 639px) {
+  .journey-label { display: none; }
 }

@@ -5,6 +5,8 @@ import { DemoNotice, EmptyState, PageHeader, Panel, StatusPill, formatDate, type
 import { DemoUnavailable, LeadSourceNote, RuleList } from "@/components/admin/admin-ui";
 import { isDemoWorkspaceEnabled } from "@/server/demo/workspace";
 import { getLeadDirectory } from "@/server/services/lead-directory";
+import { getMarketingSummary } from "@/server/services/analytics";
+import { WebsiteAnalytics } from "@/components/admin/website-analytics";
 
 export const metadata: Metadata = { title: "Marketing" };
 
@@ -19,7 +21,7 @@ const demoPosts: Post[] = [
 const postTone: Record<Post["status"], PillTone> = { Draft: "neutral", "In review": "gold", Approved: "success" };
 
 export default async function MarketingPage() {
-  const directory = await getLeadDirectory();
+  const [directory, summary] = await Promise.all([getLeadDirectory(), getMarketingSummary(30)]);
   const bySource = new Map<string, number>();
   for (const l of directory.leads) bySource.set(l.source, (bySource.get(l.source) ?? 0) + 1);
   const sources = [...bySource.entries()].sort((a, b) => b[1] - a[1]);
@@ -37,6 +39,15 @@ export default async function MarketingPage() {
           </Link>
         }
       />
+      {summary ? (
+        <WebsiteAnalytics s={summary} days={30} />
+      ) : (
+        <p className="mt-6 rounded-xl border border-border bg-card px-4 py-3 text-sm text-ink-soft">
+          {summary === null
+            ? "Website analytics start counting once Supabase is connected. Nothing is collected until then."
+            : "Website analytics are visible to owners, admins, finance, marketing and analysts."}
+        </p>
+      )}
       <div className="mt-8 grid gap-4 lg:grid-cols-5">
         <div className="min-w-0 lg:col-span-3">
           <Panel title="Content calendar" bodyClassName="p-0" action={isDemoWorkspaceEnabled() ? <StatusPill tone="warning">Demo</StatusPill> : undefined}>

@@ -118,7 +118,7 @@ export default function AboutPage() {
           What we do, and what we never claim to
         </h2>
         <div className="mt-12 grid gap-5 lg:grid-cols-2">
-          <div className="reveal glow-card rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9">
+          <div className="reveal rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9">
             <p className="text-xs font-semibold tracking-[0.16em] text-terracotta-deep uppercase">AsterPath</p>
             <h3 className="display mt-3 text-2xl text-ink">Prepares, plans and coordinates</h3>
             <CheckList items={weDo} className="mt-6" />
@@ -156,7 +156,7 @@ export default function AboutPage() {
       {founders.length > 0 && (
         <section className="section" aria-labelledby="team-title">
           <div className="page-container">
-            <h2 id="team-title">The people behind your file.</h2>
+            <h2 id="team-title">The people behind your file</h2>
             <ul className="cols mt-[var(--space-2xl)] gap-y-10">
               {founders.map((f) => (
                 <li key={f.name} className="col-span-6">
@@ -173,7 +173,7 @@ export default function AboutPage() {
       <section className="section" aria-labelledby="never-title">
         <div className="page-container cols">
           <h2 id="never-title" className="col-span-4">
-            What we will never do.
+            What we will never do
           </h2>
           <ul className="rows col-span-8">
             {wontDo.map((item) => (

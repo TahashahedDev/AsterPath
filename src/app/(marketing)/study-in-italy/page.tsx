@@ -57,7 +57,7 @@ export default function StudyInItalyPage() {
 
       <section className="section" aria-labelledby="levels-title">
         <div className="page-container">
-          <h2 id="levels-title">Three levels, three routes.</h2>
+          <h2 id="levels-title">Three levels, three routes</h2>
           <ul className="rows mt-[var(--space-2xl)]">
             {studyLevels.map((level) => (
               <li key={level.slug}>
@@ -79,7 +79,7 @@ export default function StudyInItalyPage() {
       <section className="section" aria-labelledby="year-title">
         <div className="page-container cols">
           <div className="col-span-4">
-            <h2 id="year-title">A year in the life of an application.</h2>
+            <h2 id="year-title">A year in the life of an application</h2>
             <p className="lead mt-5 text-ink-2">For a September intake. Each university and mission sets its own dates; we build yours from them.</p>
           </div>
           <ol className="rows col-span-8">
@@ -96,7 +96,7 @@ export default function StudyInItalyPage() {
       <section className="section" aria-labelledby="costs-title">
         <div className="page-container cols gap-y-[var(--space-2xl)]">
           <div className="col-span-5">
-            <h2 id="costs-title">What to plan for.</h2>
+            <h2 id="costs-title">What to plan for</h2>
             <p className="figure-xl mt-[var(--space-xl)] text-[clamp(3rem,6vw,5.5rem)]">{eur.format(visaFunds.annualEur)}</p>
             <p className="mt-3 max-w-[36ch] text-ink-2">
               The minimum yearly funds for a study visa, for {visaFunds.appliesTo}. It was {eur.format(visaFunds.previousAnnualEur)}. {visaFunds.note}
@@ -125,7 +125,7 @@ export default function StudyInItalyPage() {
 
       <section className="section" aria-labelledby="cities-title">
         <div className="page-container">
-          <h2 id="cities-title">University cities, north to south.</h2>
+          <h2 id="cities-title">University cities, north to south</h2>
           <ul className="cols mt-[var(--space-2xl)] gap-y-12">
             {cities.map((city) => (
               <li key={city.name} className="col-span-6 xl:col-span-3">
@@ -133,7 +133,7 @@ export default function StudyInItalyPage() {
                   {city.region.name}
                 </Link>
                 <h3 className="mt-2 text-[length:var(--text-section)] leading-none">{city.name}</h3>
-                <ul className="mt-4 space-y-1.5 text-[0.9375rem]">
+                <ul className="mt-4 space-y-1.5 text-[0.9375rem] pointer-coarse:space-y-0">
                   {city.universities.map((u) => (
                     <li key={u.slug}>
                       <Link href={`/universities/${u.slug}`} className="link">
@@ -151,7 +151,7 @@ export default function StudyInItalyPage() {
       <section className="section" aria-labelledby="after-title">
         <div className="page-container cols">
           <h2 id="after-title" className="col-span-4">
-            After graduation.
+            After graduation
           </h2>
           <div className="col-span-7 col-start-6">
             <p className="statement text-[length:var(--text-display-s)]">{afterGraduation.summary}</p>

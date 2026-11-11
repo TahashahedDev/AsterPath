@@ -41,6 +41,16 @@ function attributionSource(attribution: unknown): string {
   return "Website";
 }
 
+/** Reads the attribution stored with an enquiry into what the lead page shows. */
+function visitFrom(attribution: unknown): Lead["visit"] {
+  if (!attribution || typeof attribution !== "object") return undefined;
+  const a = attribution as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" && v ? v : undefined);
+  const pages = Array.isArray(a.journey) ? a.journey.filter((p): p is string => typeof p === "string") : [];
+  const visit = { source: str(a.utmSource), campaign: str(a.utmCampaign), referrer: str(a.referrer), landingPage: str(a.landingPage), pages };
+  return visit.source || visit.campaign || visit.referrer || visit.landingPage || pages.length ? visit : undefined;
+}
+
 function fromRow(row: LeadRow): Lead {
   return {
     id: row.id,
@@ -54,6 +64,7 @@ function fromRow(row: LeadRow): Lead {
     intake: formatIntake(row.intake),
     stage: stageFromStatus[row.status],
     lostReason: row.lost_reason ?? undefined,
+    visit: visitFrom(row.attribution),
     source: attributionSource(row.attribution),
     advisorId: row.assigned_to,
     tags: [],
@@ -78,6 +89,7 @@ function fromRecord(record: LeadRecord): Lead {
     level: asLevel(record.goals.level),
     intake: formatIntake(record.goals.intake),
     stage: "new",
+    visit: visitFrom(record.attribution),
     source: record.attribution?.utmSource ?? "Website",
     advisorId: null,
     tags: [],

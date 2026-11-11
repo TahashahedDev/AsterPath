@@ -58,7 +58,7 @@ export default function DestinationsPage() {
             <ul className="grid gap-3">
               {italyLinks.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="glow-card group flex items-start justify-between gap-4 rounded-[var(--radius-card)] border border-border bg-card p-6">
+                  <Link href={l.href} className="group flex items-start justify-between gap-4 rounded-[var(--radius-card)] border border-border bg-card p-6">
                     <span>
                       <span className="display block text-2xl text-ink">{l.title}</span>
                       <span className="mt-1 block text-[0.9375rem] leading-relaxed text-muted">{l.body}</span>
@@ -89,7 +89,7 @@ export default function DestinationsPage() {
             <li key={d.slug}>
               <Link
                 href={`/destinations/${d.slug}`}
-                className="reveal glow-card group flex h-full flex-col rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9"
+                className="reveal group flex h-full flex-col rounded-[var(--radius-card)] border border-border bg-card p-7 sm:p-9"
               >
                 <div className="flex items-center gap-3">
                   <Flag code={d.flag} className="h-5 w-7.5" />

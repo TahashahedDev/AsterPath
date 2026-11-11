@@ -1,33 +1,17 @@
 import { ExternalButtonLink } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { bookingUrl } from "@/lib/booking";
 import { whatsappUrl } from "@/lib/whatsapp";
-
-/**
- * The founder's Cal.com booking page, embedded. Configured with
- * NEXT_PUBLIC_BOOKING_URL (for example https://cal.com/asterpath/consultation).
- * Only plain https://cal.com links are accepted (no credentials, no port);
- * anything else falls back to the form below.
- */
-export function bookingUrl(): URL | null {
-  const raw = process.env.NEXT_PUBLIC_BOOKING_URL;
-  if (!raw) return null;
-  try {
-    const url = new URL(raw);
-    const plain = !url.username && !url.password && !url.port;
-    return url.protocol === "https:" && url.hostname === "cal.com" && plain ? url : null;
-  } catch {
-    return null;
-  }
-}
 
 export function BookingEmbed() {
   const url = bookingUrl();
   if (!url) {
     return (
       <div className="well p-[var(--space-xl)]">
-        <h2 className="text-[length:var(--text-title)]">Online booking opens soon.</h2>
+        <h2 className="text-[length:var(--text-title)]">Pick a time with us on WhatsApp</h2>
         <p className="mt-3 max-w-[48ch] leading-relaxed text-ink-2">
-          Until then, send your details below and we will reply within one working day with times for your call, or message us now.
+          Message us and we&rsquo;ll offer you times for your call within one working day. Or send your details below first, so your advisor has read them
+          before you talk.
         </p>
         <ExternalButtonLink href={whatsappUrl()} className="mt-6">
           WhatsApp {siteConfig.whatsapp.display}

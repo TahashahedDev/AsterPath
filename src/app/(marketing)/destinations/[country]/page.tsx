@@ -87,7 +87,7 @@ export default async function DestinationPage({ params }: Props) {
           </div>
           <ul className="grid gap-5 sm:grid-cols-2">
             {helpNow.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="reveal glow-card rounded-[var(--radius-card)] border border-border bg-card p-7">
+              <li key={title} className="reveal rounded-[var(--radius-card)] border border-border bg-card p-7">
                 <Icon className="size-7 text-terracotta" strokeWidth={1.5} aria-hidden="true" />
                 <h3 className="display mt-5 text-2xl text-ink">{title}</h3>
                 <p className="mt-3 leading-relaxed text-muted">{body}</p>

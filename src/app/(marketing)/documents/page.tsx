@@ -7,7 +7,7 @@ import { CtaSection } from "@/components/marketing/cta-section";
 import { PageHero } from "@/components/marketing/page-hero";
 
 export const metadata: Metadata = {
-  title: "Documents for studying in Italy: attestation, apostille, DOV and visa",
+  title: "Documents for Italy: attestation, apostille and DOV",
   description: "The complete document list for Indian students going to Italy: the attestation chain, DOV or CIMEA, the 2026/27 study visa checklist, scholarship documents and arrival.",
   alternates: { canonical: "/documents" },
 };
@@ -30,7 +30,7 @@ export default function DocumentsPage() {
       <section className="field section" aria-labelledby="chain-title">
         <div className="page-container">
           <h2 id="chain-title" className="max-w-[18ch]">
-            The chain, always in this order.
+            The chain, always in this order
           </h2>
           <ol className="cols mt-[var(--space-2xl)] gap-y-12">
             {legalisationChain.map((step, i) => (
@@ -49,7 +49,7 @@ export default function DocumentsPage() {
       <section className="section" aria-labelledby="stages-title">
         <div className="page-container">
           <h2 id="stages-title" className="max-w-[20ch]">
-            What you need, stage by stage.
+            What you need, stage by stage
           </h2>
           <div className="mt-[var(--space-2xl)]">
             {documentStages.map((stage) => (
@@ -70,7 +70,7 @@ export default function DocumentsPage() {
         <div className="page-container">
           <div className="cols items-end">
             <h2 id="visa-title" className="col-span-6">
-              The study visa file.
+              The study visa file
             </h2>
             <p className="lead col-span-5 col-start-8 text-ink-2">
               Last dates for bachelor&rsquo;s and master&rsquo;s visas: {visaChecklist.lastDates.map((d) => `${d.date} for ${d.intake}`).join(", ")}.
@@ -116,7 +116,7 @@ export default function DocumentsPage() {
       <section className="section" aria-labelledby="missions-title">
         <div className="page-container">
           <h2 id="missions-title" className="max-w-[20ch]">
-            Four Italian missions in India.
+            Four Italian missions in India
           </h2>
           <p className="lead mt-5 text-ink-2">Which office handles your DOV and visa depends on where your degree was issued and where you live.</p>
           <div className="mt-[var(--space-2xl)]">

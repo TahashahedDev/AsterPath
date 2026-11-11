@@ -110,3 +110,19 @@ Positioning: Italy is the only launched destination; Germany and France have hon
 Phase 1 gaps: newsletter signup (needs email provider + consent storage), founder profiles (`founders` in site config), OG images, photography (Higgsfield account had no credits).
 
 Testing: `tests/unit` (Vitest) and `tests/e2e` (Playwright against a production build: no sideways scrolling on any page at 320–1920px in both themes, axe WCAG 2.1 AA including colour contrast, theme persistence and no-flash, mobile navigation).
+
+## Founder notifications and bookings
+
+- **New enquiry:** after the enquiry is saved and the student has their reference, `after()` sends two emails through Resend: an alert to `LEAD_NOTIFY_EMAIL` (details plus one-tap "Reply on WhatsApp", "Email them" and "Open in admin") and a confirmation to the student (reference, next steps, prefilled booking link). Email failures are logged and never affect the saved enquiry. Without Resend nothing is sent and a reference-only log line is written.
+- **Booking:** `NEXT_PUBLIC_BOOKING_URL` (Cal.com, connected to Google Calendar with Google Meet as the location). The enquiry success screen and every WhatsApp first reply link to it with name, email and the enquiry reference prefilled.
+- **Booked calls:** Cal.com posts to `/api/webhooks/cal`, verified with `CAL_WEBHOOK_SECRET` (HMAC-SHA256). The call is stored in `bookings` (migration `20261111120000_bookings.sql`, service role only, readable with `leads.read`), linked to the lead by reference or email, and a new or contacted lead moves to "consultation booked".
+- **Admin:** the overview starts with "Waiting for a first reply" (one-tap WhatsApp with the message written) and "Upcoming calls" (one-tap Join Meet). Lead pages and the CRM drawer have the same reply button and show booked calls.
+
+## Website analytics (first-party, anonymous)
+
+- `components/layout/attribution-capture.tsx` sends page views, labelled button presses (`data-track`), WhatsApp and booking taps, and enquiry started/submitted to `/api/events` with `sendBeacon`. No cookies, no third-party script; nothing is sent under Global Privacy Control or Do Not Track.
+- `/api/events` accepts same-site requests only, ignores bots, rate-limits in memory, and stores the event after responding (`after()`) in `site_events` (migration `20261111130000_site_events.sql`): page, label, campaign or referring site, device class and a per-tab random id. No IP, user agent or form contents.
+- `marketing_summary(days)` aggregates visits, the visit → enquiry funnel, channels with conversion, campaigns, pages and buttons for Admin → Marketing (RLS `reports.read`).
+- The pages read during a visit stay on the device and are sent only inside an enquiry; the lead page shows "How they found us".
+- Retention: Vercel cron `/api/cron/prune-analytics` (daily, `CRON_SECRET`) calls `prune_site_events()` to keep 13 months.
+- Deliberately not built: identifying anonymous visitors or contacting people who have not enquired (DPDP Act 2023 consent rules, TRAI rules on unsolicited calls).

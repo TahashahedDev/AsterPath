@@ -20,7 +20,7 @@ export default function PlanPage() {
         eyebrow="The plan"
         title={
           <>
-            One plan. <span className="display-italic text-primary">Everything in it.</span>
+            What the plan <span className="display-italic text-primary">includes.</span>
           </>
         }
         description={`${plan.intakeNote} Each student gets one plan, one advisor and one written figure.`}>
@@ -31,7 +31,7 @@ export default function PlanPage() {
       <section className="section" aria-labelledby="services-title">
         <div className="page-container cols">
           <h2 id="services-title" className="col-span-4">
-            What we do.
+            What we do
           </h2>
           <ol className="rows col-span-8">
             {plan.services.map((service, i) => (
@@ -48,7 +48,7 @@ export default function PlanPage() {
       <section className="field section" aria-labelledby="cover-title">
         <div className="page-container cols">
           <div className="col-span-5">
-            <h2 id="cover-title">The costs we pay for you.</h2>
+            <h2 id="cover-title">The costs we pay for you</h2>
             <p className="lead mt-6">From the English test to your visa insurance, these are inside the plan.</p>
           </div>
           <ul className="col-span-6 col-start-7 grid gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -97,7 +97,7 @@ export default function PlanPage() {
       <section className="section" aria-labelledby="instalments-title">
         <div className="page-container">
           <h2 id="instalments-title" className="max-w-[16ch]">
-            Paid as each stage begins.
+            Paid as each stage begins
           </h2>
           <ol className="cols mt-[var(--space-2xl)] gap-y-10">
             {plan.instalments.map((step, i) => (
@@ -122,7 +122,7 @@ export default function PlanPage() {
       <section className="section" aria-labelledby="plan-faq-title">
         <div className="page-container cols">
           <h2 id="plan-faq-title" className="col-span-4">
-            About the plan.
+            About the plan
           </h2>
           <div className="col-span-8">
             <FaqList faqs={faqs.filter((f) => f.topic === "pricing")} />

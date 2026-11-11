@@ -161,7 +161,7 @@ export default function ProcessPage() {
       <section className="section" aria-labelledby="film-title">
         <div className="page-container cols items-end gap-y-8">
           <h2 id="film-title" className="col-span-4">
-            The whole journey in 26 seconds.
+            The whole journey in 26 seconds
           </h2>
           <video
             controls

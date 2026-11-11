@@ -6,7 +6,7 @@
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts Intro ../public/video/asterpath-intro.mp4 --codec=h264 --crf=20",
     "render:vertical": "remotion render src/index.ts IntroVertical out/asterpath-intro-vertical.mp4 --codec=h264 --crf=20",
-    "poster": "remotion still src/index.ts Intro ../public/video/asterpath-intro-poster.jpg --frame=200 --image-format=jpeg --jpeg-quality=82"
+    "poster": "remotion still src/index.ts Intro ../public/video/asterpath-intro-poster.jpg --frame=45 --image-format=jpeg --jpeg-quality=82"
   },
   "dependencies": {
     "@remotion/cli": "4.0.542",

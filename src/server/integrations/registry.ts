@@ -1,5 +1,5 @@
 import "server-only";
-import { bookingUrl } from "@/components/booking/booking-embed";
+import { bookingUrl } from "@/lib/booking";
 import { siteConfig } from "@/config/site";
 import { getServerEnv } from "@/lib/env";
 import { supabaseConfig } from "@/lib/supabase/config";
@@ -78,8 +78,9 @@ async function checkCal(): Promise<Pick<IntegrationReport, "status" | "detail">>
   const url = bookingUrl();
   if (!url) return { status: "error", detail: "NEXT_PUBLIC_BOOKING_URL must be a plain https://cal.com/… link." };
   const res = await probe(url.toString());
-  if (res.ok) return { status: "connected", detail: `Booking page responds (${url.pathname}).` };
-  return { status: "error", detail: `Booking page did not load (${res.status || "unreachable"}). Check the link in Cal.com.` };
+  if (!res.ok) return { status: "error", detail: `Booking page did not load (${res.status || "unreachable"}). Check the link in Cal.com.` };
+  if (!getServerEnv().CAL_WEBHOOK_SECRET) return { status: "needs_attention", detail: `Booking page responds (${url.pathname}), but CAL_WEBHOOK_SECRET is not set, so booked calls don't appear in the admin.` };
+  return { status: "connected", detail: `Booking page responds (${url.pathname}). Booked calls arrive through the signed webhook.` };
 }
 
 async function checkRazorpay(): Promise<Pick<IntegrationReport, "status" | "detail">> {
@@ -99,7 +100,8 @@ async function checkEmail(): Promise<Pick<IntegrationReport, "status" | "detail"
   const res = await probe("https://api.resend.com/domains", { headers: { authorization: `Bearer ${RESEND_API_KEY}` } });
   if (!res.ok) return { status: "error", detail: res.status === 401 || res.status === 403 ? "Resend rejected the API key." : "Resend unreachable." };
   if (!EMAIL_FROM) return { status: "needs_attention", detail: "Key verified, but EMAIL_FROM (a verified sender) is not set." };
-  return { status: "connected", detail: "API key verified. Sending stays off until templates are approved." };
+  if (!getServerEnv().LEAD_NOTIFY_EMAIL) return { status: "needs_attention", detail: "Key verified. Students get confirmations, but LEAD_NOTIFY_EMAIL is not set, so you get no new-enquiry alerts." };
+  return { status: "connected", detail: "API key verified. New-enquiry alerts and student confirmations are sent." };
 }
 
 export async function checkOllama(): Promise<Pick<IntegrationReport, "status" | "detail"> & { models: string[] }> {
@@ -148,8 +150,11 @@ export async function getIntegrationReports(): Promise<IntegrationReport[]> {
     },
     {
       id: "cal", name: "Cal.com", category: "Bookings", checkedAt, docsUrl: "https://cal.com/docs",
-      description: "Free consultation booking, embedded on the contact page.",
-      requirements: [{ name: "NEXT_PUBLIC_BOOKING_URL", set: isSet(process.env.NEXT_PUBLIC_BOOKING_URL), secret: false }],
+      description: "Free consultation booking with Google Meet links, on the contact page and after every enquiry. Calls appear in the admin through a signed webhook to /api/webhooks/cal.",
+      requirements: [
+        { name: "NEXT_PUBLIC_BOOKING_URL", set: isSet(process.env.NEXT_PUBLIC_BOOKING_URL), secret: false },
+        { name: "CAL_WEBHOOK_SECRET", set: Boolean(env.CAL_WEBHOOK_SECRET), secret: true },
+      ],
       ...cal,
     },
     {
@@ -174,10 +179,11 @@ export async function getIntegrationReports(): Promise<IntegrationReport[]> {
     },
     {
       id: "email", name: "Transactional email (Resend)", category: "Email", checkedAt, docsUrl: "https://resend.com/docs",
-      description: "Enquiry confirmations and portal notifications through an adapter; SMTP can replace it.",
+      description: "New-enquiry alerts to you (with one-tap WhatsApp reply) and a confirmation to the student.",
       requirements: [
         { name: "RESEND_API_KEY", set: Boolean(env.RESEND_API_KEY), secret: true },
         { name: "EMAIL_FROM", set: Boolean(env.EMAIL_FROM), secret: false },
+        { name: "LEAD_NOTIFY_EMAIL", set: Boolean(env.LEAD_NOTIFY_EMAIL), secret: false },
       ],
       ...email,
     },

@@ -93,6 +93,51 @@ export type InstalmentRow = {
 };
 export type CaseTaskRow = { id: string; case_id: string; title: string; due_on: string | null; done: boolean; created_by: string | null; created_at: string };
 
+export type BookingRow = {
+  id: string;
+  cal_uid: string;
+  status: "booked" | "rescheduled" | "cancelled";
+  starts_at: string;
+  ends_at: string | null;
+  attendee_name: string;
+  attendee_email: string;
+  attendee_phone: string | null;
+  meeting_url: string | null;
+  reference: string | null;
+  lead_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SiteEventRow = {
+  id: number;
+  at: string;
+  session_id: string;
+  name: "pageview" | "cta_click" | "whatsapp_click" | "booking_click" | "enquiry_started" | "enquiry_submitted";
+  path: string;
+  label: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  referrer_host: string | null;
+  device: "mobile" | "tablet" | "desktop";
+};
+
+export type MarketingSummary = {
+  visits: number;
+  pageviews: number;
+  started: number;
+  enquiries: number;
+  whatsapp: number;
+  booking: number;
+  mobileShare: number | null;
+  pages: { path: string; views: number; visits: number }[];
+  channels: { channel: string; visits: number; enquiries: number; whatsapp: number }[];
+  campaigns: { campaign: string; visits: number; enquiries: number }[];
+  ctas: { label: string; clicks: number }[];
+  daily: { day: string; visits: number; enquiries: number }[];
+};
+
 type AuditEventRow = {
   id: number;
   occurred_at: string;
@@ -117,6 +162,8 @@ export type Database = {
       quotes: Table<QuoteRow, Pick<QuoteRow, "lead_id" | "level" | "inputs" | "breakdown" | "total">, never>;
       student_cases: Table<StudentCaseRow, never, Partial<Pick<StudentCaseRow, "stage" | "status" | "advisor_id">>>;
       instalments: Table<InstalmentRow, never, Partial<Pick<InstalmentRow, "status" | "due_on" | "paid_at" | "payment_reference" | "confirmed_by">>>;
+      bookings: Table<BookingRow, Omit<BookingRow, "id" | "created_at" | "updated_at"> & Partial<Pick<BookingRow, "id">>>;
+      site_events: Table<SiteEventRow, Omit<SiteEventRow, "id" | "at">, never>;
       case_tasks: Table<CaseTaskRow, Pick<CaseTaskRow, "case_id" | "title"> & Partial<Pick<CaseTaskRow, "due_on">>, Partial<Pick<CaseTaskRow, "done" | "title" | "due_on">>>;
     };
     Views: Record<never, never>;
@@ -125,6 +172,8 @@ export type Database = {
       has_permission: { Args: { requested: string }; Returns: boolean };
       open_case: { Args: { p_lead: string; p_quote: string }; Returns: string };
       claim_my_case: { Args: Record<never, never>; Returns: undefined };
+      marketing_summary: { Args: { p_days?: number }; Returns: MarketingSummary };
+      prune_site_events: { Args: Record<never, never>; Returns: number };
       team_directory: { Args: Record<never, never>; Returns: { user_id: string; full_name: string; role: TeamRole }[] };
     };
     Enums: { team_role: TeamRole; lead_status: LeadStatus };

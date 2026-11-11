@@ -69,7 +69,7 @@ const sections: LegalSection[] = [
       <p key="a">We do not sell your personal data. We share it only:</p>,
       <ul key="b">
         <li>With universities, Universitaly, CIMEA, Italian missions, visa centres or translators — only when needed for a step you have asked us to take.</li>
-        <li>With service providers that host our systems or send our messages, under contracts requiring them to protect it. [List of providers and their locations to be published before launch.]</li>
+        <li>With service providers that host our systems or send our messages, under contracts requiring them to protect it: Supabase (database), Resend (email) and Cal.com with Google Calendar and Google Meet (consultation bookings). [Hosting provider and data locations to be confirmed before launch.]</li>
         <li>Where the law requires it.</li>
       </ul>,
     ],
@@ -125,8 +125,23 @@ const sections: LegalSection[] = [
     heading: "Cookies and local storage",
     body: [
       <p key="a">
-        We do not use advertising or tracking cookies. Your browser stores your theme choice (light or dark) and, for the length of your visit, the campaign
-        information described above. Neither is shared with third parties.
+        We do not use advertising or tracking cookies, and we never try to identify visitors who have not contacted us. Your browser stores your theme
+        choice (light or dark) and, for the length of your visit, the campaign information described above and the list of our pages you have opened.
+        That list stays on your device unless you send us an enquiry, in which case it is kept with your enquiry so your advisor knows what you were
+        reading about.
+      </p>,
+    ],
+  },
+  {
+    id: "analytics",
+    heading: "Website statistics",
+    body: [
+      <p key="a">
+        To understand which pages and campaigns help students, we count page views and button presses (for example, opening WhatsApp) on our own
+        servers. Each count records the page, the campaign or website that sent the visit, and whether a phone or computer was used, grouped by a random
+        identifier that lasts only while your browser tab is open. We do not record your IP address, your device details or anything you type, and we
+        cannot identify you from these counts. If your browser sends a Global Privacy Control or Do Not Track signal, nothing is counted. Counts are
+        deleted after 13 months.
       </p>,
     ],
   },

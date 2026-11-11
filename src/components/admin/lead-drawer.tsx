@@ -6,6 +6,7 @@ import { Mail, MessageCircle, X } from "lucide-react";
 import { degreeLabels, destinationLabels, leadStages, type Lead, type LeadStage, type StaffMember } from "@/features/operations/types";
 import { StatusPill, formatDate, formatDateTime } from "@/components/dashboard/ui";
 import { leadStageLabel, leadStageTone } from "@/components/admin/format";
+import { firstReplyWhatsappUrl } from "@/features/leads/reply";
 
 export type BoardMode = "demo" | "live" | "readonly";
 
@@ -105,6 +106,14 @@ export function LeadDrawer({
                 ))}
               </dl>
               {lead.stage === "lost" && lead.lostReason && <p className="mt-3 rounded-lg bg-paper-deep px-3 py-2 text-sm text-ink-soft">Lost: {lead.lostReason}</p>}
+              <a
+                href={firstReplyWhatsappUrl({ name: lead.name, email: lead.email, whatsapp: lead.whatsapp, reference: lead.reference, levelLabel: degreeLabels[lead.level] })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-on-primary hover:bg-primary-deep"
+              >
+                <MessageCircle className="size-4" aria-hidden="true" /> Reply on WhatsApp
+              </a>
             </section>
 
             <section aria-labelledby={`${titleId}-notes`}>

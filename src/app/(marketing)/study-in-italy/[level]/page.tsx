@@ -13,6 +13,13 @@ type Props = { params: Promise<{ level: string }> };
 
 const ctaNoun: Record<string, string> = { bachelors: "a bachelor's degree", masters: "a master's degree", phd: "a PhD" };
 
+/** Search-result descriptions, kept under ~155 characters so Google shows them whole. */
+const metaDescription: Record<string, string> = {
+  bachelors: "Bachelor's degrees in Italy after Class 12: English-taught programmes, entrance tests like CEnT-S and SAT, DOV, DSU scholarships and the study visa.",
+  masters: "Master's degrees in Italy after your bachelor's: eligibility, applications, Universitaly pre-enrolment, DOV or CIMEA, DSU scholarships and the visa.",
+  phd: "PhD positions in Italy for Indian students: doctoral calls, research proposals, funded positions, document recognition and the study visa.",
+};
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -24,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!level) return {};
   return {
     title: `${level.title} in Italy for Indian students`,
-    description: level.summary,
+    description: metaDescription[level.slug] ?? level.summary,
     alternates: { canonical: `/study-in-italy/${level.slug}` },
   };
 }
@@ -72,7 +79,7 @@ export default async function LevelPage({ params }: Props) {
         <section className="section" aria-labelledby="tests-title">
           <div className="page-container cols">
             <h2 id="tests-title" className="col-span-4">
-              Entrance tests.
+              Entrance tests
             </h2>
             <ul className="rows col-span-8">
               {entranceTests.map((t) => (
@@ -114,7 +121,7 @@ export default async function LevelPage({ params }: Props) {
       <section className="section" aria-labelledby="unis-title">
         <div className="page-container cols items-end gap-y-6">
           <div className="col-span-7">
-            <h2 id="unis-title">Where you can study.</h2>
+            <h2 id="unis-title">Where you can study</h2>
             <p className="lead mt-5 text-ink-2">
               Our index lists all {universities.length} public universities, polytechnics and higher schools. Most offer this level; the higher schools
               focus on graduate study and research. Programmes taught in English change each year, so we check each one for you.
@@ -130,7 +137,7 @@ export default async function LevelPage({ params }: Props) {
 
       <section className="section" aria-labelledby="how-title">
         <div className="page-container">
-          <h2 id="how-title">How we take you through it.</h2>
+          <h2 id="how-title">How we take you through it</h2>
           <ol className="cols mt-[var(--space-2xl)] gap-y-10">
             {processStages.map((stage, i) => (
               <li key={stage.slug} className={i < 2 ? "col-span-3" : "col-span-2"}>

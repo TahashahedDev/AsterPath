@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r = getRegionBySlug((await params).slug);
   if (!r) return {};
   return {
-    title: `Study in ${r.name}: universities and DSU scholarships`,
+    title: `${r.name}: universities and DSU grants`,
     description: `Public universities in ${r.name} and who runs its DSU scholarships, for Indian students planning to study in Italy.`,
     alternates: { canonical: `/regions/${r.slug}` },
   };
@@ -52,7 +52,7 @@ export default async function RegionPage({ params }: Props) {
       <section className="field section" aria-labelledby="dsu-title">
         <div className="page-container cols">
           <div className="col-span-5">
-            <h2 id="dsu-title">Scholarships here.</h2>
+            <h2 id="dsu-title">Scholarships here</h2>
             <p className="lead mt-6">
               For {dsu2026.year}, the national minimum for a student living away from home is {eur.format(awayFromHome.eur)} a year. Regions may pay more.
             </p>
@@ -78,7 +78,7 @@ export default async function RegionPage({ params }: Props) {
       <section className="section" aria-labelledby="unis-title">
         <div className="page-container cols">
           <h2 id="unis-title" className="col-span-4">
-            Public universities.
+            Public universities
           </h2>
           <ul className="rows col-span-8">
             {list.map((u) => (

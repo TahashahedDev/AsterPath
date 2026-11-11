@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 function ServiceCard({ service }: { service: Service }) {
   const srcs = service.sources ?? [];
   return (
-    <li id={service.slug} className="reveal glow-card scroll-mt-28 rounded-[var(--radius-card)] border border-border bg-card p-6 sm:p-8">
+    <li id={service.slug} className="reveal scroll-mt-28 rounded-[var(--radius-card)] border border-border bg-card p-6 sm:p-8">
       <div className="flex flex-wrap items-center gap-2">
         {service.destination === "italy" && <Badge tone="gold">Italy</Badge>}
         {service.onRequest && <Badge tone="neutral">On request</Badge>}
@@ -77,7 +77,7 @@ export default function ServicesPage() {
         eyebrow="Services"
         title={
           <>
-            Everything we do, <span className="display-italic text-primary">and everything we don&rsquo;t.</span>
+            Our services, <span className="display-italic text-primary">stage by stage.</span>
           </>
         }
         description="Each service says what AsterPath does, what you do yourself, and who actually decides. Universities, consulates and authorised offices make the decisions. We make sure you reach them prepared."

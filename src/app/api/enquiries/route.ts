@@ -1,8 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
 import { z } from "zod";
 import { enquirySchema } from "@/features/leads/schema";
 import { getServerEnv } from "@/lib/env";
 import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
+import { acknowledgeEnquiry, notifyTeamOfNewLead } from "@/server/integrations/notifications";
 import { createLead } from "@/server/services/lead-service";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -89,7 +90,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const result = await createLead(parsed.data);
-    if (result.ok) return NextResponse.json({ reference: result.reference }, { status: 201 });
+    if (result.ok) {
+      // The enquiry is saved; emails go out after the response so they can never delay or undo it.
+      const { lead } = result;
+      after(() => Promise.allSettled([notifyTeamOfNewLead(lead), acknowledgeEnquiry(lead)]));
+      return NextResponse.json({ reference: result.reference }, { status: 201 });
+    }
     if (result.reason === "spam") return error(422, "rejected", "This enquiry couldn't be submitted. Please message us on WhatsApp instead.");
     return error(503, "not-connected", "Online enquiries aren't connected yet. Please message us on WhatsApp and we'll reply there.");
   } catch (cause) {

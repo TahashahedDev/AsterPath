@@ -76,7 +76,7 @@ export function ThemeSwitcher({ className, showLabels = false }: { className?: s
             aria-label={showLabels ? undefined : `${label} theme`}
             onClick={() => setPreference(value)}
             className={cn(
-              "inline-flex h-9 min-w-9 items-center justify-center gap-2 rounded-full px-2.5 text-sm transition-colors",
+              "inline-flex h-11 min-w-11 items-center sm:h-9 sm:min-w-9 justify-center gap-2 rounded-full px-2.5 text-sm transition-colors",
               checked ? "bg-card text-ink shadow-[var(--shadow-card)] ring-1 ring-border" : "text-muted hover:text-ink",
               showLabels && "flex-1 px-4",
             )}

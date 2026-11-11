@@ -1,6 +1,5 @@
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { ButtonLink, ExternalButtonLink } from "@/components/ui/button";
-import { Magnetic } from "@/components/motion/magnetic";
 import { cn } from "@/lib/utils";
 import { whatsappUrl } from "@/lib/whatsapp";
 
@@ -24,16 +23,16 @@ export function CtaSection({
           <h2 className="display text-4xl leading-[1.08] sm:text-5xl">{title}</h2>
           <p className="mt-6 text-lg leading-relaxed text-on-inverse/75">{description}</p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Magnetic className="flex sm:inline-flex">
-              <ButtonLink href="/contact" size="lg" className="w-full">
+            <div className="flex sm:inline-flex">
+              <ButtonLink href="/contact" size="lg" className="w-full" data-track="closing panel: consultation">
                 Book a free consultation <ArrowRight aria-hidden="true" />
               </ButtonLink>
-            </Magnetic>
-            <Magnetic className="flex sm:inline-flex">
+            </div>
+            <div className="flex sm:inline-flex">
               <ExternalButtonLink href={whatsappUrl(whatsappMessage)} variant="secondary" size="lg" className="w-full bg-transparent text-on-inverse ring-on-inverse/25 hover:ring-on-inverse/40">
                 <MessageCircle aria-hidden="true" /> WhatsApp an advisor
               </ExternalButtonLink>
-            </Magnetic>
+            </div>
           </div>
         </div>
       </div>

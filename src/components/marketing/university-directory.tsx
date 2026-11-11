@@ -8,7 +8,7 @@ import type { University, UniversityKind } from "@/content/italy/universities";
 type RegionOption = { code: string; slug: string; name: string };
 
 const fieldClass =
-  "h-12 w-full rounded-full border border-border-strong bg-card px-4 text-[0.9375rem] text-ink transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:outline-none";
+  "h-12 w-full rounded-full border border-border-strong bg-card px-4 text-base text-ink transition-shadow sm:text-[0.9375rem] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:outline-none";
 
 function normalise(value: string) {
   return value
@@ -136,7 +136,7 @@ export function UniversityDirectory({
               <ul className="rows col-span-8">
                 {list.map((u) => (
                   <li key={u.slug} className="grid gap-1 py-4 sm:grid-cols-[minmax(0,1fr)_9rem_10rem] sm:items-baseline sm:gap-6">
-                    <Link href={`/universities/${u.slug}`} className="text-[1.0625rem] font-medium transition-colors duration-200 hover:text-mark">
+                    <Link href={`/universities/${u.slug}`} className="-my-2 py-2 text-[1.0625rem] font-medium transition-colors duration-200 hover:text-mark">
                       {u.name}
                     </Link>
                     <span className="text-[0.9375rem] text-ink-2">{u.city}</span>

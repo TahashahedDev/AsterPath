@@ -18,10 +18,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const u = getUniversity((await params).slug);
   if (!u) return {};
-  const region = regions.find((r) => r.code === u.regionCode);
   return {
-    title: `${u.name}: applying from India`,
-    description: `How Indian students apply to ${u.name} in ${u.city}, ${region?.name}: programmes, Universitaly pre-enrolment, DOV or CIMEA, and regional scholarships.`,
+    title: u.name.length > 38 ? u.name : `${u.name}: applying from India`,
+    description: `Applying to ${u.name} (${u.city}) from India: programmes, Universitaly pre-enrolment, DOV or CIMEA and DSU scholarships.`,
     alternates: { canonical: `/universities/${u.slug}` },
   };
 }
@@ -68,7 +67,7 @@ export default async function UniversityPage({ params }: Props) {
       <section className="section band-moss" aria-labelledby="apply-title">
         <div className="page-container cols">
           <h2 id="apply-title" className="col-span-4">
-            Applying from India.
+            Applying from India
           </h2>
           <ol className="rows col-span-8">
             {steps.map((s, i) => (

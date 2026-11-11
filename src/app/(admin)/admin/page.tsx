@@ -10,6 +10,8 @@ import { daysBetween, relativeDays } from "@/components/admin/format";
 import { overdueTasks, paymentTotals, pendingDocuments, studentName, upcomingDeadlines } from "@/components/admin/workspace-data";
 import { DEMO_TODAY, demoActivity, demoApplications, demoDocuments, demoStudents, isDemoWorkspaceEnabled } from "@/server/demo/workspace";
 import { getLeadDirectory } from "@/server/services/lead-directory";
+import { listUpcomingBookings } from "@/server/services/bookings";
+import { FounderToday } from "@/components/admin/founder-today";
 import { formatInr } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -32,6 +34,9 @@ export default async function AdminOverviewPage() {
   const leads = directory.leads;
   const leadsAreDemo = directory.source === "demo";
   const converted = leads.filter((l) => l.stage === "converted").length;
+  const bookings = await listUpcomingBookings();
+  // Demo leads are dated around a fixed "today", so ages are measured from it.
+  const now = leadsAreDemo ? Date.parse(DEMO_TODAY) : new Date().getTime();
 
   return (
     <div>
@@ -43,6 +48,8 @@ export default async function AdminOverviewPage() {
       ) : (
         <LeadSourceNote source={directory.source} />
       )}
+
+      {directory.source !== "unavailable" && <FounderToday leads={leads} bookings={bookings} now={now} />}
 
       <h2 className="sr-only">Key figures</h2>
       <div className="mt-6 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:gap-4 lg:grid-cols-4">

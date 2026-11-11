@@ -28,6 +28,10 @@ const serverEnvSchema = z
     RAZORPAY_WEBHOOK_SECRET: z.string().min(8).optional(),
     RESEND_API_KEY: z.string().min(8).optional(),
     EMAIL_FROM: z.string().optional(),
+    // Where new-enquiry alerts go (the founder's inbox). Alerts are off until this and Resend are set.
+    LEAD_NOTIFY_EMAIL: z.email().optional(),
+    // Signing secret for Cal.com booking webhooks (Cal.com → Settings → Developer → Webhooks).
+    CAL_WEBHOOK_SECRET: z.string().min(16).optional(),
   })
   .transform((env) => ({
     ...env,

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { parseSiteUrl } from "@/config/site";
-import { bookingUrl } from "@/components/booking/booking-embed";
+import { bookingUrl } from "@/lib/booking";
 
 describe("site URL", () => {
   it("accepts an https origin and trims a trailing slash", () => {

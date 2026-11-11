@@ -43,6 +43,8 @@ export type Lead = {
   createdAt: string;
   lastActivityAt: string;
   lostReason?: string;
+  /** How they found us and what they read before enquiring (sent with the enquiry, with consent). */
+  visit?: { source?: string; campaign?: string; referrer?: string; landingPage?: string; pages: string[] };
   notes: { at: string; authorId: string; body: string }[];
 };
 

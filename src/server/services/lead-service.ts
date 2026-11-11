@@ -2,14 +2,13 @@ import "server-only";
 import { PRIVACY_NOTICE_VERSION, type Enquiry } from "@/features/leads/schema";
 import { generateLeadReference } from "@/features/leads/reference";
 import { getLeadStore, type LeadRecord } from "@/server/repositories/lead-store";
-import { notifyTeamOfNewLead } from "@/server/integrations/notifications";
 
 const MIN_FILL_MS = 3_000; // Humans take longer than this to complete four steps.
 const MAX_FORM_AGE_MS = 24 * 60 * 60 * 1000;
 const FOLLOW_UP_AFTER_MS = 24 * 60 * 60 * 1000;
 
 export type CreateLeadResult =
-  | { ok: true; reference: string }
+  | { ok: true; reference: string; lead: LeadRecord }
   | { ok: false; reason: "spam" | "not-connected" };
 
 export function looksAutomated(enquiry: Pick<Enquiry, "website" | "startedAt">, now: number): boolean {
@@ -65,6 +64,5 @@ export async function createLead(enquiry: Enquiry, now: Date = new Date()): Prom
   };
 
   await store.create(lead);
-  await notifyTeamOfNewLead({ reference: lead.reference, level: lead.goals.level });
-  return { ok: true, reference: lead.reference };
+  return { ok: true, reference: lead.reference, lead };
 }

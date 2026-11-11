@@ -36,7 +36,7 @@ export default function ContactPage() {
       <section className="section-s">
         <div className="page-container cols items-end gap-y-8">
           <div className="col-span-7">
-            <h1 className="max-w-[14ch]">Book a free consultation.</h1>
+            <h1 className="max-w-[14ch]">Book a free consultation</h1>
             <p className="lead mt-6 text-ink-2">Thirty minutes with an advisor. Pick a time or write first.</p>
           </div>
           <ol className="rows col-span-5">
@@ -56,7 +56,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section id="enquiry" className="section band-moss scroll-mt-24" aria-labelledby="write-title">
+      <section className="section band-moss" aria-labelledby="write-title">
         <div className="page-container cols gap-y-10">
           <div className="col-span-4">
             <h2 id="write-title">Prefer to write first?</h2>
@@ -92,7 +92,7 @@ export default function ContactPage() {
               Please do not share passports, bank statements or other documents here. When documents are needed, we give you a secure, private way to share them.
             </p>
           </div>
-          <div className="col-span-8">
+          <div id="enquiry" className="col-span-8 scroll-mt-24">
             <Suspense fallback={<EnquiryForm intakes={intakes} />}>
               <PrefilledEnquiryForm intakes={intakes} />
             </Suspense>
