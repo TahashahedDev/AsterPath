@@ -130,6 +130,11 @@ const sections: LegalSection[] = [
         That list stays on your device unless you send us an enquiry, in which case it is kept with your enquiry so your advisor knows what you were
         reading about.
       </p>,
+      <p key="b">
+        If you start the enquiry form and leave before sending it, your browser keeps your answers about your plans and background (not your name,
+        email, phone number or message) for up to seven days, so you can continue where you left off. They are never sent to us unless you submit the
+        form, and are deleted when you do, when you choose &ldquo;Start over&rdquo;, or after seven days.
+      </p>,
     ],
   },
   {

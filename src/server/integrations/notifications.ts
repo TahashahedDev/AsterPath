@@ -55,13 +55,17 @@ ${body}
 </div></body></html>`;
 }
 
-/** The founder's alert: everything needed to reply in one tap, from the phone. */
-export async function notifyTeamOfNewLead(lead: LeadRecord): Promise<void> {
+/**
+ * The founder's alert: everything needed to reply in one tap, from the phone.
+ * With `unsaved`, it is the only copy of an enquiry the database refused, so it
+ * says so plainly and leaves out the admin link (there is no record to open).
+ */
+export async function notifyTeamOfNewLead(lead: LeadRecord, { unsaved = false }: { unsaved?: boolean } = {}): Promise<"sent" | "not-configured" | "failed"> {
   const { LEAD_NOTIFY_EMAIL } = getServerEnv();
   const level = label(levelOptions, lead.goals.level);
   if (!LEAD_NOTIFY_EMAIL) {
     console.info(`[leads] New enquiry ${lead.reference} (${lead.goals.level}). Alerts not configured: set LEAD_NOTIFY_EMAIL and Resend.`);
-    return;
+    return "not-configured";
   }
   const rows: [string, string][] = [
     ["Name", lead.contact.fullName],
@@ -81,16 +85,27 @@ export async function notifyTeamOfNewLead(lead: LeadRecord): Promise<void> {
     .map(([k, v]) => `<tr><td style="padding:6px 12px 6px 0;color:#58605a;font-size:14px;vertical-align:top;white-space:nowrap">${escape(k)}</td><td style="padding:6px 0;font-size:15px">${escape(v)}</td></tr>`)
     .join("");
   const message = lead.preferences.message ? `<p style="margin:16px 0;padding:12px 14px;background:#ffffff;border-radius:12px;font-size:15px;line-height:1.5">“${escape(lead.preferences.message)}”</p>` : "";
+  const warning = unsaved
+    ? `<p style="margin:0 0 16px;padding:12px 14px;background:#fdecea;border-radius:12px;color:#8a1c12;font-size:15px;line-height:1.5"><strong>Not saved in the admin.</strong> The database refused this enquiry, so this email is the only copy. Reply from here and add them to the CRM once the database is back.</p>`
+    : "";
   const html = layout(
     `New enquiry: ${lead.contact.fullName}`,
-    `<p style="margin:0 0 16px;color:#58605a;font-size:14px">${escape(lead.reference)} · reply within 1 working day</p>
-<div style="margin:0 0 20px">${button(reply, "Reply on WhatsApp", true)}${button(`mailto:${lead.contact.email}`, "Email them")}${button(admin, "Open in admin")}</div>
+    `${warning}<p style="margin:0 0 16px;color:#58605a;font-size:14px">${escape(lead.reference)} · reply within 1 working day</p>
+<div style="margin:0 0 20px">${button(reply, "Reply on WhatsApp", true)}${button(`mailto:${lead.contact.email}`, "Email them")}${unsaved ? "" : button(admin, "Open in admin")}</div>
 <table style="border-collapse:collapse">${table}</table>${message}`,
   );
-  const text = [`New enquiry ${lead.reference}`, ...rows.map(([k, v]) => `${k}: ${v}`), lead.preferences.message ? `Message: ${lead.preferences.message}` : "", `Reply on WhatsApp: ${reply}`, `Admin: ${admin}`]
+  const text = [
+    unsaved ? "NOT SAVED IN THE ADMIN: the database refused this enquiry; this email is the only copy." : "",
+    `New enquiry ${lead.reference}`,
+    ...rows.map(([k, v]) => `${k}: ${v}`),
+    lead.preferences.message ? `Message: ${lead.preferences.message}` : "",
+    `Reply on WhatsApp: ${reply}`,
+    unsaved ? "" : `Admin: ${admin}`,
+  ]
     .filter(Boolean)
     .join("\n");
-  await sendEmail({ to: LEAD_NOTIFY_EMAIL, subject: `New enquiry: ${lead.contact.fullName} (${level}, ${intakeLabel(lead.goals.intake)})`, html, text, replyTo: lead.contact.email });
+  const subject = `${unsaved ? "Not saved, act now: " : ""}New enquiry: ${lead.contact.fullName} (${level}, ${intakeLabel(lead.goals.intake)})`;
+  return sendEmail({ to: LEAD_NOTIFY_EMAIL, subject, html, text, replyTo: lead.contact.email });
 }
 
 /** The student's confirmation: their reference, what happens next, and a booking link when Cal.com is set up. */

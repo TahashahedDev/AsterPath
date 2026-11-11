@@ -6,6 +6,7 @@ import { clientIp } from "@/lib/security/rate-limit";
 import { acknowledgeEnquiry, notifyTeamOfNewLead } from "@/server/integrations/notifications";
 import { createLead } from "@/server/services/lead-service";
 import { createSharedRateLimiter } from "@/server/rate-limit";
+import { reportServerError } from "@/server/alerts";
 import { recordReferral } from "@/server/services/referrals";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -106,10 +107,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ reference: result.reference }, { status: 201 });
     }
     if (result.reason === "spam") return error(422, "rejected", "This enquiry couldn't be submitted. Please message us on WhatsApp instead.");
+    if (result.reason === "store-failed") {
+      // The database refused it, but the enquiry is still in hand: email it to the
+      // team so it isn't lost, and tell the student exactly that (not "saved").
+      after(() => reportServerError({ where: "enquiry store", error: result.cause, path: "/api/enquiries" }));
+      const forwarded = await notifyTeamOfNewLead(result.lead, { unsaved: true });
+      if (forwarded === "sent") return NextResponse.json({ reference: result.lead.reference, saved: false }, { status: 202 });
+      return error(500, "server-error", "Something went wrong on our side and your enquiry wasn't saved. Please message us on WhatsApp so we don't miss you.");
+    }
     return error(503, "not-connected", "Online enquiries aren't connected yet. Please message us on WhatsApp and we'll reply there.");
   } catch (cause) {
-    // Log the failure without the enquiry contents.
-    console.error("[leads] Failed to store enquiry", cause instanceof Error ? cause.message : cause);
+    after(() => reportServerError({ where: "enquiry route", error: cause, path: "/api/enquiries" }));
     return error(500, "server-error", "Something went wrong on our side. Please try again or message us on WhatsApp.");
   }
 }

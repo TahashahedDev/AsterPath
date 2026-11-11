@@ -9,7 +9,9 @@ const FOLLOW_UP_AFTER_MS = 24 * 60 * 60 * 1000;
 
 export type CreateLeadResult =
   | { ok: true; reference: string; lead: LeadRecord }
-  | { ok: false; reason: "spam" | "not-connected" };
+  | { ok: false; reason: "spam" | "not-connected" }
+  // The store refused or was unreachable: the caller still holds the enquiry and must not drop it.
+  | { ok: false; reason: "store-failed"; lead: LeadRecord; cause: unknown };
 
 export function looksAutomated(enquiry: Pick<Enquiry, "website" | "startedAt">, now: number): boolean {
   if (enquiry.website) return true;
@@ -63,6 +65,10 @@ export async function createLead(enquiry: Enquiry, now: Date = new Date()): Prom
     attribution: enquiry.attribution ?? null,
   };
 
-  await store.create(lead);
+  try {
+    await store.create(lead);
+  } catch (cause) {
+    return { ok: false, reason: "store-failed", lead, cause };
+  }
   return { ok: true, reference: lead.reference, lead };
 }

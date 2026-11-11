@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, Loader2, MessageCircle } from "lucide-react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
+import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, History, Loader2, MessageCircle } from "lucide-react";
 import {
   budgetOptions,
   consultationOptions,
@@ -19,6 +19,7 @@ import {
   type EnquiryInput,
 } from "@/features/leads/schema";
 import { readAttribution } from "@/features/leads/attribution";
+import { clearDraft, draftableValues, parseDraft, readDraftRaw, saveDraft } from "@/features/leads/draft";
 import { readJourney, track } from "@/features/analytics/client";
 import type { Attribution } from "@/features/leads/schema";
 import type { IntakeOption } from "@/features/leads/intakes";
@@ -71,7 +72,8 @@ const initialValues: FormValues = {
 type Status =
   | { kind: "editing" }
   | { kind: "submitting" }
-  | { kind: "success"; reference: string }
+  // saved: false when the database refused it and the server emailed it to the team instead.
+  | { kind: "success"; reference: string; saved: boolean }
   | { kind: "failed"; message: string; offline: boolean };
 
 function issuesToErrors(issues: { path: PropertyKey[]; message: string }[]): Errors {
@@ -103,6 +105,9 @@ export function PrefilledEnquiryForm({ intakes }: { intakes: IntakeOption[] }) {
 }
 
 const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Drafts live in localStorage, which no other tab changes in a way this form needs to follow.
+const noSubscription = () => () => {};
 
 /** First-touch attribution plus the pages read on this visit, sent only with the enquiry. */
 function withJourney(attribution: Attribution | undefined): Attribution | undefined {
@@ -149,6 +154,28 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
     successRef.current?.focus({ preventScroll: true });
     successRef.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" });
   }, [status.kind]);
+
+  // A draft from an earlier visit is offered only while this form is untouched.
+  const savedDraft = parseDraft(useSyncExternalStore(noSubscription, readDraftRaw, () => null));
+  const [draftDismissed, setDraftDismissed] = useState(false);
+  const pristine = Object.keys(draftableValues(values, initial)).length === 0;
+  const draftOffer = !draftDismissed && pristine && status.kind === "editing" ? savedDraft : null;
+
+  // Keep plans and background on this device as the student goes (never contact details).
+  useEffect(() => {
+    if (status.kind !== "editing") return;
+    const draft = draftableValues(values, initialValues);
+    if (Object.keys(draft).length > 0) saveDraft(draft);
+  }, [values, status.kind]);
+
+  const restoreDraft = () => {
+    if (savedDraft) setValues((v) => ({ ...v, ...(savedDraft as Partial<FormValues>) }));
+    setDraftDismissed(true);
+  };
+  const discardDraft = () => {
+    clearDraft();
+    setDraftDismissed(true);
+  };
 
   const set = <K extends FieldName>(field: K, value: FormValues[K]) => {
     setValues((v) => ({ ...v, [field]: value }));
@@ -197,8 +224,9 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
       });
       const data: unknown = await response.json().catch(() => null);
 
-      if (response.status === 201 && data && typeof data === "object" && "reference" in data && typeof data.reference === "string") {
-        setStatus({ kind: "success", reference: data.reference });
+      if ((response.status === 201 || response.status === 202) && data && typeof data === "object" && "reference" in data && typeof data.reference === "string") {
+        setStatus({ kind: "success", reference: data.reference, saved: response.status === 201 });
+        clearDraft();
         track("enquiry_submitted");
         return;
       }
@@ -237,7 +265,9 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
         <CheckCircle2 className="size-10 text-primary" strokeWidth={1.5} aria-hidden="true" />
         <h2 className="display mt-6 text-4xl">Thank you, {values.fullName.split(" ")[0]}.</h2>
         <p className="mt-4 text-lg leading-relaxed text-muted">
-          We&rsquo;ve received your enquiry. An advisor will review it and contact you by your preferred method to arrange your free consultation.
+          {status.saved
+            ? "We\u2019ve received your enquiry. An advisor will review it and contact you by your preferred method to arrange your free consultation."
+            : "Our system couldn\u2019t store your enquiry just now, so we sent your details straight to our team instead. An advisor will contact you within one working day; keep your reference in case you message us first."}
         </p>
         <dl className="mt-8 rounded-xl bg-paper-deep/70 px-5 py-4">
           <dt className="text-sm text-muted">Your reference</dt>
@@ -280,6 +310,17 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
           <span key={s.title} className={cn("h-1 rounded-full transition-colors duration-500", i <= step ? "bg-primary" : "bg-border")} />
         ))}
       </div>
+
+      {draftOffer && (
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-paper-deep/60 p-4 text-sm" role="status">
+          <History className="size-4 shrink-0 text-primary" aria-hidden="true" />
+          <p className="min-w-0 flex-1 text-ink-soft">Welcome back. We kept your plans and background from last time on this device; you only need to add your contact details.</p>
+          <div className="flex gap-2">
+            <Button type="button" size="md" onClick={restoreDraft}>Use saved answers</Button>
+            <Button type="button" size="md" variant="secondary" onClick={discardDraft}>Start over</Button>
+          </div>
+        </div>
+      )}
 
       <h2 ref={headingRef} tabIndex={-1} className="display mt-8 text-3xl focus:outline-none">
         {current.title}
