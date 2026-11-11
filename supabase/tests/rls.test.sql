@@ -191,5 +191,23 @@ select pg_temp.check(
   'a team change is logged with its old and new values'
 );
 
+-- Staff usernames ────────────────────────────────────────────────────────────
+reset role;
+update public.team_members set username = 'OwnerOne' where user_id = :owner;
+select pg_temp.act_as(:owner);
+select pg_temp.check(pg_temp.refused($$select public.staff_email_for_username('OwnerOne')$$), 'signed-in users cannot look up a staff email from a username');
+select pg_temp.act_as(null);
+select pg_temp.check(pg_temp.refused($$select public.staff_email_for_username('OwnerOne')$$), 'the public cannot look up a staff email from a username');
+reset role;
+set role service_role;
+select pg_temp.check(public.staff_email_for_username('ownerone') is not null, 'the server finds a staff email by username, ignoring case');
+select pg_temp.check(public.staff_email_for_username('nobody') is null, 'an unknown username finds nothing');
+reset role;
+update public.team_members set active = false where user_id = :owner;
+set role service_role;
+select pg_temp.check(public.staff_email_for_username('OwnerOne') is null, 'a deactivated member cannot sign in by username');
+reset role;
+update public.team_members set active = true where user_id = :owner;
+
 reset role;
 \echo 'All RLS checks passed.'

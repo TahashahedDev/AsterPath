@@ -21,7 +21,7 @@ type ProfileRow = {
   updated_at: string;
 };
 
-type TeamMemberRow = { user_id: string; role: TeamRole; active: boolean; created_at: string; updated_at: string };
+type TeamMemberRow = { user_id: string; role: TeamRole; active: boolean; username: string | null; created_at: string; updated_at: string };
 
 export type LeadRow = {
   id: string;
@@ -204,6 +204,7 @@ export type Database = {
       claim_my_case: { Args: Record<never, never>; Returns: undefined };
       marketing_summary: { Args: { p_days?: number }; Returns: MarketingSummary };
       prune_site_events: { Args: Record<never, never>; Returns: number };
+      staff_email_for_username: { Args: { p_username: string }; Returns: string | null };
       team_directory: { Args: Record<never, never>; Returns: { user_id: string; full_name: string; role: TeamRole }[] };
     };
     Enums: { team_role: TeamRole; lead_status: LeadStatus };

@@ -14,6 +14,18 @@ export const signInSchema = z.object({
   password: z.string().min(1, { error: "Enter your password." }).max(72),
 });
 
+/** Team sign-in takes a username (e.g. "TahaShahed") or an email. */
+export const usernamePattern = /^[A-Za-z0-9._-]{3,32}$/;
+export const staffSignInSchema = z.object({
+  identifier: z
+    .string()
+    .trim()
+    .min(1, { error: "Enter your username or email." })
+    .max(254)
+    .refine((v) => v.includes("@") ? z.email().safeParse(v).success : usernamePattern.test(v), { error: "Enter your username or email." }),
+  password: z.string().min(1, { error: "Enter your password." }).max(72),
+});
+
 export const signUpSchema = z.object({
   fullName: z.string().trim().min(2, { error: "Enter your full name." }).max(120),
   email,

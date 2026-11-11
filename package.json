@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run test",
     "test:e2e": "playwright test",
-    "db:test": "bash scripts/db-test.sh"
+    "db:test": "bash scripts/db-test.sh",
+    "admin:create": "node --env-file-if-exists=.env.local scripts/create-owner.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

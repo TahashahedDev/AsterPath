@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { siteConfig } from "@/config/site";
 import {
-  PRIVACY_NOTICE_VERSION, TERMS_VERSION, forgotPasswordSchema, resetPasswordSchema, safeNextPath, signInSchema, signUpSchema, type AuthFormState,
+  PRIVACY_NOTICE_VERSION, TERMS_VERSION, forgotPasswordSchema, resetPasswordSchema, safeNextPath, signInSchema, signUpSchema, staffSignInSchema, type AuthFormState,
 } from "@/features/auth/schema";
 import { getServerEnv } from "@/lib/env";
 import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // Supabase Auth limits attempts too; this stops a single source hammering one form.
@@ -29,24 +30,51 @@ async function isActiveTeamMember(supabase: NonNullable<Awaited<ReturnType<typeo
 const notConnected: AuthFormState = { status: "error", message: "Student accounts aren't open yet. Please make an enquiry instead." };
 const tooMany: AuthFormState = { status: "error", message: "Too many attempts. Please wait a few minutes and try again." };
 
+/**
+ * A username becomes the member's email on the server (service role; the lookup is
+ * not callable from the browser). Unknown usernames get the same answer as a wrong
+ * password, so usernames can't be discovered here.
+ */
+async function staffEmail(identifier: string): Promise<string | null> {
+  if (identifier.includes("@")) return identifier.toLowerCase();
+  const admin = createSupabaseAdminClient();
+  if (!admin) return null;
+  const { data } = await admin.rpc("staff_email_for_username", { p_username: identifier });
+  return data ?? null;
+}
+
+const wrongDetails: AuthFormState = { status: "error", message: "Those sign-in details don't match an account." };
+
 export async function signIn(_: AuthFormState, form: FormData): Promise<AuthFormState> {
-  const parsed = signInSchema.safeParse({ email: form.get("email"), password: form.get("password") });
-  if (!parsed.success) return { status: "error", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+  const staff = form.get("audience") === "staff";
+  let credentials: { email: string; password: string };
+  if (staff) {
+    const parsed = staffSignInSchema.safeParse({ identifier: form.get("identifier"), password: form.get("password") });
+    if (!parsed.success) return { status: "error", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    if (await rateLimited(parsed.data.identifier.toLowerCase())) return tooMany;
+    const email = await staffEmail(parsed.data.identifier);
+    if (!email) return wrongDetails;
+    credentials = { email, password: parsed.data.password };
+  } else {
+    const parsed = signInSchema.safeParse({ email: form.get("email"), password: form.get("password") });
+    if (!parsed.success) return { status: "error", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    if (await rateLimited(parsed.data.email)) return tooMany;
+    credentials = parsed.data;
+  }
 
   const supabase = await createSupabaseServerClient();
   if (!supabase) return notConnected;
-  if (await rateLimited(parsed.data.email)) return tooMany;
 
-  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(credentials);
   if (error) {
     // The same message whether the email exists or not.
     if (error.code === "email_not_confirmed") return { status: "error", message: "Please confirm your email first. We sent you a link when you signed up." };
-    return { status: "error", message: "That email and password don't match an account." };
+    return staff ? wrongDetails : { status: "error", message: "That email and password don't match an account." };
   }
 
   // Team members land in the admin workspace, students in their portal.
   const isStaff = await isActiveTeamMember(supabase, data.user.id);
-  if (form.get("audience") === "staff" && !isStaff) {
+  if (staff && !isStaff) {
     await supabase.auth.signOut();
     return { status: "error", message: "That account isn't part of the AsterPath team. Students sign in on the student page." };
   }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { safeNextPath, signInSchema, signUpSchema } from "@/features/auth/schema";
+import { safeNextPath, signInSchema, signUpSchema, staffSignInSchema } from "@/features/auth/schema";
 import { parseSupabaseUrl } from "@/lib/supabase/config";
 import { toLeadRow, type LeadRecord } from "@/server/repositories/lead-store";
 
@@ -109,5 +109,23 @@ describe("password recovery", () => {
     expect(resetPasswordSchema.safeParse({ password: "correct horse", confirm: "correct house" }).success).toBe(false);
     expect(resetPasswordSchema.safeParse({ password: "short", confirm: "short" }).success).toBe(false);
     expect(forgotPasswordSchema.safeParse({ email: "Someone@Example.com" }).data?.email).toBe("someone@example.com");
+  });
+});
+
+describe("team sign-in", () => {
+  const ok = (identifier: string) => staffSignInSchema.safeParse({ identifier, password: "x" }).success;
+
+  it("accepts a username or an email", () => {
+    expect(ok("TahaShahed")).toBe(true);
+    expect(ok("taha.shahed_1")).toBe(true);
+    expect(ok("founder@example.com")).toBe(true);
+  });
+
+  it("refuses anything that is neither", () => {
+    expect(ok("")).toBe(false);
+    expect(ok("ab")).toBe(false);
+    expect(ok("Taha Shahed")).toBe(false);
+    expect(ok("taha@")).toBe(false);
+    expect(ok("x".repeat(33))).toBe(false);
   });
 });

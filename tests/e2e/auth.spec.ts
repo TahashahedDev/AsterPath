@@ -11,6 +11,14 @@ test.describe("accounts before Supabase is connected", () => {
     }
   });
 
+  test("the team sign-in asks for a username or email, and is disabled until Supabase is connected", async ({ page }) => {
+    await page.goto("/staff/sign-in");
+    await expect(page.getByRole("heading", { name: "Team sign-in" })).toBeVisible();
+    await expect(page.getByText(/Team accounts need the Supabase connection/)).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Username or email" })).toBeDisabled();
+    await expect(page.getByRole("link", { name: "Student sign-in" })).toBeVisible();
+  });
+
   test("the portal and admin workspace are not served", async ({ page }) => {
     for (const path of ["/portal", "/admin", "/admin/team", "/admin/audit"]) {
       const response = await page.goto(path);

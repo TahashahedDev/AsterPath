@@ -136,11 +136,19 @@ export function AuthForm({ mode, available, next, notice }: { mode: "sign-in" | 
                 {fieldError("fullName")}
               </div>
             )}
-            <div>
-              <label htmlFor="auth-email" className="mb-2 block text-sm font-medium">Email</label>
-              <input id="auth-email" name="email" type="email" autoComplete="email" className={inputClass} {...invalid("email")} />
-              {fieldError("email")}
-            </div>
+            {isStaff ? (
+              <div>
+                <label htmlFor="auth-identifier" className="mb-2 block text-sm font-medium">Username or email</label>
+                <input id="auth-identifier" name="identifier" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} className={inputClass} {...invalid("identifier")} />
+                {fieldError("identifier")}
+              </div>
+            ) : (
+              <div>
+                <label htmlFor="auth-email" className="mb-2 block text-sm font-medium">Email</label>
+                <input id="auth-email" name="email" type="email" autoComplete="email" className={inputClass} {...invalid("email")} />
+                {fieldError("email")}
+              </div>
+            )}
             <div>
               <div className="mb-2 flex justify-between text-sm">
                 <label htmlFor="auth-password" className="font-medium">
