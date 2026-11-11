@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { cleanLine, optionalDateWithin, singleLine } from "@/lib/validation/fields";
 import { workflowStages } from "@/features/operations/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { CaseStage } from "@/lib/supabase/types";
@@ -27,8 +28,8 @@ export async function updateCaseStage(_: CaseFormState, form: FormData): Promise
 
 const taskSchema = z.object({
   caseId: z.uuid(),
-  title: z.string().trim().min(1, { error: "Describe the task." }).max(160),
-  dueOn: z.union([z.iso.date(), z.literal("")]),
+  title: singleLine({ label: "Task", max: 160 }),
+  dueOn: optionalDateWithin({ past: 30, future: 730, message: "Choose a due date within the next two years." }),
 });
 
 /** Adds a task the student sees in their portal. */
@@ -56,13 +57,13 @@ export async function setCaseTaskDone(form: FormData): Promise<void> {
 }
 
 const applicationStatuses = ["planned", "in_preparation", "submitted", "under_review", "admitted", "waitlisted", "rejected", "withdrawn"] as const;
-const optionalDate = z.union([z.iso.date(), z.literal("")]);
+const deadlineDate = optionalDateWithin({ past: 30, future: 730, message: "Choose a deadline within the next two years." });
 
 const addApplicationSchema = z.object({
   caseId: z.uuid(),
-  university: z.string().trim().min(2, { error: "Name the university." }).max(160),
-  programme: z.string().trim().min(2, { error: "Name the programme." }).max(200),
-  deadline: optionalDate,
+  university: singleLine({ label: "University", min: 2, max: 160 }),
+  programme: singleLine({ label: "Programme", min: 2, max: 200 }),
+  deadline: deadlineDate,
 });
 
 /** Adds a university application to a case; the student sees it in their portal. */
@@ -82,7 +83,7 @@ const updateApplicationSchema = z.object({
   caseId: z.uuid(),
   applicationId: z.uuid(),
   status: z.enum(applicationStatuses),
-  portalReference: z.string().trim().max(80),
+  portalReference: z.string().transform(cleanLine).pipe(z.string().max(80).regex(/^[A-Za-z0-9 /._-]*$/, "Use letters, numbers and - / . _ only.")),
 });
 
 /** Moves an application along; marking it submitted records today's date. */

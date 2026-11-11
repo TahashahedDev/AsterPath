@@ -25,7 +25,7 @@ export function InviteMemberForm({ canInviteOwner }: { canInviteOwner: boolean }
     <form action={action} noValidate className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1.2fr_1fr_auto] lg:items-end">
       <div>
         <label htmlFor="invite-name" className="mb-1.5 block text-xs font-medium text-muted">Full name</label>
-        <input id="invite-name" name="fullName" autoComplete="off" className={field} aria-invalid={err("fullName") ? true : undefined} />
+        <input id="invite-name" name="fullName" autoComplete="off" maxLength={120} className={field} aria-invalid={err("fullName") ? true : undefined} />
         {err("fullName") && <p className="mt-1 text-xs text-danger">{err("fullName")}</p>}
       </div>
       <div>

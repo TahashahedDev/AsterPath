@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { intakeValue } from "@/features/leads/intakes";
+import { emailAddress, multiLine, personName, singleLine, whatsappNumber } from "@/lib/validation/fields";
 
 /**
  * Public enquiry form schema, shared by the browser (per-step validation) and the
@@ -81,21 +83,10 @@ type Values<T extends readonly { value: string }[]> = [T[number]["value"], ...T[
 const enumOf = <T extends readonly { value: string }[]>(options: T, message: string) =>
   z.enum(options.map((o) => o.value) as Values<T>, { error: message });
 
-const trimmed = (min: number, max: number, label: string) =>
-  z
-    .string({ error: `${label} is required` })
-    .trim()
-    .min(min, `${label} is required`)
-    .max(max, `${label} must be ${max} characters or fewer`);
-
 export const contactStepSchema = z.object({
-  fullName: trimmed(2, 120, "Full name"),
-  email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address")).pipe(z.string().max(254)),
-  whatsapp: z
-    .string()
-    .trim()
-    .regex(/^\+?[0-9 ()-]{8,20}$/, "Enter a valid WhatsApp number, including country code")
-    .transform((value) => value.replace(/[^\d+]/g, "")),
+  fullName: personName(),
+  email: emailAddress(),
+  whatsapp: whatsappNumber(),
   residence: enumOf(residenceOptions, "Choose where you live"),
 });
 
@@ -103,14 +94,14 @@ export const goalsStepSchema = z.object({
   destination: enumOf(destinationOptions, "Choose a destination"),
   pathway: enumOf(pathwayOptions, "Choose study or work"),
   level: enumOf(levelOptions, "Choose a study level"),
-  intake: trimmed(2, 40, "Intended intake"),
-  fieldOfStudy: trimmed(2, 120, "Field of study"),
+  intake: intakeValue,
+  fieldOfStudy: singleLine({ label: "Field of study", min: 2, max: 120 }),
   scholarshipInterest: enumOf(scholarshipOptions, "Let us know about scholarships"),
 });
 
 export const backgroundStepSchema = z.object({
   highestQualification: enumOf(qualificationOptions, "Choose your highest qualification"),
-  academicBackground: trimmed(2, 600, "Academic background"),
+  academicBackground: multiLine({ label: "Academic background", min: 2, max: 600 }),
   englishTest: enumOf(englishTestOptions, "Choose your English test status"),
   passportStatus: enumOf(passportOptions, "Choose your passport status"),
   budgetRange: enumOf(budgetOptions, "Choose a budget range"),
@@ -118,7 +109,7 @@ export const backgroundStepSchema = z.object({
 
 export const preferencesStepSchema = z.object({
   consultationMethod: enumOf(consultationOptions, "Choose how you'd like to talk"),
-  message: z.string().trim().max(1500, "Message must be 1,500 characters or fewer").default(""),
+  message: multiLine({ label: "Message", max: 1500, maxLinks: 2 }).default(""),
   privacyAcknowledged: z.literal(true, { error: "Please confirm you have read the privacy policy" }),
   contactConsent: z.literal(true, { error: "We need your permission to contact you about this enquiry" }),
   // India's DPDP Act requires a parent's or guardian's consent for anyone under 18.
@@ -128,7 +119,7 @@ export const preferencesStepSchema = z.object({
 
 export const enquiryStepSchemas = [contactStepSchema, goalsStepSchema, backgroundStepSchema, preferencesStepSchema] as const;
 
-const attributionField = z.string().trim().max(200).optional();
+const attributionField = singleLine({ label: "Attribution", min: 0, max: 200, allowLinks: true }).optional();
 
 export const attributionSchema = z
   .object({
@@ -142,7 +133,7 @@ export const attributionSchema = z
     // A student's referral code from a shared link (?ref=CODE).
     referralCode: z.string().regex(/^[A-Z0-9]{6,12}$/).optional(),
     // Pages read during the visit, kept on the device and sent only with the enquiry.
-    journey: z.array(z.string().max(200).regex(/^\/[^\s]*$/)).max(20).optional(),
+    journey: z.array(z.string().max(200).regex(/^\/[A-Za-z0-9\-._~/%]*$/)).max(20).optional(),
   })
   .strict();
 

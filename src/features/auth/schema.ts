@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { emailAddress, personName } from "@/lib/validation/fields";
 
 /** Versions recorded with every new account; bump when the documents change. */
 export const TERMS_VERSION = "draft-2026-11";
 export { PRIVACY_NOTICE_VERSION } from "@/features/leads/schema";
 
-const email = z.string().trim().toLowerCase().pipe(z.email({ error: "Enter a valid email address." })).pipe(z.string().max(254));
+const email = emailAddress("Enter a valid email address.");
 // bcrypt, which Supabase uses, only reads the first 72 bytes.
 const password = z.string().min(10, { error: "Use at least 10 characters." }).max(72, { error: "Use 72 characters or fewer." });
 const ticked = (message: string) => z.literal("on", { error: message });
@@ -27,7 +28,7 @@ export const staffSignInSchema = z.object({
 });
 
 export const signUpSchema = z.object({
-  fullName: z.string().trim().min(2, { error: "Enter your full name." }).max(120),
+  fullName: personName("Your full name"),
   email,
   password,
   terms: ticked("Please accept the terms and refund policy."),

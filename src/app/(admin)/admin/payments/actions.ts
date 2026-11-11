@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { cleanLine, dateWithin, optionalDateWithin } from "@/lib/validation/fields";
 import { discountRules } from "@/content/pricing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -9,8 +10,12 @@ export type PaymentFormState = { status: "idle" | "error" | "saved"; message?: s
 
 const confirmSchema = z.object({
   instalmentId: z.uuid(),
-  reference: z.string().trim().min(4, { error: "Enter the bank UTR or Razorpay payment ID." }).max(80),
-  paidOn: z.iso.date({ error: "Enter the date the money arrived." }),
+  reference: z
+    .string({ error: "Enter the bank UTR or Razorpay payment ID." })
+    .transform((v) => cleanLine(v).replace(/\s/g, ""))
+    .pipe(z.string().regex(/^[A-Za-z0-9_-]{6,40}$/, { error: "Enter the bank UTR or Razorpay payment ID (letters and numbers only)." })),
+  // The money has already arrived: not in the future, and not implausibly old.
+  paidOn: dateWithin({ past: 365, future: 0, message: "Enter the date the money arrived (today or earlier)." }),
 });
 
 /**
@@ -40,7 +45,7 @@ export async function confirmInstalment(_: PaymentFormState, form: FormData): Pr
   return { status: "saved", message: "Payment confirmed." };
 }
 
-const statusSchema = z.object({ instalmentId: z.uuid(), status: z.enum(["upcoming", "due", "waived"]), dueOn: z.union([z.iso.date(), z.literal("")]) });
+const statusSchema = z.object({ instalmentId: z.uuid(), status: z.enum(["upcoming", "due", "waived"]), dueOn: optionalDateWithin({ past: 365, future: 1095, message: "Choose a due date within the next three years." }) });
 
 /** Requests an instalment (due, with a date), puts it back to upcoming, or waives it — e.g. Arrival after a visa refusal. */
 export async function setInstalmentStatus(form: FormData): Promise<void> {

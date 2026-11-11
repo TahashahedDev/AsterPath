@@ -296,8 +296,8 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
       <div className="mt-6 grid gap-5" key={step}>
         {step === 0 && (
           <>
-            <TextField label="Full name" name="fullName" autoComplete="name" value={values.fullName} onChange={(e) => set("fullName", e.target.value)} error={errors.fullName} />
-            <TextField label="Email" name="email" type="email" autoComplete="email" inputMode="email" value={values.email} onChange={(e) => set("email", e.target.value)} error={errors.email} />
+            <TextField label="Full name" name="fullName" autoComplete="name" maxLength={120} value={values.fullName} onChange={(e) => set("fullName", e.target.value)} error={errors.fullName} />
+            <TextField label="Email" name="email" type="email" autoComplete="email" inputMode="email" maxLength={254} value={values.email} onChange={(e) => set("email", e.target.value)} error={errors.email} />
             <TextField
               label="WhatsApp number"
               name="whatsapp"
@@ -305,7 +305,8 @@ export function EnquiryForm({ intakes, initial = initialValues }: { intakes: Int
               autoComplete="tel"
               inputMode="tel"
               placeholder="+91 98765 43210"
-              hint="Include your country code."
+              maxLength={24}
+              hint="Indian numbers can be typed as 98765 43210; others need their + country code."
               value={values.whatsapp}
               onChange={(e) => set("whatsapp", e.target.value)}
               error={errors.whatsapp}

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { dateWithin, multiLine, singleLine } from "@/lib/validation/fields";
 import type { LeadStage } from "@/features/operations/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Json, LeadStatus } from "@/lib/supabase/types";
@@ -25,7 +26,7 @@ const stageSchema = z
   .object({
     id: z.uuid(),
     stage: z.enum(Object.keys(statusFromStage) as [LeadStage, ...LeadStage[]]),
-    lostReason: z.string().trim().max(120).optional(),
+    lostReason: singleLine({ label: "Reason", min: 0, max: 120 }).optional(),
   })
   .refine((v) => v.stage !== "lost" || !!v.lostReason, { error: "Give a reason when marking a lead lost." });
 
@@ -59,7 +60,7 @@ export async function updateLeadStage(input: { id: string; stage: LeadStage; los
 const assignSchema = z.object({
   id: z.uuid(),
   advisorId: z.union([z.uuid(), z.literal("")]),
-  followUp: z.iso.date({ error: "Choose a follow-up date." }),
+  followUp: dateWithin({ past: 7, future: 365, message: "Choose a follow-up date within the next year." }),
 });
 
 export type AssignState = { status: "idle" | "error" | "saved"; message?: string };
@@ -89,7 +90,7 @@ export async function assignLead(_: AssignState, form: FormData): Promise<Assign
 
 export type FormState = { status: "idle" | "error" | "saved"; message?: string };
 
-const noteSchema = z.object({ leadId: z.uuid(), body: z.string().trim().min(1, { error: "Write a note first." }).max(2000) });
+const noteSchema = z.object({ leadId: z.uuid(), body: multiLine({ label: "Note", min: 1, max: 2000, maxLinks: 5 }) });
 
 /** Adds a note to a lead as the signed-in staff member. */
 export async function addLeadNote(_: FormState, form: FormData): Promise<FormState> {

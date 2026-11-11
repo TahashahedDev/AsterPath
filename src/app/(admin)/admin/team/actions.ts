@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { emailAddress, personName } from "@/lib/validation/fields";
 import { siteConfig } from "@/config/site";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -10,8 +11,8 @@ import type { TeamRole } from "@/lib/supabase/types";
 const roles = ["owner", "admin", "advisor", "document_reviewer", "finance", "marketing", "analyst"] as const satisfies readonly TeamRole[];
 
 const inviteSchema = z.object({
-  fullName: z.string().trim().min(2, { error: "Enter their full name." }).max(120),
-  email: z.string().trim().toLowerCase().pipe(z.email({ error: "Enter a valid email address." })),
+  fullName: personName("Their full name"),
+  email: emailAddress(),
   role: z.enum(roles, { error: "Choose a role." }),
 });
 

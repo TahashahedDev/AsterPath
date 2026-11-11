@@ -99,7 +99,7 @@ export function ConfirmPaymentForm({ instalmentId, label }: { instalmentId: stri
       <input type="hidden" name="instalmentId" value={instalmentId} />
       <div>
         <label htmlFor={`ref-${instalmentId}`} className="mb-1 block text-xs font-medium text-muted">Bank UTR or Razorpay ID for {label}</label>
-        <input id={`ref-${instalmentId}`} name="reference" required maxLength={80} autoComplete="off" className={field} />
+        <input id={`ref-${instalmentId}`} name="reference" required maxLength={40} autoComplete="off" autoCapitalize="characters" spellCheck={false} className={field} />
       </div>
       <div>
         <label htmlFor={`date-${instalmentId}`} className="mb-1 block text-xs font-medium text-muted">Received on</label>

@@ -132,20 +132,20 @@ export function AuthForm({ mode, available, next, notice }: { mode: "sign-in" | 
             {!isSignIn && (
               <div>
                 <label htmlFor="auth-fullName" className="mb-2 block text-sm font-medium">Full name</label>
-                <input id="auth-fullName" name="fullName" autoComplete="name" className={inputClass} {...invalid("fullName")} />
+                <input id="auth-fullName" name="fullName" autoComplete="name" maxLength={120} className={inputClass} {...invalid("fullName")} />
                 {fieldError("fullName")}
               </div>
             )}
             {isStaff ? (
               <div>
                 <label htmlFor="auth-identifier" className="mb-2 block text-sm font-medium">Username or email</label>
-                <input id="auth-identifier" name="identifier" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} className={inputClass} {...invalid("identifier")} />
+                <input id="auth-identifier" name="identifier" autoComplete="username" maxLength={254} autoCapitalize="none" autoCorrect="off" spellCheck={false} className={inputClass} {...invalid("identifier")} />
                 {fieldError("identifier")}
               </div>
             ) : (
               <div>
                 <label htmlFor="auth-email" className="mb-2 block text-sm font-medium">Email</label>
-                <input id="auth-email" name="email" type="email" autoComplete="email" className={inputClass} {...invalid("email")} />
+                <input id="auth-email" name="email" type="email" autoComplete="email" maxLength={254} className={inputClass} {...invalid("email")} />
                 {fieldError("email")}
               </div>
             )}

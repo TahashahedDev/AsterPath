@@ -1,4 +1,21 @@
+import { z } from "zod";
+
 export type IntakeOption = { value: string; label: string };
+
+/**
+ * Server-side intake check: "undecided", or a season within the next four years.
+ * Looser than the four options on screen, so a form opened just before a season
+ * rolls over still submits.
+ */
+export const intakeValue = z
+  .string({ error: "Choose an intake" })
+  .refine((v) => {
+    if (v === "undecided") return true;
+    if (!/^(?:spring|autumn)-\d{4}$/.test(v)) return false;
+    const year = Number(v.slice(-4));
+    const now = new Date().getFullYear();
+    return year >= now && year <= now + 4;
+  }, "Choose an intake");
 
 /**
  * The next four European intake windows from a given date: autumn (Sept–Oct) is
