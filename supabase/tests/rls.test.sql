@@ -86,7 +86,8 @@ select pg_temp.check((select count(*) from public.profiles) = 3, 'an advisor can
 
 -- Student cases: quote → open case → student sees it → finance confirms ─────
 select pg_temp.act_as(:advisor);
-update public.leads set email = 'student@asterpath.test' where reference = 'AP-261109-TEST3';
+-- Different capitals from the student's sign-in email: matching must ignore case.
+update public.leads set email = 'Student@AsterPath.test' where reference = 'AP-261109-TEST3';
 select pg_temp.check(pg_temp.affected($$insert into public.lead_notes (lead_id, body) select id, 'Called; consultation booked.' from public.leads where reference = 'AP-261109-TEST3'$$) = 1, 'an advisor can add a note to a lead');
 select pg_temp.check(pg_temp.refused($$insert into public.lead_notes (lead_id, author_id, body) select id, '00000000-0000-4000-8000-000000000001', 'Forged' from public.leads where reference = 'AP-261109-TEST3'$$), 'an advisor cannot write a note as someone else');
 insert into public.quotes (lead_id, level, inputs, breakdown, total)
@@ -190,6 +191,12 @@ select pg_temp.check(
   ),
   'a team change is logged with its old and new values'
 );
+
+-- Permission helpers are for signed-in users only ───────────────────────────
+select pg_temp.act_as(null);
+select pg_temp.check(pg_temp.refused($$select public.has_permission('leads.read')$$), 'signed-out visitors cannot call has_permission()');
+select pg_temp.check(pg_temp.refused($$select public.current_team_role()$$), 'signed-out visitors cannot call current_team_role()');
+reset role;
 
 -- Staff usernames ────────────────────────────────────────────────────────────
 reset role;
