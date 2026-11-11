@@ -8,17 +8,18 @@ import {
   PRIVACY_NOTICE_VERSION, TERMS_VERSION, forgotPasswordSchema, resetPasswordSchema, safeNextPath, signInSchema, signUpSchema, staffSignInSchema, type AuthFormState,
 } from "@/features/auth/schema";
 import { getServerEnv } from "@/lib/env";
-import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
+import { clientIp } from "@/lib/security/rate-limit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSharedRateLimiter } from "@/server/rate-limit";
 
 // Supabase Auth limits attempts too; this stops a single source hammering one form.
-const attempts = createRateLimiter({ limit: 10, windowMs: 15 * 60 * 1000 });
+const attempts = createSharedRateLimiter({ name: "auth", limit: 10, windowMs: 15 * 60 * 1000 });
 
 async function rateLimited(email: string): Promise<boolean> {
   const env = getServerEnv();
   const ip = clientIp(await headers(), { header: env.CLIENT_IP_HEADER, trustedProxyHops: env.TRUSTED_PROXY_HOPS });
-  return !attempts(`${ip ?? "unverified"}|${email}`).allowed;
+  return !(await attempts(`${ip ?? "unverified"}|${email}`)).allowed;
 }
 
 /** Reads the caller's own membership (allowed for any signed-in user by RLS, before the second factor). */
@@ -174,7 +175,7 @@ export async function startMfaEnrollment(): Promise<MfaSetup> {
 }
 
 const mfaCode = z.object({ code: z.string().trim().regex(/^\d{6}$/, { error: "Enter the 6-digit code from your app." }), factorId: z.string().optional() });
-const mfaAttempts = createRateLimiter({ limit: 8, windowMs: 10 * 60 * 1000 });
+const mfaAttempts = createSharedRateLimiter({ name: "mfa", limit: 8, windowMs: 10 * 60 * 1000 });
 
 /** Checks a code from the authenticator app and upgrades the session to two-factor (aal2). */
 export async function verifyMfa(_: AuthFormState, form: FormData): Promise<AuthFormState> {
@@ -185,7 +186,7 @@ export async function verifyMfa(_: AuthFormState, form: FormData): Promise<AuthF
   if (!supabase) return notConnected;
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return { status: "error", message: "Your session has ended. Please sign in again." };
-  if (!mfaAttempts(auth.user.id).allowed) return tooMany;
+  if (!(await mfaAttempts(auth.user.id)).allowed) return tooMany;
 
   // Use the factor being set up, or the verified one for a normal sign-in; it must belong to this user.
   const { data: factors } = await supabase.auth.mfa.listFactors();

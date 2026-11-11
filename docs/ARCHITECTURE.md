@@ -37,7 +37,7 @@ Rules of thumb:
 `EnquiryForm` (4 steps, per-step validation) → `POST /api/enquiries`:
 
 1. Same-origin check on the `Origin` header.
-2. Per-IP fixed-window rate limit (5 / 10 min). *In-memory: correct for one instance only — must move to a shared store before multi-instance hosting.*
+2. Per-IP fixed-window rate limit (5 / 10 min), shared by every instance through `rate_limit_hit()` in Supabase (migration `20261112130000_rate_limits.sql`, `src/server/rate-limit.ts`). Client keys are HMAC'd before they reach the database, and the limiter falls back to per-instance memory if Supabase is missing or failing. Sign-in, two-factor codes and the AI assistant use the same shared limiter; `/api/events` stays in memory (high volume, low risk).
 3. 16 KB body limit, Zod validation.
 4. Spam checks: honeypot field and minimum fill time, rejected with a generic message.
 5. `createLead` builds a lead with a UUID, a human reference (`AP-YYMMDD-XXXXX`), consent record (privacy-notice version, contact consent, optional updates consent), first-touch UTM attribution and a follow-up due date.

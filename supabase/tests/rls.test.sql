@@ -198,6 +198,24 @@ select pg_temp.check(pg_temp.refused($$select public.has_permission('leads.read'
 select pg_temp.check(pg_temp.refused($$select public.current_team_role()$$), 'signed-out visitors cannot call current_team_role()');
 reset role;
 
+-- Shared rate limits ─────────────────────────────────────────────────────────
+select pg_temp.act_as(null);
+select pg_temp.check(pg_temp.refused($$select * from public.rate_limit_hit('x', 1, 60)$$), 'signed-out visitors cannot touch rate limits');
+select pg_temp.act_as(:student);
+select pg_temp.check(pg_temp.refused($$select * from public.rate_limits$$), 'signed-in users cannot read rate limits');
+reset role;
+set role service_role;
+select pg_temp.check((select allowed from public.rate_limit_hit('test:a', 2, 60)), 'the first attempt is allowed');
+select pg_temp.check((select allowed from public.rate_limit_hit('test:a', 2, 60)), 'attempts up to the limit are allowed');
+select pg_temp.check(not (select allowed from public.rate_limit_hit('test:a', 2, 60)), 'the attempt over the limit is refused');
+select pg_temp.check((select retry_after_seconds between 1 and 60 from public.rate_limit_hit('test:a', 2, 60)), 'a refusal says when to retry');
+select pg_temp.check((select allowed from public.rate_limit_hit('test:b', 2, 60)), 'other clients have their own allowance');
+reset role;
+update public.rate_limits set reset_at = now() - interval '1 second' where key = 'test:a';
+set role service_role;
+select pg_temp.check((select allowed from public.rate_limit_hit('test:a', 2, 60)), 'a new window starts after the old one ends');
+reset role;
+
 -- Staff usernames ────────────────────────────────────────────────────────────
 reset role;
 update public.team_members set username = 'OwnerOne' where user_id = :owner;

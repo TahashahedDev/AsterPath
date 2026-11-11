@@ -2,17 +2,18 @@ import { NextResponse, after, type NextRequest } from "next/server";
 import { z } from "zod";
 import { enquirySchema } from "@/features/leads/schema";
 import { getServerEnv } from "@/lib/env";
-import { clientIp, createRateLimiter } from "@/lib/security/rate-limit";
+import { clientIp } from "@/lib/security/rate-limit";
 import { acknowledgeEnquiry, notifyTeamOfNewLead } from "@/server/integrations/notifications";
 import { createLead } from "@/server/services/lead-service";
+import { createSharedRateLimiter } from "@/server/rate-limit";
 import { recordReferral } from "@/server/services/referrals";
 
 const MAX_BODY_BYTES = 16 * 1024;
 const WINDOW_MS = 10 * 60 * 1000;
 // Per client when the deployment says where the real address is.
-const limiter = createRateLimiter({ limit: 5, windowMs: WINDOW_MS });
+const limiter = createSharedRateLimiter({ name: "enquiry", limit: 5, windowMs: WINDOW_MS });
 // One shared allowance for every request whose address cannot be trusted.
-const unverifiedLimiter = createRateLimiter({ limit: 30, windowMs: WINDOW_MS, maxKeys: 1 });
+const unverifiedLimiter = createSharedRateLimiter({ name: "enquiry-unverified", limit: 30, windowMs: WINDOW_MS });
 
 function error(status: number, code: string, message: string, extra?: Record<string, unknown>) {
   return NextResponse.json({ error: { code, message, ...extra } }, { status });
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
 
   const env = getServerEnv();
   const ip = clientIp(request.headers, { header: env.CLIENT_IP_HEADER, trustedProxyHops: env.TRUSTED_PROXY_HOPS });
-  const rate = ip ? limiter(ip) : unverifiedLimiter("unverified");
+  const rate = ip ? await limiter(ip) : await unverifiedLimiter("unverified");
   if (!rate.allowed) {
     return NextResponse.json(
       { error: { code: "rate-limited", message: "Too many enquiries from this connection. Please try again later or message us on WhatsApp." } },

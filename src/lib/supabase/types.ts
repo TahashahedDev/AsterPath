@@ -205,6 +205,8 @@ export type Database = {
       marketing_summary: { Args: { p_days?: number }; Returns: MarketingSummary };
       prune_site_events: { Args: Record<never, never>; Returns: number };
       staff_email_for_username: { Args: { p_username: string }; Returns: string | null };
+      rate_limit_hit: { Args: { p_key: string; p_limit: number; p_window_seconds: number }; Returns: { allowed: boolean; retry_after_seconds: number }[] };
+      prune_rate_limits: { Args: Record<never, never>; Returns: number };
       team_directory: { Args: Record<never, never>; Returns: { user_id: string; full_name: string; role: TeamRole }[] };
     };
     Enums: { team_role: TeamRole; lead_status: LeadStatus };

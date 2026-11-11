@@ -1,5 +1,7 @@
 # AsterPath
 
+[![CI](https://github.com/TahashahedDev/AsterPath/actions/workflows/ci.yml/badge.svg)](https://github.com/TahashahedDev/AsterPath/actions/workflows/ci.yml)
+
 AsterPath — an Italy-specialist study consultancy for students applying from India.
 
 The public website, the student portal and the founder's admin workspace (leads, casework, applications, payments, referrals, calendar, marketing) in one Next.js app on Supabase. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -26,6 +28,7 @@ Enquiries submitted locally are written to `.data/leads.ndjson` (git-ignored). U
 | `npm test` | Unit tests (Vitest) |
 | `npm run test:e2e` | Browser tests (Playwright, uses your installed Google Chrome): every public page at 5 screen sizes in light and dark, plus accessibility checks |
 | `npm run db:test` | Applies every migration to a throwaway local PostgreSQL and runs the Row Level Security checks |
+| CI (GitHub Actions) | Every push to `main` and every pull request runs typecheck, lint, unit tests, the dependency audit, the migrations with RLS checks, and the browser tests. Dependabot proposes dependency updates weekly. |
 | `npm run admin:create` | Creates the owner account in Supabase (asks for the password in the terminal; nothing is stored in the code) |
 
 ## What is and isn't connected

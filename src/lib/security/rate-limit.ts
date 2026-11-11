@@ -1,9 +1,7 @@
 /**
- * Fixed-window rate limiter held in process memory.
- *
- * Good enough for local development and a single instance. On serverless or
- * multi-instance hosting each instance keeps its own counters, so production
- * needs a shared store (database or Redis) — tracked for Phase 2.
+ * Fixed-window rate limiter held in process memory. Each instance keeps its own
+ * counters, so production paths that must hold across instances use
+ * createSharedRateLimiter (src/server/rate-limit.ts), which falls back to this.
  */
 export type RateLimitResult = { allowed: true; remaining: number } | { allowed: false; retryAfterSeconds: number };
 
