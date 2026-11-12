@@ -76,6 +76,7 @@ export type StudentCaseRow = {
   status: CaseStatus;
   referral_code: string | null;
   opened_at: string;
+  closed_at: string | null;
   updated_at: string;
 };
 export type InstalmentRowStatus = "upcoming" | "due" | "paid" | "waived";
@@ -166,6 +167,47 @@ export type ReferralRow = {
   updated_at: string;
 };
 
+export type DocumentSensitivity = "standard" | "identity" | "financial";
+export type DocumentTypeRow = { key: string; label: string; sensitivity: DocumentSensitivity; sort: number; active: boolean };
+export type DocumentRequestStatus = "requested" | "uploaded" | "under_review" | "approved" | "rejected" | "reupload_required" | "expired" | "withdrawn";
+export type DocumentRequestRow = {
+  id: string;
+  case_id: string;
+  application_id: string | null;
+  type_key: string;
+  title: string;
+  instructions: string;
+  status: DocumentRequestStatus;
+  due_on: string | null;
+  expires_on: string | null;
+  current_version: number | null;
+  requested_by: string | null;
+  reviewer_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+export type DocumentVersionRow = {
+  id: string;
+  request_id: string;
+  case_id: string;
+  version: number;
+  upload_path: string;
+  storage_path: string;
+  original_filename: string;
+  mime_type: "application/pdf" | "image/jpeg" | "image/png" | null;
+  size_bytes: number | null;
+  sha256: string | null;
+  state: "pending" | "active" | "superseded" | "rejected_file" | "abandoned" | "deleted";
+  scan_status: "not_scanned" | "clean" | "infected" | "failed";
+  uploaded_by: string | null;
+  created_at: string;
+  uploaded_at: string | null;
+  deleted_at: string | null;
+  upload_cleaned_at: string | null;
+};
+export type DocumentReviewAction = "requested" | "uploaded" | "opened" | "approved" | "rejected" | "reupload_required" | "withdrawn" | "expired" | "file_refused";
+export type DocumentReviewRow = { id: string; request_id: string; version_id: string | null; action: DocumentReviewAction; note: string; actor_id: string | null; created_at: string };
+
 type AuditEventRow = {
   id: number;
   occurred_at: string;
@@ -194,6 +236,14 @@ export type Database = {
       site_events: Table<SiteEventRow, Omit<SiteEventRow, "id" | "at">, never>;
       case_applications: Table<CaseApplicationRow, Pick<CaseApplicationRow, "case_id" | "university" | "programme"> & Partial<Pick<CaseApplicationRow, "deadline" | "notes">>, Partial<Pick<CaseApplicationRow, "status" | "deadline" | "submitted_on" | "portal_reference" | "notes">>>;
       referrals: Table<ReferralRow, Pick<ReferralRow, "referral_code" | "referrer_case_id"> & Partial<Pick<ReferralRow, "lead_id">>, Partial<Pick<ReferralRow, "status" | "reward_amount" | "decided_by" | "decided_at">>>;
+      document_types: Table<DocumentTypeRow, DocumentTypeRow, Partial<Omit<DocumentTypeRow, "key">>>;
+      document_requests: Table<
+        DocumentRequestRow,
+        Pick<DocumentRequestRow, "case_id" | "type_key" | "title"> & Partial<Pick<DocumentRequestRow, "application_id" | "instructions" | "due_on" | "expires_on">>,
+        Partial<Pick<DocumentRequestRow, "title" | "instructions" | "due_on" | "expires_on" | "reviewer_id">>
+      >;
+      document_versions: Table<DocumentVersionRow, never, never>;
+      document_reviews: Table<DocumentReviewRow, never, never>;
       case_tasks: Table<CaseTaskRow, Pick<CaseTaskRow, "case_id" | "title"> & Partial<Pick<CaseTaskRow, "due_on">>, Partial<Pick<CaseTaskRow, "done" | "title" | "due_on">>>;
     };
     Views: Record<never, never>;
@@ -208,6 +258,16 @@ export type Database = {
       rate_limit_hit: { Args: { p_key: string; p_limit: number; p_window_seconds: number }; Returns: { allowed: boolean; retry_after_seconds: number }[] };
       prune_rate_limits: { Args: Record<never, never>; Returns: number };
       team_directory: { Args: Record<never, never>; Returns: { user_id: string; full_name: string; role: TeamRole }[] };
+      document_review_action: { Args: { p_request: string; p_action: "approved" | "rejected" | "reupload_required" | "withdrawn"; p_note?: string; p_version?: string }; Returns: DocumentRequestStatus };
+      begin_document_upload: { Args: { p_request: string; p_filename: string }; Returns: { version_id: string; upload_path: string }[] };
+      complete_document_upload: { Args: { p_version: string; p_mime: string; p_size: number; p_sha256: string }; Returns: undefined };
+      reject_document_file: { Args: { p_version: string }; Returns: undefined };
+      authorize_document_download: { Args: { p_version: string; p_purpose?: "download" | "preview" }; Returns: { storage_path: string; download_name: string }[] };
+      expire_documents: { Args: Record<never, never>; Returns: number };
+      stale_document_uploads: { Args: { p_limit?: number }; Returns: { version_id: string; upload_path: string; storage_path: string; state: DocumentVersionRow["state"] }[] };
+      mark_upload_cleaned: { Args: { p_version: string }; Returns: undefined };
+      documents_due_for_deletion: { Args: { p_limit?: number }; Returns: { version_id: string; storage_path: string; upload_path: string }[] };
+      mark_document_version_deleted: { Args: { p_version: string }; Returns: undefined };
     };
     Enums: { team_role: TeamRole; lead_status: LeadStatus };
     CompositeTypes: Record<never, never>;

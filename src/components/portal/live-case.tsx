@@ -282,20 +282,6 @@ export function LivePortalProfile({ c, email }: { c: CaseWithMoney; email: strin
 }
 
 /** Documents: honest about secure uploads, clear about what to do meanwhile. */
-export function LivePortalDocuments() {
-  return (
-    <div className="mt-8 grid gap-4">
-      <Panel title="Sharing documents">
-        <p className="text-sm leading-relaxed text-ink-soft">
-          Your advisor gives you a document checklist in your tasks, in the order you&apos;ll need each one. Secure uploads open here soon. Until then,
-          please don&apos;t send passports, bank statements or other sensitive documents by WhatsApp or email; your advisor will tell you how to share them safely.
-        </p>
-        <Link href="/portal/tasks" className="mt-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary">See your tasks <ArrowRight className="size-4" aria-hidden="true" /></Link>
-      </Panel>
-    </div>
-  );
-}
-
 export function LivePortalMessages({ c }: { c: CaseWithMoney }) {
   return (
     <div className="mt-8 grid gap-4">

@@ -6,6 +6,10 @@ import { DemoUnavailable, FilterBar } from "@/components/admin/admin-ui";
 import { DocumentDates, StorageBoundary } from "@/components/admin/document-parts";
 import { documentStatusTone, param, pendingDocumentStatuses } from "@/components/admin/format";
 import { demoDocuments, isDemoWorkspaceEnabled, studentById } from "@/server/demo/workspace";
+import { DocumentQueue } from "@/components/documents/admin-documents";
+import { documentRequestStatusLabels } from "@/features/documents/status";
+import type { DocumentRequestStatus } from "@/lib/supabase/types";
+import { listDocumentQueue, listDocumentTypes } from "@/server/services/documents";
 
 export const metadata: Metadata = { title: "Document centre" };
 
@@ -13,9 +17,33 @@ const statusOrder = (s: DocumentStatus) => (pendingDocumentStatuses.includes(s) 
 
 export default async function DocumentsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const header = <PageHeader eyebrow="Operations" title="Document centre" description="The review queue for every student file: what is waiting, what needs a re-upload and what is about to expire." />;
+  const sp = await searchParams;
+  const liveStatus = param(sp.status);
+  const liveType = param(sp.type);
+  const live = await listDocumentQueue({ status: liveStatus && liveStatus in documentRequestStatusLabels ? liveStatus : undefined, type: liveType || undefined });
+  if (live !== null) {
+    const types = (await listDocumentTypes()) ?? [];
+    return (
+      <div>
+        {header}
+        <FilterBar
+          action="/admin/documents"
+          fields={[
+            { name: "status", label: "Status", value: liveStatus, options: (Object.keys(documentRequestStatusLabels) as DocumentRequestStatus[]).map((s) => ({ value: s, label: documentRequestStatusLabels[s] })) },
+            { name: "type", label: "Type", value: liveType, options: types.map((t) => ({ value: t.key, label: t.label })) },
+          ]}
+          resultLabel={`${live.length} document${live.length === 1 ? "" : "s"}`}
+        />
+        <p className="mt-3 flex items-start gap-2 text-xs text-muted">
+          <Lock className="mt-0.5 size-3.5 shrink-0 text-terracotta-deep" aria-hidden="true" />
+          Financial documents open only for owner, admin and finance; identity documents never open for finance or marketing. Request documents from a student&apos;s case page.
+        </p>
+        <div className="mt-4"><DocumentQueue rows={live} /></div>
+      </div>
+    );
+  }
   if (!isDemoWorkspaceEnabled()) return <div>{header}<DemoUnavailable module="The document centre" /><StorageBoundary className="mt-6" /></div>;
 
-  const sp = await searchParams;
   const status = param(sp.status);
   const category = param(sp.category);
   const rows = demoDocuments.filter((d) => (!status || d.status === status) && (!category || d.category === category)).sort((a, b) => statusOrder(a.status) - statusOrder(b.status));

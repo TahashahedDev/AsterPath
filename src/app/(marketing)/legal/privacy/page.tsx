@@ -90,8 +90,9 @@ const sections: LegalSection[] = [
     body: [
       <p key="a">
         Enquiries that do not become clients are deleted [12 months] after our last contact. Client records are kept for the duration of our services
-        and then for [the period required by Indian tax and accounting law]. Identity and academic documents are deleted [6 months] after your services
-        end unless you ask us to keep them or the law requires otherwise.
+        and then for [the period required by Indian tax and accounting law]. Documents you upload in your portal (identity, academic, financial and
+        others) are deleted automatically 12 months after your case closes, so they are still available if you re-apply for the next intake. You can
+        ask us to delete them sooner, unless the law requires us to keep them.
       </p>,
     ],
   },
@@ -100,8 +101,9 @@ const sections: LegalSection[] = [
     heading: "How we protect it",
     body: [
       <p key="a">
-        Access is limited to team members working on your case. Documents are stored privately and shared only through short-lived secure links, and
-        access is logged. No system is perfectly secure; if a breach affects you, we will inform you and the authorities as the law requires.
+        Access is limited to team members working on your case. Documents are stored privately, never at a public address: each is opened through a
+        link that expires after five minutes, and every opening is logged. Financial documents such as bank statements can be opened only by our
+        owner, administrators and finance staff. Uploaded files are checked to be genuine PDF, JPEG or PNG files of at most 10 MB. No system is perfectly secure; if a breach affects you, we will inform you and the authorities as the law requires.
       </p>,
     ],
   },

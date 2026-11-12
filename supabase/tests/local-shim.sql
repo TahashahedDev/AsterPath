@@ -53,3 +53,14 @@ grant execute on function auth.uid(), auth.jwt() to anon, authenticated, service
 -- Supabase grants table access to these roles by default; RLS and the migration's revokes do the narrowing.
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+
+-- Storage: just the bucket table the document vault migration configures.
+create schema storage;
+create table storage.buckets (
+  id text primary key,
+  name text not null,
+  public boolean default false,
+  file_size_limit bigint,
+  allowed_mime_types text[]
+);
+grant usage on schema storage to anon, authenticated, service_role;

@@ -3,6 +3,16 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Student documents upload straight from the browser to Supabase Storage (a
+// signed URL per file), so the project's own origin, and only that, may be contacted.
+const supabaseOrigin = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : "";
+  } catch {
+    return "";
+  }
+})();
+
 // Baseline CSP. Next.js injects inline bootstrap scripts, so script-src needs
 // 'unsafe-inline' until we move to nonce-based CSP (planned alongside auth,
 // when pages become dynamic anyway). Everything else is locked to 'self'.
@@ -15,7 +25,7 @@ const contentSecurityPolicy = [
   // The consultation calendar (Cal.com) is the only third party allowed in a frame.
   "frame-src https://cal.com https://app.cal.com",
   "font-src 'self'",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${isDev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

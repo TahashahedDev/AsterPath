@@ -154,4 +154,4 @@ export type Enquiry = z.output<typeof enquirySchema>;
 export type Attribution = z.output<typeof attributionSchema>;
 
 /** Version of the privacy policy the user acknowledged. Bump when /legal/privacy changes. */
-export const PRIVACY_NOTICE_VERSION = "draft-2026-11-c";
+export const PRIVACY_NOTICE_VERSION = "draft-2026-11-d";

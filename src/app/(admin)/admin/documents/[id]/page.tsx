@@ -3,16 +3,38 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, FileText, Lock } from "lucide-react";
 import { documentStatusLabels, sensitiveDocumentCategories } from "@/features/operations/types";
+import { documentRequestStatusLabels, documentRequestStatusTone } from "@/features/documents/status";
 import { DemoNotice, PageHeader, Panel, StatusPill, formatDate } from "@/components/dashboard/ui";
 import { DemoUnavailable, DisabledActions, Facts } from "@/components/admin/admin-ui";
 import { DocumentDates, StorageBoundary } from "@/components/admin/document-parts";
 import { documentStatusTone } from "@/components/admin/format";
 import { demoDocuments, isDemoWorkspaceEnabled, staffById, studentById } from "@/server/demo/workspace";
+import { DocumentReview } from "@/components/documents/admin-documents";
+import { getDocument } from "@/server/services/documents";
 
 export const metadata: Metadata = { title: "Document review" };
 
 export default async function DocumentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const live = /^[0-9a-f-]{36}$/.test(id) ? await getDocument(id) : null;
+  if (live === undefined) notFound();
+  if (live) {
+    return (
+      <div>
+        <Link href="/admin/documents" className="mb-4 inline-flex min-h-10 items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
+          <ArrowLeft className="size-4" aria-hidden="true" /> Document centre
+        </Link>
+        <PageHeader
+          eyebrow={live.type?.label ?? "Document"}
+          title={live.title}
+          description={<><Link href={`/admin/students/${live.case_id}`} className="text-primary hover:text-primary-deep">{live.studentName}</Link>{live.due_on ? ` · due ${formatDate(live.due_on)}` : ""}{live.expires_on ? ` · expires ${formatDate(live.expires_on)}` : ""}</>}
+          actions={<StatusPill tone={documentRequestStatusTone[live.status]}>{documentRequestStatusLabels[live.status]}</StatusPill>}
+        />
+        {live.instructions && <p className="mt-4 max-w-2xl text-sm text-ink-soft">{live.instructions}</p>}
+        <DocumentReview d={live} studentName={live.studentName} canWithdraw />
+      </div>
+    );
+  }
   if (!isDemoWorkspaceEnabled()) {
     return (
       <div>

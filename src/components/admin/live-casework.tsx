@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import { DataTable, EmptyState, PageHeader, Panel, StatusPill, formatDate, type Column, type PillTone } from "@/components/dashboard/ui";
+import { CaseDocumentsPanel } from "@/components/documents/admin-documents";
+import type { DocumentTypeRow } from "@/lib/supabase/types";
+import type { DocumentWithHistory } from "@/server/services/documents";
 import { AddApplicationForm, AddCaseTaskForm, CaseStageForm, ConfirmPaymentForm } from "@/components/admin/casework-forms";
 import { workflowLabel } from "@/components/admin/format";
 import { setCaseTaskDone, updateApplication } from "@/app/(admin)/admin/students/actions";
@@ -48,7 +51,7 @@ export function LiveCaseList({ cases, team }: { cases: StudentCaseRow[]; team: S
   );
 }
 
-export function LiveCaseDetail({ c, team }: { c: CaseWithMoney; team: StaffMember[] }) {
+export function LiveCaseDetail({ c, team, documents, documentTypes }: { c: CaseWithMoney; team: StaffMember[]; documents: DocumentWithHistory[]; documentTypes: DocumentTypeRow[] }) {
   return (
     <div>
       <Link href="/admin/students" className="mb-4 inline-flex min-h-10 items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
@@ -105,6 +108,8 @@ export function LiveCaseDetail({ c, team }: { c: CaseWithMoney; team: StaffMembe
           </ul>
         )}
       </Panel>
+
+      <CaseDocumentsPanel caseId={c.id} documents={documents} types={documentTypes} />
 
       <Panel title="Tasks for the student" className="mt-4">
         <AddCaseTaskForm caseId={c.id} />

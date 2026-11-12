@@ -9,6 +9,7 @@ import { applicationStatusTone, documentStatusTone, instalmentLabels, instalment
 import { WorkflowTrack } from "@/components/admin/workflow-track";
 import { LiveCaseDetail } from "@/components/admin/live-casework";
 import { getCase } from "@/server/services/cases";
+import { listCaseDocuments, listDocumentTypes } from "@/server/services/documents";
 import { getTeamDirectory } from "@/server/services/lead-directory";
 import {
   demoActivity, demoApplications, demoDocuments, demoInvoices, demoMessages, demoTasks, isDemoWorkspaceEnabled, journeyFor, staffById, studentById,
@@ -21,7 +22,10 @@ export default async function StudentCasePage({ params }: { params: Promise<{ id
   const { id } = await params;
   const live = /^[0-9a-f-]{36}$/.test(id) ? await getCase(id) : null;
   if (live === undefined) notFound();
-  if (live) return <LiveCaseDetail c={live} team={await getTeamDirectory()} />;
+  if (live) {
+    const [team, documents, documentTypes] = await Promise.all([getTeamDirectory(), listCaseDocuments(live.id), listDocumentTypes()]);
+    return <LiveCaseDetail c={live} team={team} documents={documents ?? []} documentTypes={documentTypes ?? []} />;
+  }
   if (!isDemoWorkspaceEnabled()) {
     return (
       <div>

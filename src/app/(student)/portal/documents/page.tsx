@@ -3,7 +3,9 @@ import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { DemoNotice, PageHeader, StatusPill, formatDate } from "@/components/dashboard/ui";
 import { DisabledAction } from "@/components/portal/disabled-action";
 import { DueLabel } from "@/components/portal/due-label";
-import { LivePortalDocuments, NoCaseYet } from "@/components/portal/live-case";
+import { NoCaseYet } from "@/components/portal/live-case";
+import { StudentDocuments } from "@/components/documents/student-documents";
+import { listCaseDocuments } from "@/server/services/documents";
 import { PortalUnavailable } from "@/components/portal/portal-unavailable";
 import { getMyCase } from "@/server/services/cases";
 import { documentTone } from "@/components/portal/tones";
@@ -18,7 +20,10 @@ const uploadReason = "Secure uploads open once our private document storage is l
 export default async function DocumentsPage() {
   const header = <PageHeader eyebrow="Document centre" title="Your documents" description="Everything we've requested, its review status and any feedback from your reviewer." />;
   const live = await getMyCase();
-  if (live !== null) return <>{header}{live ? <LivePortalDocuments  /> : <NoCaseYet />}</>;
+  if (live !== null) {
+    if (!live) return <>{header}<NoCaseYet /></>;
+    return <>{header}<StudentDocuments documents={(await listCaseDocuments(live.id)) ?? []} /></>;
+  }
   if (!isPortalDemoEnabled()) return <>{header}<PortalUnavailable what="documents" /></>;
   const p = getDemoPortal();
   const groups = documentCategories.map((c) => ({ category: c, docs: p.documents.filter((d) => d.category === c) })).filter((g) => g.docs.length);
